@@ -7,9 +7,12 @@ import com.google.gson.*
 import java.lang.reflect.*
 
 /**
- * A deserializer that works on Grails domain objects. If the JSON element contains an _id_ property then the domain
- * instance is retrieved from the database, otherwise a new instance is constructed. This means you can deserialize a
- * JSON HTTP request into a new domain instance or an update to an existing one.
+ * A _JsonDeserializer_ implementation that works on Grails domain objects.
+ *
+ * If the JSON element contains an _id_ property then the domain instance is
+ * retrieved from the database, otherwise a new instance is constructed. This
+ * means you can deserialize a JSON HTTP request into a new domain instance or
+ * an update to an existing one.
  */
 @Slf4j
 class GrailsDomainDeserializer implements JsonDeserializer {

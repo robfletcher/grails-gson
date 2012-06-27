@@ -5,6 +5,10 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import com.google.gson.*
 
+/**
+ * A factory for _Gson_ instances that automatically registers
+ * _JsonDeserializer_ instances for all domain classes in the application.
+ */
 @Slf4j
 class GsonFactory implements GrailsApplicationAware {
 
