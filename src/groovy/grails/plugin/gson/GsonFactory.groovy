@@ -1,10 +1,9 @@
 package grails.plugin.gson
 
-import com.google.gson.Gson
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import com.google.gson.GsonBuilder
 import groovy.util.logging.Slf4j
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import com.google.gson.*
 
 @Slf4j
 class GsonFactory implements GrailsApplicationAware {
@@ -21,7 +20,7 @@ class GsonFactory implements GrailsApplicationAware {
 		def builder = new GsonBuilder()
 		for (domainClass in grailsApplication.getDomainClasses()) {
 			log.debug "registering adapter for $domainClass.name"
-			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(grailsApplication: grailsApplication)
+			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
 		}
 		builder.create()
 	}

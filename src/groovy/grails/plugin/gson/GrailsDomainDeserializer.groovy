@@ -1,11 +1,10 @@
 package grails.plugin.gson
 
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import com.google.gson.*
-import org.codehaus.groovy.grails.commons.*
-import java.lang.reflect.*
-import groovy.util.logging.Log
 import groovy.util.logging.Slf4j
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import com.google.gson.*
+
+import java.lang.reflect.*
 
 /**
  * A deserializer that works on Grails domain objects. If the JSON element contains an _id_ property then the domain
@@ -13,24 +12,27 @@ import groovy.util.logging.Slf4j
  * JSON HTTP request into a new domain instance or an update to an existing one.
  */
 @Slf4j
-class GrailsDomainDeserializer implements JsonDeserializer, GrailsApplicationAware {
+class GrailsDomainDeserializer implements JsonDeserializer {
 
-	GrailsApplication grailsApplication
+	GrailsDomainClass domainClass
 
-    Object deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
-		def domainClass = getDomainClass(type)
-        def jsonObject = element.asJsonObject
-        def id = context.deserialize(jsonObject.get('id'), getPropertyType(domainClass, 'id'))
-        def instance = id ? type.get(id) : type.newInstance()
-        for (prop in jsonObject.entrySet()) {
-			Type propertyType = getPropertyType(domainClass, prop.key)
+	GrailsDomainDeserializer(GrailsDomainClass domainClass) {
+		this.domainClass = domainClass
+	}
+
+	Object deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
+		def jsonObject = element.asJsonObject
+		def id = context.deserialize(jsonObject.get('id'), getPropertyType('id'))
+		def instance = id ? type.get(id) : type.newInstance()
+		for (prop in jsonObject.entrySet()) {
+			Type propertyType = getPropertyType(prop.key)
 			log.debug "deserializing $prop.key $prop.value ($propertyType)"
 			instance.properties[prop.key] = context.deserialize(prop.value, propertyType)
-        }
-        instance
-    }
+		}
+		instance
+	}
 
-	private Type getPropertyType(GrailsDomainClass domainClass, String name) {
+	private Type getPropertyType(String name) {
 		def domainClassProperty = domainClass.getPropertyByName(name)
 		def propertyType = domainClassProperty.type
 
@@ -55,10 +57,6 @@ class GrailsDomainDeserializer implements JsonDeserializer, GrailsApplicationAwa
 		} else {
 			propertyType
 		}
-	}
-
-	private GrailsDomainClass getDomainClass(Type type) {
-		grailsApplication.getDomainClass(type.name)
 	}
 
 }
