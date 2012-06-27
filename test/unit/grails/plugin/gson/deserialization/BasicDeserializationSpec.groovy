@@ -1,10 +1,10 @@
 package grails.plugin.gson.deserialization
 
+import com.google.gson.Gson
 import grails.persistence.Entity
-import grails.plugin.gson.GrailsDomainDeserializer
+import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import spock.lang.Specification
-import com.google.gson.*
 
 @Mock(RockStar)
 class BasicDeserializationSpec extends Specification {
@@ -12,9 +12,7 @@ class BasicDeserializationSpec extends Specification {
 	Gson gson
 
 	void setup() {
-		def builder = new GsonBuilder()
-		builder.registerTypeAdapter RockStar, new GrailsDomainDeserializer(grailsApplication: grailsApplication)
-		gson = builder.create()
+		gson = new GsonFactory(grailsApplication).createGson()
 	}
 
 	void 'can deserialize a new instance'() {
