@@ -8,7 +8,6 @@ class Person {
 	String name
     int age
 	Address address
-    Collection<Pet> pets
 
 	static embedded = ['address']
     static hasMany = [pets: Pet]

@@ -4,15 +4,15 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 import com.google.gson.*
 
-@Mock(Person)
+@Mock([Person, Pet])
 class GrailsDomainDeserializerSpec extends Specification {
 
 	Gson gson
 
     void setup() {
         def builder = new GsonBuilder()
-        builder.registerTypeAdapter Person, new GrailsDomainDeserializer()
-        builder.registerTypeAdapter Pet, new GrailsDomainDeserializer()
+        builder.registerTypeAdapter Person, new GrailsDomainDeserializer(grailsApplication: grailsApplication)
+        builder.registerTypeAdapter Pet, new GrailsDomainDeserializer(grailsApplication: grailsApplication)
         gson = builder.create()
     }
 
@@ -41,14 +41,14 @@ class GrailsDomainDeserializerSpec extends Specification {
         person.address.number == data.address.number
         person.address.street == data.address.street
         person.pets.size() == 2
-        person.pets.every { it instanceof Pet }
+        person.pets*.getClass().every { it == Pet }
         ['Goldie', 'Dottie'].every { it in person.pets.name }
         person.pets.every { it.species == 'Goldfish' }
     }
 
     void 'can update an existing instance with json'() {
         given:
-        def pet1 = new Pet(name: 'Goldy', species: 'Goldfish')
+        def pet1 = new Pet(name: 'Goldy', species: 'Goldfish').save(failOnError: true)
         def person1 = new Person(name: 'Alex', age: 2, pets: [pet1]).save(failOnError: true)
 
         and:
@@ -76,8 +76,8 @@ class GrailsDomainDeserializerSpec extends Specification {
         person2.address.number == data.address.number
         person2.address.street == data.address.street
         person2.pets.size() == 2
-        person2.pets.every { it instanceof Pet }
-        ['Goldie', 'Dottie'].every { it in person2.pets.name }
+		person2.pets*.getClass().every { it == Pet }
+		['Goldie', 'Dottie'].every { it in person2.pets.name }
         person2.pets.every { it.species == 'Goldfish' }
     }
 }
