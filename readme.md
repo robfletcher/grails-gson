@@ -8,60 +8,70 @@ Grails' JSON deserialization has some limitations. Specifically it doesn't work 
 
 Let's say you have a domain classes _Child_ and _Pet_ like this:
 
-	class Child {
-		String name
-		int age
-		static hasMany = [pets: Pet]
-	}
+``` groovy
+class Child {
+	String name
+	int age
+	static hasMany = [pets: Pet]
+}
 
-	class Pet {
-		String name
-		String species
-	}
+class Pet {
+	String name
+	String species
+}
+```
 
 This can be deserialized in a number of ways.
 
 ### To create a new _Child_ instance with associated _Pet_ instances
 
-	{
-		"name": "Alex",
-		"age": 3,
-		"pets": [
-			{"name": "Goldie", "species": "Goldfish"},
-			{"name": "Dottie", "species": "Goldfish"}
-		]
-	}
+``` json
+{
+	"name": "Alex",
+	"age": 3,
+	"pets": [
+		{"name": "Goldie", "species": "Goldfish"},
+		{"name": "Dottie", "species": "Goldfish"}
+	]
+}
+```
 
 ### To bind new _Pet_ instances to an existing _Child_
 
-	{
-		"id": 1,
-		"pets": [
-			{"name": "Goldie", "species": "Goldfish"},
-			{"name": "Dottie", "species": "Goldfish"}
-		]
-	}
+``` json
+{
+	"id": 1,
+	"pets": [
+		{"name": "Goldie", "species": "Goldfish"},
+		{"name": "Dottie", "species": "Goldfish"}
+	]
+}
+```
 
 ### To bind existing _Pet_ instances to a new _Child_
 
-	{
-		"name": "Alex",
-		"age": 3,
-		"pets": [
-			{"id": 1},
-			{"id": 2}
-		]
-	}
+``` json
+{
+	"name": "Alex",
+	"age": 3,
+	"pets": [
+		{"id": 1},
+		{"id": 2}
+	]
+}
+```
 
 ### To update the _name_ of existing _Pet_ instances without changing their _species_
 
-	{
-		"id": 1,
-		"pets": [
-			{"id": 1, "name": "Goldie"},
-			{"id": 2, "name": "Dottie"}
-		]
-	}
+``` json
+{
+	"id": 1,
+	"pets": [
+		{"id": 1, "name": "Goldie"},
+		{"id": 2, "name": "Dottie"}
+	]
+}
+```
 
 ## Compatibility
 
