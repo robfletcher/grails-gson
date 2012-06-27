@@ -12,6 +12,7 @@ class GrailsDomainDeserializerSpec extends Specification {
     void setup() {
         def builder = new GsonBuilder()
         builder.registerTypeAdapter Person, new GrailsDomainDeserializer()
+        builder.registerTypeAdapter Pet, new GrailsDomainDeserializer()
         gson = builder.create()
     }
 
@@ -23,6 +24,10 @@ class GrailsDomainDeserializerSpec extends Specification {
             address: [
                 number: 7,
                 street: 'Gosberton Road'
+            ],
+            pets: [
+            	[name: 'Goldie', species: 'Goldfish'],
+            	[name: 'Dottie', species: 'Goldfish']
             ]
         ]
         def json = gson.toJson(data)
@@ -35,11 +40,16 @@ class GrailsDomainDeserializerSpec extends Specification {
         person.age == data.age
         person.address.number == data.address.number
         person.address.street == data.address.street
+        person.pets.size() == 2
+        person.pets.every { it instanceof Pet }
+        ['Goldie', 'Dottie'].every { it in person.pets.name }
+        person.pets.every { it.species == 'Goldfish' }
     }
 
-    void 'can update and existing instance with json'() {
+    void 'can update an existing instance with json'() {
         given:
-        def person1 = new Person(name: 'Alex', age: 2).save(failOnError: true)
+        def pet1 = new Pet(name: 'Goldy', species: 'Goldfish')
+        def person1 = new Person(name: 'Alex', age: 2, pets: [pet1]).save(failOnError: true)
 
         and:
         def data = [
@@ -48,6 +58,10 @@ class GrailsDomainDeserializerSpec extends Specification {
             address: [
                 number: 7,
                 street: 'Gosberton Road'
+            ],
+            pets: [
+            	[id: pet1.id, name: 'Goldie'],
+            	[name: 'Dottie', species: 'Goldfish']
             ]
         ]
         def json = gson.toJson(data)
@@ -61,5 +75,9 @@ class GrailsDomainDeserializerSpec extends Specification {
         person2.age == data.age
         person2.address.number == data.address.number
         person2.address.street == data.address.street
+        person2.pets.size() == 2
+        person2.pets.every { it instanceof Pet }
+        ['Goldie', 'Dottie'].every { it in person2.pets.name }
+        person2.pets.every { it.species == 'Goldfish' }
     }
 }
