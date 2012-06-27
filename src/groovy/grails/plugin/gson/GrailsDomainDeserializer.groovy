@@ -3,14 +3,16 @@ package grails.plugin.gson
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import com.google.gson.*
 import org.codehaus.groovy.grails.commons.*
-
 import java.lang.reflect.*
+import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 
 /**
  * A deserializer that works on Grails domain objects. If the JSON element contains an _id_ property then the domain
  * instance is retrieved from the database, otherwise a new instance is constructed. This means you can deserialize a
  * JSON HTTP request into a new domain instance or an update to an existing one.
  */
+@Slf4j
 class GrailsDomainDeserializer implements JsonDeserializer, GrailsApplicationAware {
 
 	GrailsApplication grailsApplication
@@ -22,7 +24,7 @@ class GrailsDomainDeserializer implements JsonDeserializer, GrailsApplicationAwa
         def instance = id ? type.get(id) : type.newInstance()
         for (prop in jsonObject.entrySet()) {
 			Type propertyType = getPropertyType(domainClass, prop.key)
-			println "deserializing $prop.key $prop.value ($propertyType)"
+			log.debug "deserializing $prop.key $prop.value ($propertyType)"
 			instance.properties[prop.key] = context.deserialize(prop.value, propertyType)
         }
         instance
