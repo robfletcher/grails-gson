@@ -26,8 +26,8 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 		def instance = id ? type.get(id) : type.newInstance()
 		for (prop in jsonObject.entrySet()) {
 			Type propertyType = getPropertyType(prop.key)
-			log.debug "deserializing $prop.key $prop.value ($propertyType)"
-			instance.properties[prop.key] = context.deserialize(prop.value, propertyType)
+			log.debug "deserializing $prop.key to $propertyType"
+			instance[prop.key] = context.deserialize(prop.value, propertyType)
 		}
 		instance
 	}
@@ -41,7 +41,11 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 			new ParameterizedType() {
 				@Override
 				Type[] getActualTypeArguments() {
-					[componentType] as Type[]
+					if (Map.isAssignableFrom(propertyType)) {
+						[String, componentType] as Type[]
+					} else {
+						[componentType] as Type[]
+					}
 				}
 
 				@Override
@@ -52,6 +56,11 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 				@Override
 				Type getOwnerType() {
 					null
+				}
+
+				@Override
+				String toString() {
+					"$rawType.name<${actualTypeArguments.name.join(', ')}>"
 				}
 			}
 		} else {

@@ -1,0 +1,87 @@
+package grails.plugin.gson.deserialization
+
+import com.google.gson.Gson
+import grails.persistence.Entity
+import grails.plugin.gson.GsonFactory
+import grails.test.mixin.Mock
+import spock.lang.Specification
+
+@Mock([Geek, Site])
+class MapDeserializationSpec extends Specification {
+
+	Gson gson
+
+	void setup() {
+		gson = new GsonFactory(grailsApplication).createGson()
+	}
+
+	void 'can deserialize a new instance'() {
+		given:
+		def data = [
+			name: 'Rob',
+			sites: [
+				homepage: [url: 'http://freeside.co'],
+				blog: [url: 'http://hipsterdevstack.tumblr.com']
+			]
+		]
+		def json = gson.toJson(data)
+
+		when:
+		def geek = gson.fromJson(json, Geek)
+
+		then:
+		geek.name == data.name
+		geek.sites.size() == 2
+		geek.sites.keySet() == data.sites.keySet()
+		geek.sites.values()*.getClass().every { it == Site }
+		geek.sites.homepage.url.toString() == data.sites.homepage.url
+		geek.sites.blog.url.toString() == data.sites.blog.url
+	}
+
+	void 'can deserialize an existing instance'() {
+		given:
+		def site1 = new Site(url: 'http://freeside.co'.toURL()).save(failOnError: true)
+		def geek1 = new Geek(name: 'Rob', sites: [homepage: site1]).save(failOnError: true)
+
+		and:
+		def data = [
+			id: geek1.id,
+			sites: [
+				homepage: [id: site1.id],
+				blog: [url: 'http://hipsterdevstack.tumblr.com'],
+				twitter: [url: 'http://twitter.com/rfletcherEW']
+			]
+		]
+		def json = gson.toJson(data)
+
+		when:
+		def geek2 = gson.fromJson(json, Geek)
+
+		then:
+		geek2.id == geek1.id
+		geek2.name == geek1.name
+		geek2.sites.size() == 3
+		geek2.sites.keySet() == ['homepage', 'blog', 'twitter'] as Set
+		geek2.sites.values()*.getClass().every { it == Site }
+		geek2.sites.homepage.url == geek1.sites.homepage.url
+		geek2.sites.blog.url.toString() == data.sites.blog.url
+		geek2.sites.twitter.url.toString() == data.sites.twitter.url
+	}
+}
+
+@Entity
+class Geek {
+	String name
+	Map<String, Site> sites
+	static hasMany = [sites: Site]
+}
+
+@Entity
+class Site {
+	URL url
+
+	@Override
+	String toString() {
+		url
+	}
+}
