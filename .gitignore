@@ -1,2 +1,8 @@
+# Grails
 /target
 *.log
+
+# IntelliJ IDEA
+/.idea
+/out
+*.iml
