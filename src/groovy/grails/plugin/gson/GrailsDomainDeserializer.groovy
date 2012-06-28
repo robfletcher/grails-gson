@@ -36,7 +36,8 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 	}
 
 	private getOrCreateInstance(JsonObject jsonObject, Type type, JsonDeserializationContext context) {
-		def id = context.deserialize(jsonObject.get('id'), getPropertyType('id'))
+        def identityProp = domainClass.identifier
+		def id = context.deserialize(jsonObject.get(identityProp.name), identityProp.type)
 		id ? type.get(id) : type.newInstance()
 	}
 
