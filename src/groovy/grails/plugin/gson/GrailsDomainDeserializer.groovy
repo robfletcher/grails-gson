@@ -50,7 +50,6 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 		}
 	}
 
-
 	private static class DomainClassPropertyParameterizedType implements ParameterizedType {
 
 		private final GrailsDomainClassProperty property

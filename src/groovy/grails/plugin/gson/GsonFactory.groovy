@@ -3,6 +3,7 @@ package grails.plugin.gson
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import java.lang.reflect.Type
 import com.google.gson.*
 
 /**
@@ -13,6 +14,7 @@ import com.google.gson.*
 class GsonFactory implements GrailsApplicationAware {
 
 	GrailsApplication grailsApplication
+    private final Map<Type, ?> typeAdapters = [:]
 
 	GsonFactory() {}
 
@@ -26,7 +28,13 @@ class GsonFactory implements GrailsApplicationAware {
 			log.debug "registering adapter for $domainClass.name"
 			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
 		}
+        for (entry in typeAdapters) {
+            builder.registerTypeAdapter entry.key, entry.value
+        }
 		builder.create()
 	}
 
+    void registerTypeAdapter(Type type, adapter) {
+        typeAdapters[type] = adapter
+    }
 }
