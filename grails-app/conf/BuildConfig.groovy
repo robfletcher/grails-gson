@@ -17,7 +17,7 @@ grails.project.dependency.resolution = {
 
     dependencies {
         compile 'com.google.code.gson:gson:2.2.1'
-        test('org.joda.time:joda-time:2.0') {
+        test('joda-time:joda-time:2.1') {
             export = false
         }
     }

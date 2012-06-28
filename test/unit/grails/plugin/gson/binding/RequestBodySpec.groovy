@@ -9,15 +9,26 @@ import spock.util.mop.ConfineMetaClassChanges
 import javax.servlet.http.HttpServletRequest
 
 import com.google.gson.*
+import grails.plugin.gson.GsonFactory
 
 @ConfineMetaClassChanges(HttpServletRequest)
 @Mock(Album)
 class RequestBodySpec extends Specification {
 
-    void setup() {
+	Gson gson
+
+	void setup() {
+		gson = new GsonFactory(grailsApplication).createGson()
+
         GrailsMockHttpServletRequest.metaClass.getJSON = { ->
             new JsonParser().parse(delegate.reader)
         }
+
+		for (domainClass in grailsApplication.domainClasses) {
+			domainClass.clazz.metaClass.constructor = { JsonElement json ->
+				gson.fromJson(json, delegate)
+			}
+		}
     }
 
     void 'can get JSON data from request'() {
