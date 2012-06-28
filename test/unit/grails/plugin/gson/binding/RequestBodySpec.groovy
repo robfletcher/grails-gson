@@ -42,13 +42,29 @@ class RequestBodySpec extends Specification {
         request.JSON.title.getAsString() == 'Synthetica'
     }
 
-    void 'can bind request json direct to domain class'() {
+    void 'can bind request json direct to new domain class'() {
         given:
         def request = new GrailsMockHttpServletRequest()
         request.content = '{"artist":"Metric","title":"Synthetica"}'.bytes
 
         when:
         def album = new Album(request.JSON)
+
+        then:
+        album.artist == 'Metric'
+        album.title == 'Synthetica'
+    }
+
+    void 'can bind request json direct to existing domain class'() {
+        given:
+        def request = new GrailsMockHttpServletRequest()
+        request.content = '{"artist":"Metric","title":"Synthetica"}'.bytes
+
+		and:
+		def album = new Album()
+
+        when:
+        album.properties = request.JSON
 
         then:
         album.artist == 'Metric'
