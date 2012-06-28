@@ -5,6 +5,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import com.google.gson.*
 
 import java.lang.reflect.*
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
 /**
  * A _JsonDeserializer_ implementation that works on Grails domain objects.
@@ -25,49 +26,63 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 
 	Object deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
 		def jsonObject = element.asJsonObject
-		def id = context.deserialize(jsonObject.get('id'), getPropertyType('id'))
-		def instance = id ? type.get(id) : type.newInstance()
+		def instance = getOrCreateInstance(jsonObject, type, context)
 		for (prop in jsonObject.entrySet()) {
-			Type propertyType = getPropertyType(prop.key)
+			def propertyType = getPropertyType(prop.key)
 			log.debug "deserializing $prop.key to $propertyType"
 			instance[prop.key] = context.deserialize(prop.value, propertyType)
 		}
 		instance
 	}
 
+	private getOrCreateInstance(JsonObject jsonObject, Type type, JsonDeserializationContext context) {
+		def id = context.deserialize(jsonObject.get('id'), getPropertyType('id'))
+		id ? type.get(id) : type.newInstance()
+	}
+
 	private Type getPropertyType(String name) {
 		def domainClassProperty = domainClass.getPropertyByName(name)
-		def propertyType = domainClassProperty.type
 
 		if (domainClassProperty.manyToMany || domainClassProperty.oneToMany) {
-			def componentType = domainClassProperty.referencedPropertyType
-			new ParameterizedType() {
-				@Override
-				Type[] getActualTypeArguments() {
-					if (Map.isAssignableFrom(propertyType)) {
-						[String, componentType] as Type[]
-					} else {
-						[componentType] as Type[]
-					}
-				}
-
-				@Override
-				Type getRawType() {
-					propertyType
-				}
-
-				@Override
-				Type getOwnerType() {
-					null
-				}
-
-				@Override
-				String toString() {
-					"$rawType.name<${actualTypeArguments.name.join(', ')}>"
-				}
-			}
+			DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
 		} else {
-			propertyType
+			domainClassProperty.type
+		}
+	}
+
+
+	private static class DomainClassPropertyParameterizedType implements ParameterizedType {
+
+		private final GrailsDomainClassProperty property
+
+		static ParameterizedType forProperty(GrailsDomainClassProperty property) {
+			new DomainClassPropertyParameterizedType(property)
+		}
+
+		private DomainClassPropertyParameterizedType(GrailsDomainClassProperty property) {
+			this.property = property
+		}
+
+		Type[] getActualTypeArguments() {
+			def referencedType = property.referencedPropertyType
+			if (Map.isAssignableFrom(property.type)) {
+				[String, referencedType] as Type[]
+			} else {
+				[referencedType] as Type[]
+			}
+		}
+
+		Type getRawType() {
+			property.type
+		}
+
+		Type getOwnerType() {
+			null
+		}
+
+		@Override
+		String toString() {
+			"$rawType.name<${actualTypeArguments.name.join(', ')}>"
 		}
 	}
 
