@@ -31,7 +31,6 @@ class HttpResponseSpec extends Specification {
 
         for (controller in grailsApplication.controllerClasses) {
             controller.clazz.metaClass.render = { JSON json ->
-                println "in render method"
                 json.render delegate.response
             }
         }
@@ -41,16 +40,13 @@ class HttpResponseSpec extends Specification {
 
     void 'can render JSON and so on'() {
         given:
-        def response = new GrailsMockHttpServletResponse()
-
-        and:
         new Album(artist: 'David Bowie', title: 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars').save(failOnError: true)
 
         when:
         controller.index()
 
         then:
-        response.contentAsString == '{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars"}'
+        response.contentAsString == '[{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars"}]'
     }
 
 }

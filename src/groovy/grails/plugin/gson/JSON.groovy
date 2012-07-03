@@ -16,14 +16,11 @@ class JSON extends AbstractConverter<JsonWriter> {
     }
 
     void render(Writer out) {
-        println "render $target"
-        def json = gsonFactory.createGson().toJson(target)
-        println "json = $json"
-        out << json
+        gsonFactory.createGson().toJson(target, out)
     }
 
     void render(HttpServletResponse response) {
-        render response.writer
+		render response.writer
     }
 
     JsonWriter getWriter() {
