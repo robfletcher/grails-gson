@@ -5,40 +5,46 @@ import javax.servlet.http.HttpServletResponse
 import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
 import org.codehaus.groovy.grails.web.converters.Converter
 import com.google.gson.stream.JsonWriter
+import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class JSON extends AbstractConverter<JsonWriter> {
-	@Override
-	void setTarget(Object target) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
 
-	@Override
-	void render(Writer out) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
+    private target
 
-	@Override
-	void render(HttpServletResponse response) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
+    void setTarget(target) {
+        this.target = target
+    }
 
-	@Override
-	JsonWriter getWriter() {
-		return null  //To change body of implemented methods use File | Settings | File Templates.
-	}
+    void render(Writer out) {
+        println "render $target"
+        def json = gsonFactory.createGson().toJson(target)
+        println "json = $json"
+        out << json
+    }
 
-	@Override
-	void convertAnother(Object o) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
+    void render(HttpServletResponse response) {
+        render response.writer
+    }
 
-	@Override
-	void build(Closure c) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
+    JsonWriter getWriter() {
+        throw new UnsupportedOperationException()
+    }
 
-	@Override
-	ObjectMarshaller<? extends Converter> lookupObjectMarshaller(Object target) {
-		return null  //To change body of implemented methods use File | Settings | File Templates.
-	}
+    void convertAnother(Object o) {
+        throw new UnsupportedOperationException()
+    }
+
+    void build(Closure c) {
+        throw new UnsupportedOperationException()
+    }
+
+    ObjectMarshaller<? extends Converter> lookupObjectMarshaller(Object target) {
+        throw new UnsupportedOperationException()
+    }
+
+    private GsonFactory getGsonFactory() {
+        def grailsApplication = ApplicationHolder.application
+        new GsonFactory(grailsApplication)
+    }
+
 }

@@ -1,11 +1,10 @@
 package grails.plugin.gson
 
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import com.google.gson.*
+import org.codehaus.groovy.grails.commons.*
 
 import java.lang.reflect.*
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
 /**
  * A _JsonDeserializer_ implementation that works on Grails domain objects.

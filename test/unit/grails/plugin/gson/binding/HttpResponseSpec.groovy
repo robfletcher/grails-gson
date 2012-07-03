@@ -16,37 +16,47 @@ import grails.test.mixin.TestFor
 @Mock(Album)
 class HttpResponseSpec extends Specification {
 
-	Gson gson
-	def controller
+    Gson gson
+    def controller
 
-	void setup() {
-		gson = new GsonFactory(grailsApplication).createGson()
+    void setupSpec() {
+        defineBeans {
+            gsonFactory(GsonFactory)
+        }
+    }
 
-		HttpServletResponse.metaClass.render = { JsonElement json ->
-			delegate.outputStream << gson.toJson(json)
-		}
+    void setup() {
+        def factory = applicationContext.getBean('gsonFactory')
+        gson = factory.createGson()
 
-		controller = new AlbumController()
-	}
+        for (controller in grailsApplication.controllerClasses) {
+            controller.clazz.metaClass.render = { JSON json ->
+                println "in render method"
+                json.render delegate.response
+            }
+        }
 
-	void 'can render JSON and so on'() {
-		given:
-		def response = new GrailsMockHttpServletResponse()
+        controller = new AlbumController()
+    }
 
-		and:
-		def album = new Album(artist: 'David Bowie', title: 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars')
+    void 'can render JSON and so on'() {
+        given:
+        def response = new GrailsMockHttpServletResponse()
 
-		when:
-		controller.render album as JSON
+        and:
+        new Album(artist: 'David Bowie', title: 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars').save(failOnError: true)
 
-		then:
-		response.contentAsString == '{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars"}'
-	}
+        when:
+        controller.index()
+
+        then:
+        response.contentAsString == '{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars"}'
+    }
 
 }
 
 class AlbumController {
-	def index() {
-		render Album.list() as JSON
-	}
+    def index() {
+        render Album.list() as JSON
+    }
 }
