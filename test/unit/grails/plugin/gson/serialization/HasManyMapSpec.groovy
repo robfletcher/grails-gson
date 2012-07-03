@@ -1,4 +1,4 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.persistence.Entity
@@ -7,7 +7,7 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 
 @Mock([Geek, Site])
-class MapDeserializationSpec extends Specification {
+class HasManyMapSpec extends Specification {
 
 	Gson gson
 
@@ -66,6 +66,18 @@ class MapDeserializationSpec extends Specification {
 		geek2.sites.homepage.url == geek1.sites.homepage.url
 		geek2.sites.blog.url.toString() == data.sites.blog.url
 		geek2.sites.twitter.url.toString() == data.sites.twitter.url
+	}
+
+	void 'can serialize an instance'() {
+		given:
+		def site1 = new Site(url: 'http://freeside.co'.toURL()).save(failOnError: true)
+		def site2 = new Site(url: 'http://hipsterdevstack.tumblr.com'.toURL()).save(failOnError: true)
+		def geek = new Geek(name: 'Rob', sites: [homepage: site1, tumblr: site2]).save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(geek)
+		json.sites.homepage.url.asString == site1.url.toString()
+		json.sites.tumblr.url.asString == site2.url.toString()
 	}
 }
 

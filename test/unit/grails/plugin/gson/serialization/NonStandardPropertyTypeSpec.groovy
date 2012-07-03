@@ -1,4 +1,4 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.persistence.Entity
@@ -13,7 +13,7 @@ import com.google.gson.stream.JsonReader
 import org.joda.time.format.DateTimeFormatter
 
 @Mock(Reminder)
-class JodaPropertyDeserializationSpec extends Specification {
+class NonStandardPropertyTypeSpec extends Specification {
 
     Gson gson
     DateTimeFormatter formatter = ISODateTimeFormat.dateHourMinuteSecond()
@@ -49,6 +49,15 @@ class JodaPropertyDeserializationSpec extends Specification {
         reminder.label == data.label
         reminder.time == formatter.parseLocalDateTime(data.time)
     }
+
+	void 'can serialize an instance with a non-standard property type'() {
+		given:
+		def reminder = new Reminder(label: 'Cocktails at the bar', time: new LocalDateTime(2012, 6, 28, 17, 0)).save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(reminder)
+		json.time.asString == '2012-06-28T17:00:00'
+	}
 
 }
 

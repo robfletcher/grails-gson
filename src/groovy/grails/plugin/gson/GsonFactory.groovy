@@ -24,14 +24,18 @@ class GsonFactory implements GrailsApplicationAware {
 
 	Gson createGson() {
 		def builder = new GsonBuilder()
+
 		for (domainClass in grailsApplication.getDomainClasses()) {
 			log.debug "registering adapter for $domainClass.name"
 			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
-            builder.addSerializationExclusionStrategy(new GrailsDomainExclusionStrategy(domainClass))
 		}
-        for (entry in typeAdapters) {
+
+		builder.addSerializationExclusionStrategy new GrailsDomainExclusionStrategy(grailsApplication)
+
+		for (entry in typeAdapters) {
             builder.registerTypeAdapter entry.key, entry.value
         }
+
 		builder.create()
 	}
 

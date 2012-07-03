@@ -1,27 +1,35 @@
 package grails.plugin.gson
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import com.google.gson.*
+import org.codehaus.groovy.grails.commons.*
 
 class GrailsDomainExclusionStrategy implements ExclusionStrategy {
 
-    private final GrailsDomainClass domainClass
-	private final Collection<String> persistentPropertyNames
+	private final GrailsApplication grailsApplication
 
-    GrailsDomainExclusionStrategy(GrailsDomainClass domainClass) {
-        this.domainClass = domainClass
-		persistentPropertyNames = (domainClass.persistentProperties.name).asImmutable()
-    }
+	GrailsDomainExclusionStrategy(GrailsApplication grailsApplication) {
+		this.grailsApplication = grailsApplication
+	}
 
-    boolean shouldSkipField(FieldAttributes field) {
-        !isPersistentProperty(field.name)
-    }
+	boolean shouldSkipField(FieldAttributes field) {
+		def domainClass = getDomainClassForType(field.declaringClass)
+		if (domainClass) {
+			def property = domainClass.properties.find { it.name == field.name }
+			if (field.name == domainClass.identifier.name || field.name in domainClass.persistentProperties.name || property?.isBasicCollectionType()) {
+				return false
+			} else {
+				return true
+			}
+		} else {
+			false
+		}
+	}
 
 	boolean shouldSkipClass(Class<?> aClass) {
-        false
-    }
+		false
+	}
 
-	private boolean isPersistentProperty(String name) {
-		name in persistentPropertyNames
+	private GrailsDomainClass getDomainClassForType(Class type) {
+		grailsApplication.getDomainClasses().find { it.clazz == type }
 	}
 }

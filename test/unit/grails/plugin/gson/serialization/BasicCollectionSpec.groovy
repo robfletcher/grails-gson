@@ -1,4 +1,4 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.persistence.Entity
@@ -7,7 +7,7 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 
 @Mock(Pirate)
-class BasicCollectionDeserializationSpec extends Specification {
+class BasicCollectionSpec extends Specification {
 
 	Gson gson
 
@@ -50,10 +50,22 @@ class BasicCollectionDeserializationSpec extends Specification {
 		pirate2.name == pirate1.name
 		pirate2.commands == data.commands
 	}
+
+	void 'can serialize an instance'() {
+		given:
+		def pirate = new Pirate(name: 'Blackbeard', commands: ["Queen Anne's Revenge", 'Adventure']).save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(pirate)
+		json.commands.get(0).asString == pirate.commands[0]
+		json.commands.get(1).asString == pirate.commands[1]
+	}
 }
 
 @Entity
 class Pirate {
 	String name
 	List<String> commands
+
+	static hasMany = [commands: String]
 }

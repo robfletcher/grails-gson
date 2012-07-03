@@ -1,4 +1,4 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.persistence.Entity
@@ -7,7 +7,7 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 
 @Mock(Publication)
-class NonStandardIdDeserializationSpec extends Specification {
+class NonStandardIdSpec extends Specification {
 
     Gson gson
 
@@ -30,6 +30,15 @@ class NonStandardIdDeserializationSpec extends Specification {
         pub2.id == pub1.id
         pub2.title == pub1.title
     }
+
+	void 'can serialize an instance with a non-standard id property'() {
+		given:
+		def pub = new Publication(isbn: '9780670919543', title: 'Zero History').save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(pub)
+		json.isbn.asString == pub.isbn
+	}
 
 }
 

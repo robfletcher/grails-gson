@@ -1,4 +1,4 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.plugin.gson.GsonFactory
@@ -7,7 +7,7 @@ import spock.lang.Specification
 import grails.persistence.Entity
 
 @Mock([Book, Author])
-class ManyToOneDeserializationSpec extends Specification {
+class ManyToOnePropertySpec extends Specification {
 
 	Gson gson
 
@@ -51,6 +51,17 @@ class ManyToOneDeserializationSpec extends Specification {
 		book2.title == book1.title
 		book2.author.id == author1.id
 		book2.author.name == data.author.name
+	}
+
+	void 'can serialize an instance'() {
+		given:
+		def author = new Author(name: 'William Gibson').save(failOnError: true)
+		def book = new Book(title: 'Virtual Light', author: author).save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(book)
+		json.author.id.asLong == author.id
+		json.author.name.asString == author.name
 	}
 }
 

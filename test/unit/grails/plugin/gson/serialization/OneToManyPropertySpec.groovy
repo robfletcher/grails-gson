@@ -1,4 +1,4 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.persistence.Entity
@@ -7,7 +7,7 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 
 @Mock([Boy, Pet])
-class OneToManyDeserializationSpec extends Specification {
+class OneToManyPropertySpec extends Specification {
 
 	Gson gson
 
@@ -66,6 +66,22 @@ class OneToManyDeserializationSpec extends Specification {
 		boy2.pets*.getClass().every { it == Pet }
 		['Goldie', 'Dottie'].every { it in boy2.pets.name }
 		boy2.pets.every { it.species == 'Goldfish' }
+	}
+
+	void 'can serialize an instance'() {
+		given:
+		def pet1 = new Pet(name: 'Goldie', species: 'Goldfish').save(failOnError: true)
+		def pet2 = new Pet(name: 'Dottie', species: 'Goldfish').save(failOnError: true)
+		def boy = new Boy(name: 'Alex', age: 2, pets: [pet1, pet2]).save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(boy)
+		json.pets.get(0).id.asLong == pet1.id
+		json.pets.get(0).name.asString == pet1.name
+		json.pets.get(0).species.asString == pet1.species
+		json.pets.get(1).id.asLong == pet2.id
+		json.pets.get(1).name.asString == pet2.name
+		json.pets.get(1).species.asString == pet2.species
 	}
 }
 

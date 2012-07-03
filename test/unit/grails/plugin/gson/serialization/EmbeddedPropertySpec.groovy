@@ -1,13 +1,14 @@
-package grails.plugin.gson.deserialization
+package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
 import grails.persistence.Entity
 import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import spock.lang.Specification
+import com.google.gson.JsonObject
 
 @Mock(Person)
-class EmbeddedDeserializationSpec extends Specification {
+class EmbeddedPropertySpec extends Specification {
 
 	Gson gson
 
@@ -57,6 +58,16 @@ class EmbeddedDeserializationSpec extends Specification {
 		person2.name == person1.name
 		person2.address.number == data.address.number
 		person2.address.street == data.address.street
+	}
+
+	void 'can serialize an instance'() {
+		given:
+		def person = new Person(name: 'Rob', address: new Address(number: 7, street: 'Gosberton Road')).save(failOnError: true)
+
+		expect:
+		def json = gson.toJsonTree(person)
+		json.address.number.asInt == person.address.number
+		json.address.street.asString == person.address.street
 	}
 }
 
