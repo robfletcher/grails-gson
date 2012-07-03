@@ -40,13 +40,13 @@ class HttpResponseSpec extends Specification {
 
     void 'can render JSON and so on'() {
         given:
-        new Album(artist: 'David Bowie', title: 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars').save(failOnError: true)
+        def album = new Album(artist: 'David Bowie', title: 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars').save(failOnError: true)
 
         when:
         controller.index()
 
         then:
-        response.contentAsString == '[{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars"}]'
+        response.contentAsString == /[{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars","id":$album.id}]/
     }
 
 }
