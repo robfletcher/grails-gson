@@ -5,6 +5,7 @@ import grails.persistence.Entity
 import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import spock.lang.Specification
+import spock.lang.Issue
 
 @Mock(Publication)
 class NonStandardIdSpec extends Specification {
@@ -15,7 +16,8 @@ class NonStandardIdSpec extends Specification {
         gson = new GsonFactory(grailsApplication).createGson()
     }
 
-    void 'can deserialize an existing instance with a non-standard id property'() {
+	@Issue('https://github.com/robfletcher/grails-gson/issues/1')
+	void 'can deserialize an existing instance with a non-standard id property'() {
         given:
         def pub1 = new Publication(isbn: '9780670919543', title: 'Zero History').save(failOnError: true)
 
