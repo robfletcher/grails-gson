@@ -1,39 +1,22 @@
 package grails.plugin.gson.binding
 
-import grails.test.mixin.Mock
-import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
 import javax.servlet.http.HttpServletResponse
 
-import com.google.gson.*
 import grails.plugin.gson.*
-import grails.test.mixin.TestFor
+import grails.test.mixin.*
 
 @ConfineMetaClassChanges(HttpServletResponse)
 @TestFor(AlbumController)
 @Mock(Album)
 class HttpResponseSpec extends Specification {
 
-    Gson gson
     def controller
 
-    void setupSpec() {
-        defineBeans {
-            gsonFactory(GsonFactory)
-        }
-    }
-
     void setup() {
-        def factory = applicationContext.getBean('gsonFactory')
-        gson = factory.createGson()
-
-        for (controller in grailsApplication.controllerClasses) {
-            controller.clazz.metaClass.render = { JSON json ->
-                json.render delegate.response
-            }
-        }
+		new ArtefactEnhancer(grailsApplication).enhanceControllers()
 
         controller = new AlbumController()
     }

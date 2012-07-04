@@ -1,38 +1,23 @@
 package grails.plugin.gson.binding
 
+import com.google.gson.JsonElement
 import grails.persistence.Entity
-import grails.plugin.gson.GsonFactory
+import grails.plugin.gson.ArtefactEnhancer
 import grails.test.mixin.Mock
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
-import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
 import javax.servlet.http.HttpServletRequest
 
-import com.google.gson.*
-
 @ConfineMetaClassChanges(HttpServletRequest)
 @Mock(Album)
 class RequestBodySpec extends Specification {
 
-	Gson gson
-
 	void setup() {
-		gson = new GsonFactory(grailsApplication).createGson()
-
-        GrailsMockHttpServletRequest.metaClass.getJSON = { ->
-            new JsonParser().parse(delegate.reader)
-        }
-
-		for (domainClass in grailsApplication.domainClasses) {
-			domainClass.clazz.metaClass.constructor = { JsonElement json ->
-				gson.fromJson(json, delegate)
-			}
-			domainClass.clazz.metaClass.setProperties = { JsonElement json ->
-				DataBindingUtils.bindObjectToDomainInstance(domainClass, delegate, gson.fromJson(json, Map))
-			}
-		}
+		def enhancer = new ArtefactEnhancer(grailsApplication)
+		enhancer.enhanceDomains()
+		enhancer.enhanceRequest()
     }
 
     void 'can get JSON data from request'() {
