@@ -1,15 +1,16 @@
 package grails.plugin.gson.binding
 
 import grails.persistence.Entity
+import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
+import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
 
 import javax.servlet.http.HttpServletRequest
 
 import com.google.gson.*
-import grails.plugin.gson.GsonFactory
 
 @ConfineMetaClassChanges(HttpServletRequest)
 @Mock(Album)
@@ -27,6 +28,9 @@ class RequestBodySpec extends Specification {
 		for (domainClass in grailsApplication.domainClasses) {
 			domainClass.clazz.metaClass.constructor = { JsonElement json ->
 				gson.fromJson(json, delegate)
+			}
+			domainClass.clazz.metaClass.setProperties = { JsonElement json ->
+				DataBindingUtils.bindObjectToDomainInstance(domainClass, delegate, gson.fromJson(json, Map))
 			}
 		}
     }
