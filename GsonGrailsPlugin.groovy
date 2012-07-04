@@ -1,4 +1,4 @@
-import grails.plugin.gson.ArtefactEnhancer
+import grails.plugin.gson.*
 
 class GsonGrailsPlugin {
     
@@ -18,6 +18,10 @@ class GsonGrailsPlugin {
     def organization = [name: 'Freeside Software', url: 'http://freeside.co']
     def issueManagement = [system: 'GitHub', url: 'https://github.com/robfletcher/grails-gson/issues']
     def scm = [url: 'https://github.com/robfletcher/grails-gson']
+
+	def doWithSpring = {
+		gsonFactory(GsonFactory)
+	}
 
     def doWithDynamicMethods = { ctx ->
         def enhancer = new ArtefactEnhancer(application)
