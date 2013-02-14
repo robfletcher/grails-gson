@@ -38,23 +38,23 @@ This method is convenient if you need to support additional data types. You can 
 
 ### Using Grails converters
 
-The plugin also provides a Grails converter implementation so that you can swap out usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.JSON`. For example:
+The plugin also provides a Grails converter implementation so that you can swap out usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
 
-	import grails.plugin.gson.JSON
+	import grails.plugin.gson.GSON
 
 	class PersonController {
 		def list() {
-			render Person.list(params) as JSON
+			render Person.list(params) as GSON
 		}
 
 		def save() {
-			def personInstance = new Person(request.JSON)
+			def personInstance = new Person(request.GSON)
 			// ... etc.
 		}
 
 		def update() {
 			def personInstance = Person.get(params.id)
-			personInstance.properties = request.JSON
+			personInstance.properties = request.GSON
 			// ... etc.
 		}
 	}
