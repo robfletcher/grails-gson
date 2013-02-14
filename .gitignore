@@ -1,6 +1,8 @@
 # Grails
 /target
 *.log
+/plugin.xml
+/*.zip
 
 # IntelliJ IDEA
 /.idea

@@ -1,8 +1,6 @@
-import grails.plugin.gson.*
-
 class GsonGrailsPlugin {
     
-    def version = '1.0'
+    def version = '1.0-SNAPSHOT'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
     def pluginExcludes = [
@@ -20,11 +18,11 @@ class GsonGrailsPlugin {
     def scm = [url: 'https://github.com/robfletcher/grails-gson']
 
 	def doWithSpring = {
-		gsonFactory(GsonFactory)
+		gsonFactory grails.plugin.gson.GsonFactory
 	}
 
     def doWithDynamicMethods = { ctx ->
-        def enhancer = new ArtefactEnhancer(application)
+        def enhancer = new grails.plugin.gson.ArtefactEnhancer(application)
 		enhancer.enhanceRequest()
 		enhancer.enhanceControllers()
 		enhancer.enhanceDomains()
