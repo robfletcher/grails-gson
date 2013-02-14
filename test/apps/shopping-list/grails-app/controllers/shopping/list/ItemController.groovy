@@ -11,7 +11,7 @@ class ItemController {
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
 		response.addIntHeader 'X-Pagination-Total', Item.count()
-        Item.list(params) as GSON
+        render Item.list(params) as GSON
     }
 
     def save() {
