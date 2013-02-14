@@ -8,31 +8,38 @@ grails.project.source.level = 1.7
 
 grails.project.dependency.resolution = {
 
-    inherits 'global'
+	inherits 'global'
 	log 'error'
-    checksums true
-    legacyResolve false
+	checksums true
+	legacyResolve false
 
-    repositories {
-        inherits true
+	repositories {
+		inherits true
 
-        grailsPlugins()
-        grailsHome()
-        grailsCentral()
+		grailsPlugins()
+		grailsHome()
+		grailsCentral()
 
-        mavenLocal()
-        mavenCentral()
-    }
+		mavenLocal()
+		mavenCentral()
+	}
 
-    dependencies {
+	dependencies {
 		compile 'com.google.code.gson:gson:2.2.2'
-    }
 
-    plugins {
-        runtime ":hibernate:$grailsVersion"
+		test 'org.spockframework:spock-grails-support:0.7-groovy-2.0'
+		test 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
+	}
 
-        build ":tomcat:$grailsVersion"
-    }
+	plugins {
+		runtime ":hibernate:$grailsVersion"
+
+		build ":tomcat:$grailsVersion"
+
+		test(':spock:0.7') {
+			exclude 'spock-grails-support'
+		}
+	}
 
 }
 

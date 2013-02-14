@@ -6,8 +6,6 @@ import static javax.servlet.http.HttpServletResponse.*
 
 class ItemController {
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'POST']
-
 	private static final int SC_UNPROCESSABLE_ENTITY = 422
 
     def list(Integer max) {
