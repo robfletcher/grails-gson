@@ -6,6 +6,9 @@ import com.google.gson.*
 
 import static org.codehaus.groovy.grails.web.binding.DataBindingUtils.bindObjectToDomainInstance
 
+/**
+ * Adds GSON meta methods and properties to Grails artifacts.
+ */
 class ArtefactEnhancer {
 
 	private final GrailsApplication grailsApplication
