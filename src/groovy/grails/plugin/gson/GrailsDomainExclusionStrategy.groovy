@@ -14,11 +14,7 @@ class GrailsDomainExclusionStrategy implements ExclusionStrategy {
 	boolean shouldSkipField(FieldAttributes field) {
 		def domainClass = getDomainClassForType(field.declaringClass)
 		if (domainClass) {
-			if (field.name == domainClass.identifier.name || field.name in domainClass.persistentProperties.name) {
-				return false
-			} else {
-				return true
-			}
+			field.name != domainClass.identifier.name && !(field.name in domainClass.persistentProperties.name)
 		} else {
 			false
 		}
