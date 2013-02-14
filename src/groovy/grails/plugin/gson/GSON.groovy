@@ -13,8 +13,6 @@ class GSON extends AbstractConverter<JsonWriter> {
 
 	void setTarget(target) {
 		this.target = target
-		println "target: $target"
-		new Exception().printStackTrace()
 	}
 
 	void render(Writer out) {
