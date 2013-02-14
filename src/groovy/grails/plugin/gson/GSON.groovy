@@ -16,7 +16,7 @@ class GSON extends AbstractConverter<JsonWriter> {
     }
 
     void render(Writer out) {
-        gsonFactory.createGson().toJson(target, out)
+        getGsonFactory().createGson().toJson(target, out)
     }
 
     void render(HttpServletResponse response) {

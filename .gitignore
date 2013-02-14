@@ -3,6 +3,7 @@
 *.log
 /plugin.xml
 /*.zip
+/web-app/
 
 # IntelliJ IDEA
 /.idea

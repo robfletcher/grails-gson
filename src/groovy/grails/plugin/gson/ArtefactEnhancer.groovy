@@ -1,9 +1,8 @@
 package grails.plugin.gson
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
+import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
-
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import static org.codehaus.groovy.grails.web.binding.DataBindingUtils.bindObjectToDomainInstance
 
 /**
@@ -39,8 +38,8 @@ class ArtefactEnhancer {
 	}
 
 	void enhanceRequest() {
-		GrailsMockHttpServletRequest.metaClass.getGSON = { ->
-			new JsonParser().parse(delegate.reader)
+		HttpServletRequest.metaClass.getGSON = { ->
+			new JsonParser().parse(new BufferedReader(delegate.reader))
 		}
 	}
 }
