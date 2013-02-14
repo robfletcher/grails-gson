@@ -18,8 +18,8 @@ class ArtefactEnhancer {
 
 	void enhanceControllers() {
 		for (controller in grailsApplication.controllerClasses) {
-			controller.clazz.metaClass.render = { JSON json ->
-				json.render delegate.response
+			controller.clazz.metaClass.render = { GSON gson ->
+				gson.render delegate.response
 			}
 		}
 	}
@@ -36,7 +36,7 @@ class ArtefactEnhancer {
 	}
 
 	void enhanceRequest() {
-		GrailsMockHttpServletRequest.metaClass.getJSON = { ->
+		GrailsMockHttpServletRequest.metaClass.getGSON = { ->
 			new JsonParser().parse(delegate.reader)
 		}
 	}

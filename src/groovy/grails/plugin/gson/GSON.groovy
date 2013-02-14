@@ -7,7 +7,7 @@ import org.codehaus.groovy.grails.web.converters.Converter
 import com.google.gson.stream.JsonWriter
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
-class JSON extends AbstractConverter<JsonWriter> {
+class GSON extends AbstractConverter<JsonWriter> {
 
     private target
 

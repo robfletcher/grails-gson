@@ -21,7 +21,7 @@ class HttpResponseSpec extends Specification {
         controller = new AlbumController()
     }
 
-    void 'can render JSON and so on'() {
+    void 'can render using GSON converter'() {
         given:
         def album = new Album(artist: 'David Bowie', title: 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars').save(failOnError: true)
 
@@ -36,6 +36,6 @@ class HttpResponseSpec extends Specification {
 
 class AlbumController {
     def index() {
-        render Album.list() as JSON
+        render Album.list() as GSON
     }
 }

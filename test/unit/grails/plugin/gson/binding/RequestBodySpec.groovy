@@ -26,9 +26,9 @@ class RequestBodySpec extends Specification {
         request.content = '{"artist":"Metric","title":"Synthetica"}'.bytes
 
         expect:
-        JsonElement.isAssignableFrom(request.JSON.getClass())
-        request.JSON.artist.getAsString() == 'Metric'
-        request.JSON.title.getAsString() == 'Synthetica'
+        JsonElement.isAssignableFrom(request.GSON.getClass())
+        request.GSON.artist.getAsString() == 'Metric'
+        request.GSON.title.getAsString() == 'Synthetica'
     }
 
     void 'can bind request json direct to new domain class'() {
@@ -53,7 +53,7 @@ class RequestBodySpec extends Specification {
 		def album = new Album()
 
         when:
-        album.properties = request.JSON
+        album.properties = request.GSON
 
         then:
         album.artist == 'Metric'
