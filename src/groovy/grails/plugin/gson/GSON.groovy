@@ -11,6 +11,12 @@ class GSON extends AbstractConverter<JsonWriter> {
 
 	private target
 
+	GSON() {}
+
+	GSON(target) {
+		setTarget(target)
+	}
+
 	void setTarget(target) {
 		this.target = target
 	}
