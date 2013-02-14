@@ -11,12 +11,8 @@ import spock.util.mop.ConfineMetaClassChanges
 @Mock(Album)
 class HttpResponseSpec extends Specification {
 
-    def controller
-
     void setup() {
 		new ArtefactEnhancer(grailsApplication).enhanceControllers()
-
-        controller = new AlbumController()
     }
 
     void 'can render a domain instance list using GSON converter'() {
