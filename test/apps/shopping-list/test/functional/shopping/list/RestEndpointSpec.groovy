@@ -145,7 +145,7 @@ class RestEndpointSpec extends Specification {
 		e.response.status == SC_UNPROCESSABLE_ENTITY
 		e.response.contentType == APPLICATION_JSON.mimeType
 		e.response.data.errors[0] == 'Property [description] of class [class shopping.list.Item] cannot be blank'
-		e.response.data.errors[1] == 'Property [quantity] of class [class shopping.list.Item] is less than minimum value [1]'
+		e.response.data.errors[1] == 'Property [quantity] of class [class shopping.list.Item] with value [0] is less than minimum value [1]'
 	}
 
 }

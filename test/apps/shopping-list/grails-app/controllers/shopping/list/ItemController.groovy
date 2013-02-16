@@ -49,7 +49,7 @@ class ItemController {
             }
         }
 
-        itemInstance.properties = params
+        itemInstance.properties = request.GSON
 
 		if (itemInstance.save(flush: true)) {
 			respondUpdated itemInstance
