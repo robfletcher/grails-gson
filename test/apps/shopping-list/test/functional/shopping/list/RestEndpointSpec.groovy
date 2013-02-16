@@ -95,4 +95,17 @@ class RestEndpointSpec extends Specification {
 		e.response.data.errors[1] == 'Property [quantity] of class [class shopping.list.Item] cannot be null'
 	}
 
+	void 'save creates a new instance given valid JSON'() {
+		when:
+		def request = [description: 'Gin', quantity: 1, unit: 'bottles']
+		HttpResponseDecorator response = http.post(path: 'item', body: request, requestContentType: JSON)
+
+		then:
+		response.status == SC_CREATED
+		response.contentType == APPLICATION_JSON.mimeType
+		response.data.description == request.description
+		response.data.quantity == request.quantity
+		response.data.units == request.units
+	}
+
 }

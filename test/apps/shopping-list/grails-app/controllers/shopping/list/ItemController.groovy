@@ -29,7 +29,7 @@ class ItemController {
 	def show(Long id) {
         def itemInstance = Item.get(id)
 		if (itemInstance) {
-			render itemInstance as GSON
+			respondFound itemInstance
 		} else {
 			respondNotFound id
 		}
@@ -80,18 +80,19 @@ class ItemController {
 		}
 	}
 
+	private void respondFound(Item itemInstance) {
+		response.status = SC_OK
+		render itemInstance as GSON
+	}
+
 	private void respondCreated(Item itemInstance) {
-		def responseBody = [:]
-		responseBody.message = message(code: 'default.created.message', args: [message(code: 'item.label', default: 'Item'), itemInstance.id])
 		response.status = SC_CREATED
-		render responseBody as GSON
+		render itemInstance as GSON
 	}
 
 	private void respondUpdated(Item itemInstance) {
-		def responseBody = [:]
-		responseBody.message = message(code: 'default.updated.message', args: [message(code: 'item.label', default: 'Item'), itemInstance.id])
 		response.status = SC_OK
-		render responseBody as GSON
+		render itemInstance as GSON
 	}
 
 	private void respondUnprocessableEntity(Item itemInstance) {
