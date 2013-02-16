@@ -2,13 +2,14 @@ package shopping.list
 
 import grails.plugin.gson.GSON
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.http.MediaType
 import static javax.servlet.http.HttpServletResponse.*
 
 class ItemController {
 
 	public static final String X_PAGINATION_TOTAL = 'X-Pagination-Total'
 	public static final int SC_UNPROCESSABLE_ENTITY = 422
+
+	def beforeInterceptor = [action: this.&checkRequestIsJson, only: ['save', 'update']]
 
 	def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
@@ -17,11 +18,6 @@ class ItemController {
     }
 
     def save() {
-		if (request.contentType != 'application/json') {
-			respondNotAcceptable()
-			return
-		}
-
         def itemInstance = new Item(request.GSON)
 		if (itemInstance.save(flush: true)) {
 			respondCreated itemInstance
@@ -40,11 +36,6 @@ class ItemController {
     }
 
 	def update(Long id, Long version) {
-		if (request.contentType != 'application/json') {
-			respondNotAcceptable()
-			return
-		}
-
 		def itemInstance = Item.get(id)
         if (!itemInstance) {
 			respondNotFound id
@@ -81,6 +72,13 @@ class ItemController {
 			respondNotDeleted id
 		}
     }
+
+	private checkRequestIsJson() {
+		if (request.contentType != 'application/json') {
+			respondNotAcceptable()
+			return false
+		}
+	}
 
 	private void respondCreated(Item itemInstance) {
 		def responseBody = [:]
