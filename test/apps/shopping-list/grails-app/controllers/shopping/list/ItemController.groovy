@@ -2,19 +2,26 @@ package shopping.list
 
 import grails.plugin.gson.GSON
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.http.MediaType
 import static javax.servlet.http.HttpServletResponse.*
 
 class ItemController {
 
-	private static final int SC_UNPROCESSABLE_ENTITY = 422
+	public static final String X_PAGINATION_TOTAL = 'X-Pagination-Total'
+	public static final int SC_UNPROCESSABLE_ENTITY = 422
 
-    def list(Integer max) {
+	def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-		response.addIntHeader 'X-Pagination-Total', Item.count()
+		response.addIntHeader X_PAGINATION_TOTAL, Item.count()
         render Item.list(params) as GSON
     }
 
     def save() {
+		if (request.contentType != 'application/json') {
+			respondNotAcceptable()
+			return
+		}
+
         def itemInstance = new Item(request.GSON)
 		if (itemInstance.save(flush: true)) {
 			respondCreated itemInstance
@@ -33,7 +40,12 @@ class ItemController {
     }
 
 	def update(Long id, Long version) {
-        def itemInstance = Item.get(id)
+		if (request.contentType != 'application/json') {
+			respondNotAcceptable()
+			return
+		}
+
+		def itemInstance = Item.get(id)
         if (!itemInstance) {
 			respondNotFound id
 			return
@@ -124,6 +136,13 @@ class ItemController {
 		responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'item.label', default: 'Item'), id])
 		response.status = SC_INTERNAL_SERVER_ERROR
 		render responseBody as GSON
+	}
+
+	private void respondNotAcceptable() {
+		response.status = SC_NOT_ACCEPTABLE
+		response.contentLength = 0
+		response.outputStream.flush()
+		response.outputStream.close()
 	}
 
 }
