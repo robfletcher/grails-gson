@@ -7,6 +7,7 @@ import static javax.servlet.http.HttpServletResponse.*
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
 import static shopping.list.ItemController.*
 
+@Unroll
 class RestEndpointSpec extends Specification {
 
 	static final BASE_URL = 'http://localhost:8080/shopping-list/'
@@ -63,24 +64,34 @@ class RestEndpointSpec extends Specification {
 		response.data.unit == item.unit
 	}
 
-	void 'show returns a 404 given a non-existent id'() {
+	void '#action returns a 404 given a non-existent id'() {
 		when:
-		http.get(path: 'item/1')
+		http."$method"(path: 'item/1', requestContentType: JSON)
 
 		then:
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_NOT_FOUND
 		e.response.contentType == APPLICATION_JSON.mimeType
 		e.response.data.message == 'Item not found with id 1'
+
+		where:
+		action   | method
+		'show'   | 'get'
+		'delete' | 'delete'
 	}
 
-	void 'save returns a 406 given non-JSON data'() {
+	void '#action returns a 406 given non-JSON data'() {
 		when:
-		http.post(path: 'item')
+		http."$method"(path: 'item')
 
 		then:
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_NOT_ACCEPTABLE
+
+		where:
+		action   | method
+		'save'   | 'post'
+		'update' | 'put'
 	}
 
 	void 'save returns a 422 given invalid JSON'() {
@@ -106,6 +117,35 @@ class RestEndpointSpec extends Specification {
 		response.data.description == request.description
 		response.data.quantity == request.quantity
 		response.data.units == request.units
+
+		and:
+		Item.count() == old(Item.count()) + 1
+	}
+
+	void 'update returns a 404 given a non-existent id'() {
+		when:
+		http.put(path: 'item/1', body: [description: 'Gin', quantity: 1], requestContentType: JSON)
+
+		then:
+		def e = thrown(HttpResponseException)
+		e.response.status == SC_NOT_FOUND
+		e.response.contentType == APPLICATION_JSON.mimeType
+		e.response.data.message == 'Item not found with id 1'
+	}
+
+	void 'update returns a 422 given invalid JSON'() {
+		given:
+		def item = new Item(description: 'Gin', quantity: 1, unit: 'bottle').save(failOnError: true, flush: true)
+
+		when:
+		http.put(path: "item/$item.id", body: [description: '', quantity: 0], requestContentType: JSON)
+
+		then:
+		def e = thrown(HttpResponseException)
+		e.response.status == SC_UNPROCESSABLE_ENTITY
+		e.response.contentType == APPLICATION_JSON.mimeType
+		e.response.data.errors[0] == 'Property [description] of class [class shopping.list.Item] cannot be blank'
+		e.response.data.errors[1] == 'Property [quantity] of class [class shopping.list.Item] is less than minimum value [1]'
 	}
 
 }
