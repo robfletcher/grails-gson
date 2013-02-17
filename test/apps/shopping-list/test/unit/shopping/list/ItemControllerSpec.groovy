@@ -1,7 +1,8 @@
 package shopping.list
 
 import javax.servlet.http.HttpServletResponse
-import grails.plugin.gson.*
+import com.google.gson.JsonParser
+import grails.plugin.gson.ArtefactEnhancer
 import grails.test.mixin.*
 import spock.lang.Specification
 import static shopping.list.ItemController.SC_UNPROCESSABLE_ENTITY
@@ -16,9 +17,8 @@ class ItemControllerSpec extends Specification {
 		enhancer.enhanceDomains()
 		enhancer.enhanceRequest()
 
-		def gsonFactory = new GsonFactory(grailsApplication)
 		HttpServletResponse.metaClass.getContentAsJson = {->
-			gsonFactory.createGson().fromJson(delegate.contentAsString, Map)
+			new JsonParser().parse(delegate.contentAsString)
 		}
 	}
 
@@ -36,7 +36,7 @@ class ItemControllerSpec extends Specification {
 		then:
 		response.status == SC_UNPROCESSABLE_ENTITY
 		response.contentType == 'application/json;charset=UTF-8'
-		response.contentAsJson.errors[0] == 'Property [description] of class [class shopping.list.Item] cannot be blank'
-		response.contentAsJson.errors[1] == 'Property [quantity] of class [class shopping.list.Item] with value [0] is less than minimum value [1]'
+		response.contentAsJson.errors.get(0).asString == 'Property [description] of class [class shopping.list.Item] cannot be blank'
+		response.contentAsJson.errors.get(1).asString == 'Property [quantity] of class [class shopping.list.Item] with value [0] is less than minimum value [1]'
 	}
 }
