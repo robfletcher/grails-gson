@@ -1,8 +1,8 @@
 class UrlMappings {
 
 	static mappings = {
-		"/items"(controller: 'item', action: 'list')
-		"/item/$id?"(controller: 'item') {
+		"/albums"(controller: 'album', action: 'list')
+		"/album/$id?"(controller: 'album') {
 			action = [GET: 'show', PUT: 'update', DELETE: 'delete', POST: 'save']
 		}
 

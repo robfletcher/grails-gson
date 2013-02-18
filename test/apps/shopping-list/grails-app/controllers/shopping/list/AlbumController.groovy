@@ -4,7 +4,7 @@ import grails.plugin.gson.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
 
-class ItemController {
+class AlbumController {
 
 	public static final String X_PAGINATION_TOTAL = 'X-Pagination-Total'
 	public static final int SC_UNPROCESSABLE_ENTITY = 422
@@ -13,60 +13,61 @@ class ItemController {
 
 	def list(Integer max) {
 		params.max = Math.min(max ?: 10, 100)
-		response.addIntHeader X_PAGINATION_TOTAL, Item.count()
-		render Item.list(params) as GSON
+		response.addIntHeader X_PAGINATION_TOTAL, Album.count()
+		render Album.list(params) as GSON
 	}
 
 	def save() {
-		def itemInstance = new Item(request.GSON)
-		if (itemInstance.save(flush: true)) {
-			respondCreated itemInstance
+		def albumInstance = new Album(request.GSON)
+		log.error albumInstance.dump()
+		if (albumInstance.save(flush: true)) {
+			respondCreated albumInstance
 		} else {
-			respondUnprocessableEntity itemInstance
+			respondUnprocessableEntity albumInstance
 		}
 	}
 
 	def show(Long id) {
-		def itemInstance = Item.get(id)
-		if (itemInstance) {
-			respondFound itemInstance
+		def albumInstance = Album.get(id)
+		if (albumInstance) {
+			respondFound albumInstance
 		} else {
 			respondNotFound id
 		}
 	}
 
 	def update(Long id, Long version) {
-		def itemInstance = Item.get(id)
-		if (!itemInstance) {
+		def albumInstance = Album.get(id)
+		if (!albumInstance) {
 			respondNotFound id
 			return
 		}
 
 		if (version != null) {
-			if (itemInstance.version > version) {
-				respondConflict(itemInstance)
+			if (albumInstance.version > version) {
+				respondConflict(albumInstance)
 				return
 			}
 		}
 
-		itemInstance.properties = request.GSON
+		albumInstance.properties = request.GSON
 
-		if (itemInstance.save(flush: true)) {
-			respondUpdated itemInstance
+		if (albumInstance.save(flush: true)) {
+			respondUpdated albumInstance
 		} else {
-			respondUnprocessableEntity itemInstance
+			respondUnprocessableEntity albumInstance
 		}
 	}
 
 	def delete(Long id) {
-		def itemInstance = Item.get(id)
-		if (!itemInstance) {
+		def albumInstance = Album.get(id)
+		if (!albumInstance) {
 			respondNotFound id
 			return
 		}
 
 		try {
-			itemInstance.delete(flush: true)
+			albumInstance.delete(flush: true)
 			respondDeleted id
 		} catch (DataIntegrityViolationException e) {
 			respondNotDeleted id
@@ -80,24 +81,24 @@ class ItemController {
 		}
 	}
 
-	private void respondFound(Item itemInstance) {
+	private void respondFound(Album albumInstance) {
 		response.status = SC_OK
-		render itemInstance as GSON
+		render albumInstance as GSON
 	}
 
-	private void respondCreated(Item itemInstance) {
+	private void respondCreated(Album albumInstance) {
 		response.status = SC_CREATED
-		render itemInstance as GSON
+		render albumInstance as GSON
 	}
 
-	private void respondUpdated(Item itemInstance) {
+	private void respondUpdated(Album albumInstance) {
 		response.status = SC_OK
-		render itemInstance as GSON
+		render albumInstance as GSON
 	}
 
-	private void respondUnprocessableEntity(Item itemInstance) {
+	private void respondUnprocessableEntity(Album albumInstance) {
 		def responseBody = [:]
-		responseBody.errors = itemInstance.errors.allErrors.collect {
+		responseBody.errors = albumInstance.errors.allErrors.collect {
 			message(error: it)
 		}
 		response.status = SC_UNPROCESSABLE_ENTITY
@@ -106,17 +107,17 @@ class ItemController {
 
 	private void respondNotFound(long id) {
 		def responseBody = [:]
-		responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'item.label', default: 'Item'), id])
+		responseBody.message = message(code: 'default.not.found.message', args: [message(code: 'item.label', default: 'Album'), id])
 		response.status = SC_NOT_FOUND
 		render responseBody as GSON
 	}
 
-	private void respondConflict(Item itemInstance) {
-		itemInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-				[message(code: 'item.label', default: 'Item')] as Object[],
-				'Another user has updated this Item while you were editing')
+	private void respondConflict(Album albumInstance) {
+		albumInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
+				[message(code: 'item.label', default: 'Album')] as Object[],
+				'Another user has updated this Album while you were editing')
 		def responseBody = [:]
-		responseBody.errors = itemInstance.errors.allErrors.collect {
+		responseBody.errors = albumInstance.errors.allErrors.collect {
 			message(error: it)
 		}
 		response.status = SC_CONFLICT
@@ -125,14 +126,14 @@ class ItemController {
 
 	private void respondDeleted(long id) {
 		def responseBody = [:]
-		responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'item.label', default: 'Item'), id])
+		responseBody.message = message(code: 'default.deleted.message', args: [message(code: 'item.label', default: 'Album'), id])
 		response.status = SC_OK
 		render responseBody as GSON
 	}
 
 	private void respondNotDeleted(long id) {
 		def responseBody = [:]
-		responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'item.label', default: 'Item'), id])
+		responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: 'item.label', default: 'Album'), id])
 		response.status = SC_INTERNAL_SERVER_ERROR
 		render responseBody as GSON
 	}
