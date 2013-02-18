@@ -3,6 +3,7 @@ class GsonGrailsPlugin {
     def version = '1.0-SNAPSHOT'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
+	def loadAfter = ['controllers']
     def pluginExcludes = [
         'grails-app/views/**/*'
     ]
