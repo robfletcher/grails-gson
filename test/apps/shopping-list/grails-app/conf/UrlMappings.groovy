@@ -6,7 +6,7 @@ class UrlMappings {
 			action = [GET: 'show', PUT: 'update', DELETE: 'delete', POST: 'save']
 		}
 
-		"/" view: '/index'
-		"500" view: '/error'
+		"404" controller: 'errors', action: 'notFound'
+		"500" controller: 'errors', action: 'serverError'
 	}
 }
