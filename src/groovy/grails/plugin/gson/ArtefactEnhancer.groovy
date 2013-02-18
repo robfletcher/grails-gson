@@ -28,18 +28,19 @@ class ArtefactEnhancer {
 
 	void enhanceDomains() {
 		for (domainClass in grailsApplication.domainClasses) {
-			domainClass.clazz.metaClass.constructor = { JsonElement json ->
+			domainClass.metaClass.constructor = { JsonElement json ->
 				gson.fromJson(json, delegate)
 			}
-			domainClass.clazz.metaClass.setProperties = { JsonElement json ->
+			domainClass.metaClass.setProperties = { JsonElement json ->
 				bindObjectToDomainInstance domainClass, delegate, gson.fromJson(json, Map)
 			}
 		}
 	}
 
 	void enhanceRequest() {
-		HttpServletRequest.metaClass.getGSON = { ->
-			new JsonParser().parse(new BufferedReader(delegate.reader))
+		HttpServletRequest.metaClass.getGSON = {->
+			def requestBody = new BufferedReader(delegate.reader)
+			new JsonParser().parse(requestBody)
 		}
 	}
 }

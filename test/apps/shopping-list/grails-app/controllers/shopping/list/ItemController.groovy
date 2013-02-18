@@ -12,66 +12,66 @@ class ItemController {
 	def beforeInterceptor = [action: this.&checkRequestIsJson, only: ['save', 'update']]
 
 	def list(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+		params.max = Math.min(max ?: 10, 100)
 		response.addIntHeader X_PAGINATION_TOTAL, Item.count()
-        render Item.list(params) as GSON
-    }
+		render Item.list(params) as GSON
+	}
 
-    def save() {
-        def itemInstance = new Item(request.GSON)
+	def save() {
+		def itemInstance = new Item(request.GSON)
 		if (itemInstance.save(flush: true)) {
 			respondCreated itemInstance
 		} else {
 			respondUnprocessableEntity itemInstance
 		}
-    }
+	}
 
 	def show(Long id) {
-        def itemInstance = Item.get(id)
+		def itemInstance = Item.get(id)
 		if (itemInstance) {
 			respondFound itemInstance
 		} else {
 			respondNotFound id
 		}
-    }
+	}
 
 	def update(Long id, Long version) {
 		def itemInstance = Item.get(id)
-        if (!itemInstance) {
+		if (!itemInstance) {
 			respondNotFound id
 			return
-        }
+		}
 
-        if (version != null) {
-            if (itemInstance.version > version) {
+		if (version != null) {
+			if (itemInstance.version > version) {
 				respondConflict(itemInstance)
-                return
-            }
-        }
+				return
+			}
+		}
 
-        itemInstance.properties = request.GSON
+		itemInstance.properties = request.GSON
 
 		if (itemInstance.save(flush: true)) {
 			respondUpdated itemInstance
 		} else {
 			respondUnprocessableEntity itemInstance
 		}
-    }
+	}
 
 	def delete(Long id) {
-        def itemInstance = Item.get(id)
-        if (!itemInstance) {
+		def itemInstance = Item.get(id)
+		if (!itemInstance) {
 			respondNotFound id
-            return
-        }
+			return
+		}
 
-        try {
-            itemInstance.delete(flush: true)
+		try {
+			itemInstance.delete(flush: true)
 			respondDeleted id
 		} catch (DataIntegrityViolationException e) {
 			respondNotDeleted id
 		}
-    }
+	}
 
 	private checkRequestIsJson() {
 		if (request.contentType != 'application/json') {
