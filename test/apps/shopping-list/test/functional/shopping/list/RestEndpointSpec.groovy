@@ -107,8 +107,10 @@ class RestEndpointSpec extends Specification {
 	}
 
 	void 'save creates a new instance given valid JSON'() {
-		when:
+		given:
 		def request = [description: 'Gin', quantity: 1, unit: 'bottles']
+
+		when:
 		HttpResponseDecorator response = http.post(path: 'item', body: request, requestContentType: JSON)
 
 		then:
@@ -146,6 +148,35 @@ class RestEndpointSpec extends Specification {
 		e.response.contentType == APPLICATION_JSON.mimeType
 		e.response.data.errors[0] == 'Property [description] of class [class shopping.list.Item] cannot be blank'
 		e.response.data.errors[1] == 'Property [quantity] of class [class shopping.list.Item] with value [0] is less than minimum value [1]'
+	}
+
+	void 'update succeeds given valid JSON'() {
+		given:
+		def item = new Item(description: 'Gin', quantity: 1, unit: 'bottle').save(failOnError: true, flush: true)
+
+		and:
+		def request = [description: 'London Dry Gin', quantity: 2]
+
+		when:
+		HttpResponseDecorator response = http.put(path: "item/$item.id", body: request, requestContentType: JSON)
+
+		then:
+		response.status == SC_OK
+		response.contentType == APPLICATION_JSON.mimeType
+		response.data.description == request.description
+		response.data.quantity == request.quantity
+		response.data.units == request.units
+
+		and:
+		Item.count() == old(Item.count())
+
+		and:
+		item.refresh()
+		item.description == request.description
+		item.quantity == request.quantity
+
+		and:
+		item.unit == 'bottle'
 	}
 
 }
