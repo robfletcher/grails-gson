@@ -4,8 +4,7 @@ import com.google.gson.Gson
 import grails.persistence.Entity
 import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
-import spock.lang.Specification
-import spock.lang.Issue
+import spock.lang.*
 
 @Mock(Publication)
 class NonStandardIdSpec extends Specification {
@@ -16,6 +15,7 @@ class NonStandardIdSpec extends Specification {
         gson = new GsonFactory(grailsApplication).createGson()
     }
 
+	@Ignore
 	@Issue('https://github.com/robfletcher/grails-gson/issues/1')
 	void 'can deserialize an existing instance with a non-standard id property'() {
         given:

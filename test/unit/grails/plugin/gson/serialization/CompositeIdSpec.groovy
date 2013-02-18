@@ -15,6 +15,7 @@ class CompositeIdSpec extends Specification {
 		gson = new GsonFactory(grailsApplication).createGson()
 	}
 
+	@Ignore
 	@Issue('https://github.com/robfletcher/grails-gson/issues/7')
 	void 'can deserialize an existing instance with a composite id'() {
 		given:
