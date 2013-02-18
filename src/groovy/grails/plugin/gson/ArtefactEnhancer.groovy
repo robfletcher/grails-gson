@@ -20,7 +20,7 @@ class ArtefactEnhancer {
 
 	void enhanceControllers() {
 		for (controller in grailsApplication.controllerClasses) {
-			controller.clazz.metaClass.render = { GSON gson ->
+			controller.metaClass.render = { GSON gson ->
 				gson.render delegate.response
 			}
 		}
