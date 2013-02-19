@@ -1,5 +1,4 @@
 language: groovy
 jdk:
   - oraclejdk7
-  - openjdk7
-script: ./grailsw refresh-dependencies && ./grailsw clean && ./grailsw test-app && cd test/apps/shopping-list && ./grailsw refresh-dependencies && ./grailsw clean && ./grailsw "test-app functional:"
+script: ./grailsw refresh-dependencies && ./grailsw clean && ./grailsw test-app unit: && cd test/apps/shopping-list && ./grailsw refresh-dependencies && ./grailsw clean && ./grailsw "test-app functional:"
