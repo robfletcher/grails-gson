@@ -1,4 +1,4 @@
-import shopping.list.*
+import grails.plugin.gson.test.*
 
 fixture {
 

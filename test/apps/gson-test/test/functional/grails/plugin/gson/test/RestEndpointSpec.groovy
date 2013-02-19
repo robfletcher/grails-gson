@@ -1,4 +1,4 @@
-package shopping.list
+package grails.plugin.gson.test
 
 import groovyx.net.http.*
 import org.codehaus.groovy.grails.commons.ApplicationHolder
@@ -6,7 +6,7 @@ import spock.lang.*
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.*
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
-import static shopping.list.AlbumController.*
+import static grails.plugin.gson.test.AlbumController.*
 
 @Unroll
 class RestEndpointSpec extends Specification {
@@ -109,8 +109,8 @@ class RestEndpointSpec extends Specification {
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_UNPROCESSABLE_ENTITY
 		e.response.contentType == APPLICATION_JSON.mimeType
-		e.response.data.errors[0] == 'Property [artist] of class [class shopping.list.Album] cannot be null'
-		e.response.data.errors[1] == 'Property [title] of class [class shopping.list.Album] cannot be null'
+		e.response.data.errors[0] == 'Property [artist] of class [class grails.plugin.gson.test.Album] cannot be null'
+		e.response.data.errors[1] == 'Property [title] of class [class grails.plugin.gson.test.Album] cannot be null'
 	}
 
 	void 'save creates a new instance given valid JSON'() {
@@ -172,7 +172,7 @@ class RestEndpointSpec extends Specification {
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_UNPROCESSABLE_ENTITY
 		e.response.contentType == APPLICATION_JSON.mimeType
-		e.response.data.errors[0] == 'Property [title] of class [class shopping.list.Album] cannot be blank'
+		e.response.data.errors[0] == 'Property [title] of class [class grails.plugin.gson.test.Album] cannot be blank'
 	}
 
 	// TODO: should reject invalid data deep in graph

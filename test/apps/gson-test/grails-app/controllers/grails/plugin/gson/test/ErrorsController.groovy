@@ -1,4 +1,4 @@
-package shopping.list
+package grails.plugin.gson.test
 
 import grails.plugin.gson.GSON
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR

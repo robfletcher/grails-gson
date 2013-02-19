@@ -1,4 +1,4 @@
-package shopping.list
+package grails.plugin.gson.test
 
 import groovy.transform.ToString
 
