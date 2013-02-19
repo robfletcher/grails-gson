@@ -34,7 +34,7 @@ class ArtefactEnhancer {
 
 	void enhanceDomains() {
 		grailsApplication.domainClasses.each { GrailsDomainClass domainClass ->
-			domainClass.metaClass.constructor = { JsonElement json ->
+			domainClass.metaClass.constructor = { JsonObject json ->
 				gson.fromJson(json, delegate)
 			}
 			domainClass.metaClass.setProperties = { JsonObject json ->
