@@ -16,10 +16,19 @@ class GrailsDomainExclusionStrategy implements ExclusionStrategy {
 
 	boolean shouldSkipField(FieldAttributes field) {
 		def domainClass = getDomainClassForType(field.declaringClass)
-		if (domainClass) {
-			field.name != domainClass.identifier.name && !(field.name in domainClass.persistentProperties.name)
-		} else {
+		if (!domainClass) {
+			// not a domain class - serialize everything
 			false
+		} else if (field.name == domainClass.identifier.name) {
+			// always serialize the id
+			false
+		} else if (!(field.name in domainClass.persistentProperties.name)) {
+			// skip non-persistent properties
+			true
+		} else {
+			// skip if the non-owning side of a bidirectional property or we will get a stack overflow
+			def persistentProperty = domainClass.getPersistentProperty(field.name)
+			persistentProperty.isBidirectional() && !persistentProperty.isOwningSide()
 		}
 	}
 
