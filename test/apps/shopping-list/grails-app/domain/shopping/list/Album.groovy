@@ -1,5 +1,8 @@
 package shopping.list
 
+import groovy.transform.ToString
+
+@ToString
 class Album {
 
 	Artist artist
@@ -9,13 +12,14 @@ class Album {
 
 	static hasMany = [tracks: String]
 
-    static constraints = {
+	static constraints = {
 		artist bindable: true
 		title blank: false, unique: true
 		year nullable: true
-    }
+	}
 
 	static mapping = {
-		artist lazy: false, cascade: 'all'
+		artist lazy: false, // https://github.com/robfletcher/grails-gson/issues/14
+				cascade: 'all' // https://github.com/robfletcher/grails-gson/issues/15
 	}
 }

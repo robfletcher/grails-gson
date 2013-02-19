@@ -19,7 +19,7 @@ class AlbumController {
 
 	def save() {
 		def albumInstance = new Album(request.GSON)
-		log.error albumInstance.dump()
+		log.error albumInstance
 		if (albumInstance.save(flush: true)) {
 			respondCreated albumInstance
 		} else {
@@ -51,6 +51,7 @@ class AlbumController {
 		}
 
 		albumInstance.properties = request.GSON
+		log.error albumInstance
 
 		if (albumInstance.save(flush: true)) {
 			respondUpdated albumInstance
