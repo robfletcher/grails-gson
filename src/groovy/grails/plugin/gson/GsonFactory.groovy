@@ -1,10 +1,11 @@
 package grails.plugin.gson
 
+import java.lang.reflect.Type
+import com.google.gson.*
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import java.lang.reflect.Type
-import com.google.gson.*
+import org.hibernate.proxy.HibernateProxy
 
 /**
  * A factory for _Gson_ instances that automatically registers
@@ -29,6 +30,8 @@ class GsonFactory implements GrailsApplicationAware {
 			log.debug "registering adapter for $domainClass.name"
 			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
 		}
+
+		builder.registerTypeAdapterFactory(HibernateProxyAdapter.FACTORY)
 
 		builder.addSerializationExclusionStrategy new GrailsDomainExclusionStrategy(grailsApplication)
 

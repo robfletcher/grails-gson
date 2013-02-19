@@ -19,7 +19,6 @@ class Album {
 	}
 
 	static mapping = {
-		artist lazy: false, // https://github.com/robfletcher/grails-gson/issues/14
-				cascade: 'all' // https://github.com/robfletcher/grails-gson/issues/15
+		artist cascade: 'all' // https://github.com/robfletcher/grails-gson/issues/15
 	}
 }
