@@ -2,13 +2,15 @@ package grails.plugin.gson
 
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import com.google.gson.reflect.TypeToken
+import groovy.util.logging.Slf4j
+import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import static org.codehaus.groovy.grails.web.binding.DataBindingUtils.bindObjectToDomainInstance
 
 /**
  * Adds GSON meta methods and properties to Grails artifacts.
  */
+@Slf4j
 class ArtefactEnhancer {
 
 	private final GrailsApplication grailsApplication
@@ -28,12 +30,16 @@ class ArtefactEnhancer {
 	}
 
 	void enhanceDomains() {
-		for (domainClass in grailsApplication.domainClasses) {
+		grailsApplication.domainClasses.each { GrailsDomainClass domainClass ->
 			domainClass.metaClass.constructor = { JsonElement json ->
 				gson.fromJson(json, delegate)
 			}
-			domainClass.metaClass.setProperties = { JsonElement json ->
-				bindObjectToDomainInstance domainClass, delegate, gson.fromJson(json, Map)
+			domainClass.metaClass.setProperties = { JsonObject json ->
+				json.entrySet().each { Map.Entry<String, JsonElement> entry ->
+					def persistentProperty = domainClass.getPersistentProperty(entry.key)
+					def adapter = gson.getAdapter(TypeToken.get(persistentProperty.type))
+					delegate[entry.key] = adapter.fromJsonTree(entry.value)
+				}
 			}
 		}
 	}
