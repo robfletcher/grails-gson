@@ -3,6 +3,7 @@ package grails.plugin.gson.binding
 import javax.servlet.http.HttpServletResponse
 import grails.plugin.gson.*
 import grails.test.mixin.*
+import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import spock.lang.*
 import spock.util.mop.ConfineMetaClassChanges
 
@@ -12,7 +13,8 @@ import spock.util.mop.ConfineMetaClassChanges
 class HttpResponseSpec extends Specification {
 
     void setup() {
-		new ArtefactEnhancer(grailsApplication).enhanceControllers()
+		PluginManagerHolder.pluginManager = applicationContext.pluginManager
+		new ArtefactEnhancer(grailsApplication, applicationContext.pluginManager).enhanceControllers()
     }
 
     void 'can render a domain instance list using GSON converter'() {

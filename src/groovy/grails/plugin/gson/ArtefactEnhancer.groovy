@@ -3,6 +3,7 @@ package grails.plugin.gson
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import static org.codehaus.groovy.grails.web.binding.DataBindingUtils.bindObjectToDomainInstance
 
 /**
@@ -13,9 +14,9 @@ class ArtefactEnhancer {
 	private final GrailsApplication grailsApplication
 	private final Gson gson
 
-	ArtefactEnhancer(GrailsApplication grailsApplication) {
+	ArtefactEnhancer(GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
 		this.grailsApplication = grailsApplication
-		gson = new GsonFactory(grailsApplication).createGson()
+		gson = new GsonFactory(grailsApplication, pluginManager).createGson()
 	}
 
 	void enhanceControllers() {

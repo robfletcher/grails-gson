@@ -4,6 +4,7 @@ import grails.plugin.gson.GSON
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import org.codehaus.groovy.grails.commons.ApplicationHolder
+import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import org.codehaus.groovy.grails.plugins.converters.ConvertersPluginSupport
 import spock.lang.*
 
@@ -14,6 +15,7 @@ class AsTypeSpec extends Specification {
 	void setup() {
 		ConvertersPluginSupport.enhanceApplication(grailsApplication, applicationContext)
 		ApplicationHolder.application = grailsApplication
+		PluginManagerHolder.pluginManager = applicationContext.pluginManager
 	}
 
 	void 'can cast a #type to GSON'() {

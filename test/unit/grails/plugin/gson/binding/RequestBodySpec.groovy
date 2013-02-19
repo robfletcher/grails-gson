@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 class RequestBodySpec extends Specification {
 
 	void setup() {
-		def enhancer = new ArtefactEnhancer(grailsApplication)
+		def enhancer = new ArtefactEnhancer(grailsApplication, applicationContext.pluginManager)
 		enhancer.enhanceDomains()
 		enhancer.enhanceRequest()
     }

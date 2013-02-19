@@ -19,7 +19,7 @@ class NonStandardPropertyTypeSpec extends Specification {
     DateTimeFormatter formatter = ISODateTimeFormat.dateHourMinuteSecond()
 
     void setup() {
-        def factory = new GsonFactory(grailsApplication)
+        def factory = new GsonFactory(grailsApplication, applicationContext.pluginManager)
         factory.registerTypeAdapter(LocalDateTime, new TypeAdapter<LocalDateTime>() {
             @Override
             void write(JsonWriter jsonWriter, LocalDateTime t) {

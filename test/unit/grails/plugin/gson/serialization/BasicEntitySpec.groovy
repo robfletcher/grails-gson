@@ -12,7 +12,7 @@ class BasicEntitySpec extends Specification {
 	Gson gson
 
 	void setup() {
-		gson = new GsonFactory(grailsApplication).createGson()
+		gson = new GsonFactory(grailsApplication, applicationContext.pluginManager).createGson()
 	}
 
 	void 'can deserialize a new instance'() {

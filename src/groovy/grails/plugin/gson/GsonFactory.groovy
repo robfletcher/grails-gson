@@ -4,23 +4,25 @@ import java.lang.reflect.Type
 import com.google.gson.*
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.plugins.*
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import org.hibernate.proxy.HibernateProxy
 
 /**
  * A factory for _Gson_ instances that automatically registers
  * _JsonDeserializer_ instances for all domain classes in the application.
  */
 @Slf4j
-class GsonFactory implements GrailsApplicationAware {
+class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 
 	GrailsApplication grailsApplication
-    private final Map<Type, ?> typeAdapters = [:]
+	GrailsPluginManager pluginManager
+	private final Map<Type, ?> typeAdapters = [:]
 
 	GsonFactory() {}
 
-	GsonFactory(GrailsApplication grailsApplication) {
+	GsonFactory(GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
 		this.grailsApplication = grailsApplication
+		this.pluginManager = pluginManager
 	}
 
 	Gson createGson() {
@@ -31,18 +33,20 @@ class GsonFactory implements GrailsApplicationAware {
 			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
 		}
 
-		builder.registerTypeAdapterFactory(HibernateProxyAdapter.FACTORY)
+		if (pluginManager.hasGrailsPlugin('hibernate')) {
+			builder.registerTypeAdapterFactory(HibernateProxyAdapter.FACTORY)
+		}
 
 		builder.addSerializationExclusionStrategy new GrailsDomainExclusionStrategy(grailsApplication)
 
 		for (entry in typeAdapters) {
-            builder.registerTypeAdapter entry.key, entry.value
-        }
+			builder.registerTypeAdapter entry.key, entry.value
+		}
 
 		builder.create()
 	}
 
-    void registerTypeAdapter(Type type, adapter) {
-        typeAdapters[type] = adapter
-    }
+	void registerTypeAdapter(Type type, adapter) {
+		typeAdapters[type] = adapter
+	}
 }
