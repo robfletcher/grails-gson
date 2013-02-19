@@ -143,5 +143,28 @@ The plugin's Gson deserializer works with:
 - collections of basic types
 - arbitrary depth object graphs
 
+## Gotchas
+
+When trying to bind an entire object graph you need to be mindful of the way GORM cascades persistence changes.
+
+### Cascading updates
+
+Even though you can bind nested domain relationships there need to be cascade rules in place so that they will save.
+
+In the examples above the _Pet_ domain class must declare that it `belongsTo` _Child_ (or _Child_ must declare that
+updates cascade to `pets`). Otherwise the data will bind but when you save the _Child_ instance the changes to any
+nested _Pet_ instances will not be persisted.
+
+### Cascading saves
+
+Likewise if you are trying to create an entire object graph at once the correct cascade rules need to be present.
+
+If _Pet_ declares `belongsTo = [child: Child]` everything should work as Grails will apply cascade _all_ by default.
+However if _Pet_ declares `belongsTo = Child` then _Child_ needs to override the default cascade _save-update_ so that
+new _Pet_ instances are created properly.
+
+See [the Grails documentation on the `cascade` mapping](http://grails.org/doc/latest/ref/Database%20Mapping/cascade.html)
+for more information.
+
 [gson]:http://code.google.com/p/google-gson/
 [grails-9220]:http://jira.grails.org/browse/GRAILS-9220
