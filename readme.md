@@ -77,6 +77,7 @@ class Child {
 class Pet {
 	String name
 	String species
+	static belongsTo = [child: Child]
 }
 ```
 
