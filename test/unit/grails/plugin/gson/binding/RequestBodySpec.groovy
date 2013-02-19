@@ -1,14 +1,13 @@
 package grails.plugin.gson.binding
 
+import javax.servlet.http.HttpServletRequest
 import com.google.gson.JsonElement
 import grails.persistence.Entity
-import grails.plugin.gson.ArtefactEnhancer
+import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.test.mixin.Mock
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
 import spock.lang.Specification
 import spock.util.mop.ConfineMetaClassChanges
-
-import javax.servlet.http.HttpServletRequest
 
 @ConfineMetaClassChanges(HttpServletRequest)
 @Mock(Album)

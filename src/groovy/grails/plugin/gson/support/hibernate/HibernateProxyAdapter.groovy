@@ -1,4 +1,4 @@
-package grails.plugin.gson
+package grails.plugin.gson.support.hibernate
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken

@@ -1,7 +1,8 @@
 package grails.plugin.gson.binding
 
 import javax.servlet.http.HttpServletResponse
-import grails.plugin.gson.*
+import grails.plugin.gson.converters.GSON
+import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.test.mixin.*
 import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import spock.lang.*

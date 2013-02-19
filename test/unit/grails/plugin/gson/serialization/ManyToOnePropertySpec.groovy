@@ -1,10 +1,10 @@
 package grails.plugin.gson.serialization
 
 import com.google.gson.Gson
+import grails.persistence.Entity
 import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import spock.lang.Specification
-import grails.persistence.Entity
 
 @Mock([Book, Author])
 class ManyToOnePropertySpec extends Specification {

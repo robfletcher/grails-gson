@@ -1,6 +1,5 @@
-package grails.plugin.gson.converter
+package grails.plugin.gson.converters
 
-import grails.plugin.gson.GSON
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import org.codehaus.groovy.grails.commons.ApplicationHolder

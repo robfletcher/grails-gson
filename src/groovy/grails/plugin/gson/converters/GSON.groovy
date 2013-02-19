@@ -1,7 +1,8 @@
-package grails.plugin.gson
+package grails.plugin.gson.converters
 
 import javax.servlet.http.HttpServletResponse
 import com.google.gson.stream.JsonWriter
+import grails.plugin.gson.GsonFactory
 import grails.util.GrailsWebUtil
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.plugins.PluginManagerHolder

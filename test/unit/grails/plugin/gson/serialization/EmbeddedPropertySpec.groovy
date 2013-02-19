@@ -5,7 +5,6 @@ import grails.persistence.Entity
 import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import spock.lang.Specification
-import com.google.gson.JsonObject
 
 @Mock(Person)
 class EmbeddedPropertySpec extends Specification {

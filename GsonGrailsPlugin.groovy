@@ -23,7 +23,7 @@ class GsonGrailsPlugin {
 	}
 
     def doWithDynamicMethods = { ctx ->
-        def enhancer = new grails.plugin.gson.ArtefactEnhancer(application, ctx.pluginManager)
+        def enhancer = new grails.plugin.gson.metaclass.ArtefactEnhancer(application, ctx.pluginManager)
 		enhancer.enhanceRequest()
 		enhancer.enhanceControllers()
 		enhancer.enhanceDomains()

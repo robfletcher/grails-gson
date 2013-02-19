@@ -1,6 +1,6 @@
 package grails.plugin.gson.test
 
-import grails.plugin.gson.GSON
+import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
 

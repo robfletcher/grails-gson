@@ -1,6 +1,6 @@
 package grails.plugin.gson.test
 
-import grails.plugin.gson.GSON
+import grails.plugin.gson.converters.GSON
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 

@@ -1,15 +1,13 @@
 package grails.plugin.gson.serialization
 
-import com.google.gson.Gson
+import com.google.gson.*
+import com.google.gson.stream.*
 import grails.persistence.Entity
 import grails.plugin.gson.GsonFactory
 import grails.test.mixin.Mock
 import org.joda.time.LocalDateTime
 import org.joda.time.format.ISODateTimeFormat
 import spock.lang.Specification
-import com.google.gson.TypeAdapter
-import com.google.gson.stream.JsonWriter
-import com.google.gson.stream.JsonReader
 import org.joda.time.format.DateTimeFormatter
 
 @Mock(Reminder)

@@ -1,4 +1,4 @@
-package grails.plugin.gson
+package grails.plugin.gson.adapters
 
 import com.google.gson.*
 import org.codehaus.groovy.grails.commons.*

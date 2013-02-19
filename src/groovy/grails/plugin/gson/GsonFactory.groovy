@@ -2,6 +2,8 @@ package grails.plugin.gson
 
 import java.lang.reflect.Type
 import com.google.gson.*
+import grails.plugin.gson.adapters.*
+import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.*
