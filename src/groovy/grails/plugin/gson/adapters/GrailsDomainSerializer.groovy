@@ -16,10 +16,6 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	@Override
 	JsonElement serialize(T instance, Type type, JsonSerializationContext context) {
-		serializeEntity instance, context
-	}
-
-	private JsonElement serializeEntity(T instance, JsonSerializationContext context) {
 		def element = new JsonObject()
 		eachUnvisitedProperty(instance) { GrailsDomainClassProperty property ->
 			element.add property.name, context.serialize(instance[property.name], property.type)
