@@ -28,14 +28,16 @@ class BidirectionalPropertySpec extends Specification {
 		def json = gson.toJsonTree(artist)
 		json.name.asString == artist.name
 		json.albums.size() == 3
-		json.albums.collect { it.title.asString }.sort() == [album1, album2, album3].title.sort()
+		json.albums.collect { it.title.asString } as Set == [album1, album2, album3].title as Set
+		json.albums.collect { it.id.asLong } as Set == [album1, album2, album3].id as Set
 	}
 
 	void 'serialization stops at a non-owning relationship'() {
 		expect:
 		def json = gson.toJsonTree(album1)
+		json.id.asLong == album1.id
 		json.title.asString == album1.title
-		json.artist == null
+		json.artist.id.asLong == artist.id
 	}
 
 }
