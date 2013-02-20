@@ -25,6 +25,7 @@ class BidirectionalPropertySpec extends Specification {
 
 	void 'can serialize a full graph from the owning side of a relationship'() {
 		expect:
+		println gson.toJson(artist)
 		def json = gson.toJsonTree(artist)
 		json.name.asString == artist.name
 		json.albums.size() == 3
@@ -34,13 +35,14 @@ class BidirectionalPropertySpec extends Specification {
 
 	void 'serialization stops at a non-owning relationship'() {
 		expect:
+		println gson.toJson(album1)
 		def json = gson.toJsonTree(album1)
 		json.id.asLong == album1.id
 		json.title.asString == album1.title
-		json.artist.id.asLong == artist.id
 
 		and:
-		json.artist.name == null
+		json.artist.id.asLong == artist.id
+		json.artist.name == artist.name
 		json.artist.albums == null
 	}
 
