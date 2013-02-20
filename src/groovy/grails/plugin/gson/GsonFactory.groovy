@@ -31,11 +31,12 @@ class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 		def builder = new GsonBuilder()
 
 		def domainSerializer = new GrailsDomainSerializer(grailsApplication)
+		def domainDeserializer = new GrailsDomainDeserializer(grailsApplication)
 
 		for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
-			log.debug "registering adapter for $domainClass.name"
+			log.debug "registering adapters for $domainClass.name"
 			builder.registerTypeAdapter domainClass.clazz, domainSerializer
-			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
+			builder.registerTypeAdapter domainClass.clazz, domainDeserializer
 		}
 
 		if (pluginManager.hasGrailsPlugin('hibernate')) {
