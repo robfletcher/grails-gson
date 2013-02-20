@@ -8,9 +8,34 @@ Grails' JSON deserialization has some limitations. Specifically it doesn't work 
 
 ## Usage
 
+### Using Grails converters
+
+The plugin provides a Grails converter implementation so that you can swap out usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
+
+	import grails.plugin.gson.GSON
+
+	class PersonController {
+		def list() {
+			render Person.list(params) as GSON
+		}
+
+		def save() {
+			def personInstance = new Person(request.GSON)
+			// ... etc.
+		}
+
+		def update() {
+			def personInstance = Person.get(params.id)
+			personInstance.properties = request.GSON
+			// ... etc.
+		}
+	}
+
+This method is useful if you want to continue using Grails conventions in your code.
+
 ### Using Gson directly
 
-The plugin provides a _gsonFactory_ bean that you can inject into your components. This is pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to override specific behaviour.
+Alternatively, the plugin provides a _gsonFactory_ bean that you can inject into your components. This is pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to override specific behaviour.
 
 	class PersonController {
 		def gsonFactory
@@ -37,31 +62,6 @@ The plugin provides a _gsonFactory_ bean that you can inject into your component
 	}
 
 This method is convenient if you need to support additional data types. You can register type handlers with the _gsonFactory_ bean.
-
-### Using Grails converters
-
-The plugin also provides a Grails converter implementation so that you can swap out usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
-
-	import grails.plugin.gson.GSON
-
-	class PersonController {
-		def list() {
-			render Person.list(params) as GSON
-		}
-
-		def save() {
-			def personInstance = new Person(request.GSON)
-			// ... etc.
-		}
-
-		def update() {
-			def personInstance = Person.get(params.id)
-			personInstance.properties = request.GSON
-			// ... etc.
-		}
-	}
-
-This method is useful if you want to continue using Grails conventions in your code.
 
 ## Deserialization examples
 
