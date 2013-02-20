@@ -9,7 +9,6 @@ import org.codehaus.groovy.grails.commons.*
 class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	private final GrailsDomainClass domainClass
-	private final Collection referenceCache = new HashSet()
 
 	GrailsDomainSerializer(GrailsDomainClass domainClass) {
 		this.domainClass = domainClass
@@ -17,19 +16,21 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	@Override
 	JsonElement serialize(T instance, Type type, JsonSerializationContext context) {
-		if (instance in referenceCache) {
-			log.debug 'circular reference detected...'
-			null
-		} else {
-			referenceCache << instance
-			serializeEntity instance, context
-		}
+		serializeEntity instance, context
 	}
 
-	private JsonElement serializeEntity(T instance, context) {
+	private JsonElement serializeEntity(T instance, JsonSerializationContext context) {
 		def element = new JsonObject()
 		eachProperty { GrailsDomainClassProperty property ->
-			element.add property.name, context.serialize(instance[property.name], property.type)
+			if (property.isAssociation() && property.isBidirectional() && !property.isOwningSide()) {
+				def referencedIdProperty = property.otherSide.domainClass.identifier
+				def referencedId = instance[property.name][referencedIdProperty.name]
+				def value = [(referencedIdProperty.name): referencedId]
+				element.add property.name, context.serialize(value, Map)
+			} else {
+				def value = instance[property.name]
+				element.add property.name, context.serialize(value, property.type)
+			}
 		}
 		element
 	}

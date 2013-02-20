@@ -38,6 +38,10 @@ class BidirectionalPropertySpec extends Specification {
 		json.id.asLong == album1.id
 		json.title.asString == album1.title
 		json.artist.id.asLong == artist.id
+
+		and:
+		json.artist.name == null
+		json.artist.albums == null
 	}
 
 }

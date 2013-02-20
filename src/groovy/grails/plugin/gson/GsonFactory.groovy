@@ -5,8 +5,7 @@ import com.google.gson.*
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.plugins.*
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 
@@ -41,7 +40,7 @@ class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 			builder.registerTypeAdapterFactory(HibernateProxyAdapter.FACTORY)
 		}
 
-		builder.addSerializationExclusionStrategy new GrailsDomainExclusionStrategy(grailsApplication)
+//		builder.addSerializationExclusionStrategy new GrailsDomainExclusionStrategy(grailsApplication)
 
 		for (entry in typeAdapters) {
 			builder.registerTypeAdapter entry.key, entry.value
