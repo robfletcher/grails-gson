@@ -2,16 +2,18 @@ package grails.plugin.gson.adapters
 
 import java.lang.reflect.Type
 import com.google.gson.*
-import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
 
-@TupleConstructor(includeFields = true)
 @Slf4j
 class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	private final GrailsDomainClass domainClass
 	private final Collection referenceCache = new HashSet()
+
+	GrailsDomainSerializer(GrailsDomainClass domainClass) {
+		this.domainClass = domainClass
+	}
 
 	@Override
 	JsonElement serialize(T instance, Type type, JsonSerializationContext context) {

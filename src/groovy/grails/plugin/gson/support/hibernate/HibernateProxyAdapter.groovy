@@ -3,14 +3,12 @@ package grails.plugin.gson.support.hibernate
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.*
-import groovy.transform.TupleConstructor
 
 /**
  * Ensures that Hibernate proxies are initialized when serializing domain instances.
  *
  * Based on code from http://stackoverflow.com/questions/13459718/could-not-serialize-object-cause-of-hibernateproxy#answer-13525550
  */
-@TupleConstructor(includeFields = true)
 class HibernateProxyAdapter extends TypeAdapter {
 
 	static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
@@ -21,6 +19,10 @@ class HibernateProxyAdapter extends TypeAdapter {
 	};
 
 	private final Gson context
+
+	HibernateProxyAdapter(Gson context) {
+		this.context = context
+	}
 
 	@Override
 	void write(JsonWriter out, value) throws IOException {

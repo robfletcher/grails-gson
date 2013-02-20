@@ -4,7 +4,6 @@ import java.lang.reflect.Type
 import com.google.gson.*
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
-import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -16,7 +15,6 @@ import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
  * _JsonDeserializer_ instances for all domain classes in the application.
  */
 @Slf4j
-@TupleConstructor
 class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 
 	GrailsApplication grailsApplication
@@ -24,6 +22,11 @@ class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 	private final Map<Type, ?> typeAdapters = [:]
 
 	GsonFactory() {}
+
+	GsonFactory(GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
+		this.grailsApplication = grailsApplication
+		this.pluginManager = pluginManager
+	}
 
 	Gson createGson() {
 		def builder = new GsonBuilder()
