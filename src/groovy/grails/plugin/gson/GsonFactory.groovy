@@ -7,6 +7,7 @@ import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.plugins.*
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 
@@ -27,8 +28,9 @@ class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 	Gson createGson() {
 		def builder = new GsonBuilder()
 
-		for (domainClass in grailsApplication.getDomainClasses()) {
+		for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
 			log.debug "registering adapter for $domainClass.name"
+			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainSerializer(domainClass)
 			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
 		}
 

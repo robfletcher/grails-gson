@@ -26,7 +26,7 @@ class HttpResponseSpec extends Specification {
         controller.index()
 
         then:
-        response.contentAsString == /[{"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars","id":$album.id}]/
+        response.contentAsString == /[{"id":$album.id,"artist":"David Bowie","title":"The Rise and Fall of Ziggy Stardust and the Spiders From Mars"}]/
     }
 
 	@Issue('https://github.com/robfletcher/grails-gson/issues/9')
