@@ -1,9 +1,10 @@
 package grails.plugin.gson.adapters
 
-import java.lang.reflect.*
+import java.lang.reflect.Type
 import com.google.gson.*
+import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.grails.commons.*
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
 /**
  * A _JsonDeserializer_ implementation that works on Grails domain objects.
@@ -15,11 +16,11 @@ import org.codehaus.groovy.grails.commons.*
  */
 @TupleConstructor(includeFields = true)
 @Slf4j
-class GrailsDomainDeserializer implements JsonDeserializer {
+class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 
 	GrailsDomainClass domainClass
 
-	Object deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
+	T deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
 		def jsonObject = element.asJsonObject
 		def instance = getOrCreateInstance(jsonObject, type, context)
 		for (prop in jsonObject.entrySet()) {
@@ -43,41 +44,6 @@ class GrailsDomainDeserializer implements JsonDeserializer {
 			DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
 		} else {
 			domainClassProperty.type
-		}
-	}
-
-	private static class DomainClassPropertyParameterizedType implements ParameterizedType {
-
-		private final GrailsDomainClassProperty property
-
-		static ParameterizedType forProperty(GrailsDomainClassProperty property) {
-			new DomainClassPropertyParameterizedType(property)
-		}
-
-		private DomainClassPropertyParameterizedType(GrailsDomainClassProperty property) {
-			this.property = property
-		}
-
-		Type[] getActualTypeArguments() {
-			def referencedType = property.referencedPropertyType
-			if (Map.isAssignableFrom(property.type)) {
-				[String, referencedType] as Type[]
-			} else {
-				[referencedType] as Type[]
-			}
-		}
-
-		Type getRawType() {
-			property.type
-		}
-
-		Type getOwnerType() {
-			null
-		}
-
-		@Override
-		String toString() {
-			"$rawType.name<${actualTypeArguments.name.join(', ')}>"
 		}
 	}
 
