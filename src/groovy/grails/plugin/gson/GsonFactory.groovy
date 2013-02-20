@@ -30,17 +30,17 @@ class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 	Gson createGson() {
 		def builder = new GsonBuilder()
 
+		def domainSerializer = new GrailsDomainSerializer(grailsApplication)
+
 		for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
 			log.debug "registering adapter for $domainClass.name"
-			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainSerializer(domainClass)
+			builder.registerTypeAdapter domainClass.clazz, domainSerializer
 			builder.registerTypeAdapter domainClass.clazz, new GrailsDomainDeserializer(domainClass)
 		}
 
 		if (pluginManager.hasGrailsPlugin('hibernate')) {
 			builder.registerTypeAdapterFactory(HibernateProxyAdapter.FACTORY)
 		}
-
-//		builder.addSerializationExclusionStrategy new GrailsDomainExclusionStrategy(grailsApplication)
 
 		for (entry in typeAdapters) {
 			builder.registerTypeAdapter entry.key, entry.value

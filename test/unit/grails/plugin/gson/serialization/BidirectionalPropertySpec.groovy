@@ -24,26 +24,39 @@ class BidirectionalPropertySpec extends Specification {
 	}
 
 	void 'can serialize a full graph from the owning side of a relationship'() {
-		expect:
+
+		expect: 'the top-level object properties are serialized'
 		println gson.toJson(artist)
 		def json = gson.toJsonTree(artist)
-		json.name.asString == artist.name
+		json.has('id')
+		json.has('name')
+
+		and: 'the collection properties are serialized'
 		json.albums.size() == 3
-		json.albums.collect { it.title.asString } as Set == [album1, album2, album3].title as Set
-		json.albums.collect { it.id.asLong } as Set == [album1, album2, album3].id as Set
+		json.albums.every { it.has('id') }
+		json.albums.every { it.has('title') }
+
+		and: 'the circular reference is not followed'
+		json.albums.every { !it.has('artist') }
+
 	}
 
-	void 'serialization stops at a non-owning relationship'() {
-		expect:
+	void 'serialization stops when it hits a circular relationship'() {
+
+		expect: 'the top-level object properties are serialized'
 		println gson.toJson(album1)
 		def json = gson.toJsonTree(album1)
-		json.id.asLong == album1.id
-		json.title.asString == album1.title
+		json.has('id')
+		json.has('title')
+		json.has('artist')
 
-		and:
-		json.artist.id.asLong == artist.id
-		json.artist.name == artist.name
-		json.artist.albums == null
+		and: 'the relationship properties are serialized'
+		json.artist.has('id')
+		json.artist.has('name')
+
+		and: 'the circular reference is not followed'
+		!json.artist.has('albums')
+
 	}
 
 }
