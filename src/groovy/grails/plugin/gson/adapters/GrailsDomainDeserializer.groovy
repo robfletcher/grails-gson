@@ -2,6 +2,7 @@ package grails.plugin.gson.adapters
 
 import java.lang.reflect.Type
 import com.google.gson.*
+import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -14,14 +15,11 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClass
  * means you can deserialize a JSON HTTP request into a new domain instance or
  * an update to an existing one.
  */
+@TupleConstructor
 @Slf4j
 class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 
-	private final GrailsApplication grailsApplication
-
-	GrailsDomainDeserializer(GrailsApplication grailsApplication) {
-		this.grailsApplication = grailsApplication
-	}
+	final GrailsApplication grailsApplication
 
 	T deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
 		def domainClass = getDomainClassFor(type)

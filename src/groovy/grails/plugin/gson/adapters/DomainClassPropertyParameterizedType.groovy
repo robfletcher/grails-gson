@@ -1,6 +1,7 @@
 package grails.plugin.gson.adapters
 
 import java.lang.reflect.*
+import groovy.transform.TupleConstructor
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
 /**
@@ -20,16 +21,13 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
  *
  * `getActualTypeArguments` will return `Type[String, Pirate]`.
  */
+@TupleConstructor
 class DomainClassPropertyParameterizedType implements ParameterizedType {
 
-	private final GrailsDomainClassProperty property
+	final GrailsDomainClassProperty property
 
 	static ParameterizedType forProperty(GrailsDomainClassProperty property) {
 		new DomainClassPropertyParameterizedType(property)
-	}
-
-	DomainClassPropertyParameterizedType(GrailsDomainClassProperty property) {
-		this.property = property
 	}
 
 	Type[] getActualTypeArguments() {

@@ -2,18 +2,17 @@ package grails.plugin.gson.adapters
 
 import java.lang.reflect.Type
 import com.google.gson.*
+import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
 
+@TupleConstructor
 @Slf4j
 class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
-	private final GrailsApplication grailsApplication
-	private final Stack<GrailsDomainClassProperty> circularityStack = new Stack<GrailsDomainClassProperty>()
+	final GrailsApplication grailsApplication
 
-	GrailsDomainSerializer(GrailsApplication grailsApplication) {
-		this.grailsApplication = grailsApplication
-	}
+	private final Stack<GrailsDomainClassProperty> circularityStack = new Stack<GrailsDomainClassProperty>()
 
 	@Override
 	JsonElement serialize(T instance, Type type, JsonSerializationContext context) {
