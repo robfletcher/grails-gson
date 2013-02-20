@@ -13,14 +13,11 @@ import org.codehaus.groovy.grails.commons.*
  * means you can deserialize a JSON HTTP request into a new domain instance or
  * an update to an existing one.
  */
+@TupleConstructor(includeFields = true)
 @Slf4j
 class GrailsDomainDeserializer implements JsonDeserializer {
 
 	GrailsDomainClass domainClass
-
-	GrailsDomainDeserializer(GrailsDomainClass domainClass) {
-		this.domainClass = domainClass
-	}
 
 	Object deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
 		def jsonObject = element.asJsonObject

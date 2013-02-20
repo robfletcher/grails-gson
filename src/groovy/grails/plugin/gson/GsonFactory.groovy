@@ -22,11 +22,6 @@ class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 
 	GsonFactory() {}
 
-	GsonFactory(GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
-		this.grailsApplication = grailsApplication
-		this.pluginManager = pluginManager
-	}
-
 	Gson createGson() {
 		def builder = new GsonBuilder()
 

@@ -1,18 +1,16 @@
 package grails.plugin.gson.adapters
 
 import com.google.gson.*
+import groovy.transform.TupleConstructor
 import org.codehaus.groovy.grails.commons.*
 
 /**
  * An exclusion strategy that instructs Gson to skip non-persistent properties of Grails domain classes.
  */
+@TupleConstructor(includeFields = true)
 class GrailsDomainExclusionStrategy implements ExclusionStrategy {
 
 	private final GrailsApplication grailsApplication
-
-	GrailsDomainExclusionStrategy(GrailsApplication grailsApplication) {
-		this.grailsApplication = grailsApplication
-	}
 
 	boolean shouldSkipField(FieldAttributes field) {
 		def domainClass = getDomainClassForType(field.declaringClass)
