@@ -14,6 +14,7 @@ import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
  * _JsonDeserializer_ instances for all domain classes in the application.
  */
 @Slf4j
+@TupleConstructor
 class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
 
 	GrailsApplication grailsApplication
