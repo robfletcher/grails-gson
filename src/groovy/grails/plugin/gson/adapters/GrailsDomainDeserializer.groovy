@@ -4,8 +4,8 @@ import java.lang.reflect.Type
 import com.google.gson.*
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.codehaus.groovy.grails.commons.*
+import static org.codehaus.groovy.grails.web.binding.DataBindingUtils.bindObjectToDomainInstance
 
 /**
  * A _JsonDeserializer_ implementation that works on Grails domain objects.
@@ -24,17 +24,18 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 	T deserialize(JsonElement element, Type type, JsonDeserializationContext context) {
 		def domainClass = getDomainClassFor(type)
 		def jsonObject = element.asJsonObject
-		def instance = getOrCreateInstance(jsonObject, domainClass, context)
-		for (prop in jsonObject.entrySet()) {
-			def propertyType = getPropertyType(domainClass, prop.key)
-			log.debug "deserializing $prop.key to $propertyType"
-			instance[prop.key] = context.deserialize(prop.value, propertyType)
+		T instance = getOrCreateInstance(jsonObject, domainClass, context)
+
+		def properties = jsonObject.entrySet().collectEntries { property ->
+			def propertyType = getPropertyType(domainClass, property.key)
+			[(property.key): context.deserialize(property.value, propertyType)]
 		}
+		bindObjectToDomainInstance domainClass, instance, properties
 		instance
 	}
 
-	private getOrCreateInstance(JsonObject jsonObject, GrailsDomainClass domainClass, JsonDeserializationContext context) {
-        def identityProp = domainClass.identifier
+	private T getOrCreateInstance(JsonObject jsonObject, GrailsDomainClass domainClass, JsonDeserializationContext context) {
+		def identityProp = domainClass.identifier
 		def id = context.deserialize(jsonObject.get(identityProp.name), identityProp.type)
 		id ? domainClass.clazz.get(id) : domainClass.clazz.newInstance()
 	}
