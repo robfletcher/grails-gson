@@ -1,5 +1,5 @@
 package grails.plugin.gson.test
 
-class AlbumController {
+class PublicationController {
 	static scaffold = true
 }
