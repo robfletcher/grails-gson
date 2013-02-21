@@ -15,7 +15,7 @@ import spock.util.mop.ConfineMetaClassChanges
 class RequestBodySpec extends Specification {
 
 	void setup() {
-		def gsonFactory = new GsonFactory(grailsApplication, applicationContext.pluginManager)
+		def gsonFactory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
 		def enhancer = new ArtefactEnhancer(grailsApplication, gsonFactory)
 		enhancer.enhanceDomains()
 		enhancer.enhanceRequest()

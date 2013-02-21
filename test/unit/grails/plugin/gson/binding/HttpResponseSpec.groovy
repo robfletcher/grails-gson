@@ -14,7 +14,7 @@ import spock.util.mop.ConfineMetaClassChanges
 class HttpResponseSpec extends Specification {
 
     void setup() {
-		def gsonFactory = new GsonFactory(grailsApplication, applicationContext.pluginManager)
+		def gsonFactory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
 		grailsApplication.mainContext.registerMockBean('gsonFactory', gsonFactory)
 		new ArtefactEnhancer(grailsApplication, gsonFactory).enhanceControllers()
     }

@@ -8,21 +8,25 @@ import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.plugins.*
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 
 /**
  * A factory for _Gson_ instances that automatically registers
  * _JsonDeserializer_ instances for all domain classes in the application.
  */
 @Slf4j
-class GsonFactory implements GrailsApplicationAware, PluginManagerAware {
+class GsonFactory implements ApplicationContextAware, GrailsApplicationAware, PluginManagerAware {
 
+	ApplicationContext applicationContext
 	GrailsApplication grailsApplication
 	GrailsPluginManager pluginManager
 	private final Map<Type, ?> typeAdapters = [:]
 
 	GsonFactory() {}
 
-	GsonFactory(GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
+	GsonFactory(ApplicationContext applicationContext, GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
+		this.applicationContext = applicationContext
 		this.grailsApplication = grailsApplication
 		this.pluginManager = pluginManager
 	}

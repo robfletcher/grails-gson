@@ -12,7 +12,7 @@ class NonStandardIdSpec extends Specification {
     Gson gson
 
     void setup() {
-        gson = new GsonFactory(grailsApplication, applicationContext.pluginManager).createGson()
+        gson = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager).createGson()
     }
 
 	@Ignore

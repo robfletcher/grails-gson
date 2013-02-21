@@ -12,7 +12,7 @@ import spock.lang.*
 class AsTypeSpec extends Specification {
 
 	void setup() {
-		def gsonFactory = new GsonFactory(grailsApplication, applicationContext.pluginManager)
+		def gsonFactory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
 		grailsApplication.mainContext.registerMockBean('gsonFactory', gsonFactory)
 		ConvertersPluginSupport.enhanceApplication(grailsApplication, applicationContext)
 		ApplicationHolder.application = grailsApplication

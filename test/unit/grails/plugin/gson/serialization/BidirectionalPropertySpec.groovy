@@ -15,7 +15,7 @@ class BidirectionalPropertySpec extends Specification {
 	Album album1, album2, album3
 
 	void setup() {
-		gson = new GsonFactory(grailsApplication, applicationContext.pluginManager).createGson()
+		gson = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager).createGson()
 
 		artist = new Artist(name: 'David Bowie').save(failOnError: true)
 		album1 = new Album(title: 'Hunky Dory', artist: artist).save(failOnError: true)
