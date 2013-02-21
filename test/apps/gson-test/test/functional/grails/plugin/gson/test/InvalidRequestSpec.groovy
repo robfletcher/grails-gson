@@ -6,6 +6,7 @@ import static grails.plugin.gson.test.AlbumController.SC_UNPROCESSABLE_ENTITY
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
+import static grails.plugin.gson.http.HttpConstants.*
 
 @Unroll
 class InvalidRequestSpec extends RestEndpointSpec {

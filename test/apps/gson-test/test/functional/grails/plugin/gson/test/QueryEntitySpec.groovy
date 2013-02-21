@@ -4,6 +4,7 @@ import groovyx.net.http.HttpResponseDecorator
 import static grails.plugin.gson.test.AlbumController.X_PAGINATION_TOTAL
 import static javax.servlet.http.HttpServletResponse.SC_OK
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
+import static grails.plugin.gson.http.HttpConstants.*
 
 class QueryEntitySpec extends RestEndpointSpec {
 

@@ -6,6 +6,7 @@ import static grails.plugin.gson.test.AlbumController.X_PAGINATION_TOTAL
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.*
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
+import static grails.plugin.gson.http.HttpConstants.*
 
 @Unroll
 class NoDataSpec extends RestEndpointSpec {
