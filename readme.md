@@ -9,6 +9,10 @@ you can't bind a JSON data structure to a GORM domain class and have it populate
  There is a [JIRA][2] open for this issue but since it's easy to provide an alternative with _Gson_ I thought a plugin
  was worthwhile.
 
+## Installation
+
+Add `compile ':gson:1.0-SNAPSHOT'` to `grails-app/conf/BuildConfig.groovy`.
+
 ## Usage
 
 ### Using Grails converters
