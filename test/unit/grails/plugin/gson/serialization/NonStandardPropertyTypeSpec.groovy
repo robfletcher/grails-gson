@@ -70,7 +70,7 @@ class LocalDateTimeAdapterFactory implements TypeAdapterFactory {
 	final DateTimeFormatter formatter
 
 	@Override
-	<T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+	TypeAdapter create(Gson gson, TypeToken type) {
 		type.rawType == LocalDateTime ? new LocalDateTimeAdapter(formatter) : null
 	}
 }
