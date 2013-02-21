@@ -119,7 +119,15 @@ And instances of `Artist` will get serialized to JSON as:
 }
 ```
 
-## Deserialization examples
+## Deserialization
+
+The plugin registers a [`JsonDeserializer`][8] that handles conversion of JSON to Grails domain objects. It will handle deserialization at any level of a JSON object graph so embedded objects, relationships and persistent collections can all be modified when binding to the top level domain object instance.
+
+If a JSON object contains an `id` property then it will use GORM to retrieve an existing instance, otherwise it creates a new one.
+
+Any other properties of the JSON object are bound to the domain instance. The deserializer respects the [`bindable`][9] constraint so any properties that are blacklisted from binding are ignored.
+
+### Deserialization examples
 
 Let's say you have a domain classes _Child_ and _Pet_ like this:
 
@@ -282,3 +290,5 @@ such relationships you will need to register additional `TypeAdapter` implementa
 [5]:http://grails.org/doc/latest/ref/Database%20Mapping/cascade.html
 [6]:https://travis-ci.org/robfletcher/grails-gson
 [7]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html
+[8]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/JsonDeserializer.html
+[9]:http://grails.org/doc/latest/ref/Constraints/bindable.html
