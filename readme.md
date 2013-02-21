@@ -1,16 +1,20 @@
-[![Build Status](https://travis-ci.org/robfletcher/grails-gson.png)](https://travis-ci.org/robfletcher/grails-gson)
+[![Build Status](https://travis-ci.org/robfletcher/grails-gson.png)][6]
 
-This plugin provides alternate JSON (de)serialization for Grails using Google's [Gson][gson] library.
+This plugin provides alternate JSON (de)serialization for Grails using Google's [Gson][1] library.
 
 ## Rationale
 
-Grails' JSON deserialization has some limitations. Specifically it doesn't work with nested object graphs. This means you can't bind a JSON data structure to a GORM domain class and have it populate associations, embedded properties, etc. There is a [JIRA][grails-9220] open for this issue but since it's easy to provide an alternative with _Gson_ I thought a plugin was worthwhile.
+Grails' JSON deserialization has some limitations. Specifically it doesn't work with nested object graphs. This means
+you can't bind a JSON data structure to a GORM domain class and have it populate associations, embedded properties, etc.
+ There is a [JIRA][2] open for this issue but since it's easy to provide an alternative with _Gson_ I thought a plugin
+ was worthwhile.
 
 ## Usage
 
 ### Using Grails converters
 
-The plugin provides a Grails converter implementation so that you can swap out usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
+The plugin provides a Grails converter implementation so that you can replace usage of the existing
+`grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
 
 	import grails.plugin.gson.GSON
 
@@ -31,37 +35,75 @@ The plugin provides a Grails converter implementation so that you can swap out u
 		}
 	}
 
-This method is useful if you want to continue using Grails conventions in your code.
-
 ### Using Gson directly
 
-Alternatively, the plugin provides a _gsonFactory_ bean that you can inject into your components. This is pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to override specific behaviour.
+Alternatively, the plugin provides a _gsonBuilder_ factory bean that you can inject into your components. This is
+pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to
+override specific behaviour.
 
 	class PersonController {
-		def gsonFactory
+		def gsonBuilder
 
 		def list() {
-			def gson = gsonFactory.createGson()
+			def gson = gsonBuilder.create()
 			def personInstances = Person.list(params)
 			render contentType: 'application/json', text: gson.toJson(personInstances)
 		}
 
 		def save() {
-			def gson = gsonFactory.createGson()
+			def gson = gsonBuilder.create()
 			def personInstance = gson.fromJson(request.reader, Person)
 			if (personInstance.save()) {
 				// ... etc.
 		}
 
 		def update() {
-			def gson = gsonFactory.createGson()
+			def gson = gsonBuilder.create()
 			// because the incoming JSON contains an id this will read the Person
 			// from the database and update it!
 			def personInstance = gson.fromJson(request.reader, Person)
 		}
 	}
 
-This method is convenient if you need to support additional data types. You can register type handlers with the _gsonFactory_ bean.
+## Serialization
+
+The plugin will automatically resolve any _Hibernate_ proxies it encounters when serializing an object graph to JSON.
+
+If an object graph contains bi-directional relationships they will only be traversed once but in either direction. For
+example if you have the following domain classes:
+
+	class Artist {
+		String name
+		static hasMany = [albums: Album]
+	}
+
+	class Album {
+		String title
+		static belongsTo = [artist: Artist]
+	}
+
+Instances of `Album` will get serialized to JSON as:
+
+	{
+		"id": 2,
+		"title": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars",
+		"artist": {
+			"id": 1,
+			"name": "David Bowie"
+		}
+	}
+
+And instances of `Artist` will get serialized to JSON as:
+
+	{
+		"id": 1,
+		"name": "David Bowie",
+		"albums": [
+			{ "id": 1, "title": "Hunky Dory" },
+			{ "id": 2, "title": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars" },
+			{ "id": 3, "title": "Low" }
+		]
+	}
 
 ## Deserialization examples
 
@@ -133,6 +175,45 @@ This can be deserialized in a number of ways.
 }
 ```
 
+## Registering additional type adapters
+
+The `gsonBuilder` factory bean provided by the plugin will automatically register any Spring beans that implement the
+[`TypeAdapterFactory`][3] interface.
+
+### Example
+
+To register support serilizing and deserializing `org.joda.time.LocalDate` properties you would define a
+[`TypeAdapter`][4] implementation:
+
+	class LocalDateAdapter extends TypeAdapter<LocalDate> {
+
+		private final formatter = ISODateTimeFormat.date()
+
+		void write(JsonWriter jsonWriter, LocalDateTime t) {
+			jsonWriter.value(t.toString(formatter))
+		}
+
+		LocalDateTime read(JsonReader jsonReader) {
+			formatter.parseLocalDate(jsonReader.nextString())
+		}
+	}
+
+Then create a `TypeAdapterFactory`:
+
+	class LocalDateAdapterFactory implements TypeAdapterFactory {
+		TypeAdapter create(Gson gson, TypeToken type) {
+			type.rawType == LocalDate ? new LocalDateAdapter() : null
+		}
+	}
+
+Finally register the `TypeAdapterFactory` in `grails-app/conf/spring/resources.groovy`:
+
+	beans {
+		localDateAdapterFactory(LocalDateAdapterFactory)
+	}
+
+The plugin will then automatically use it.
+
 ## Compatibility
 
 The plugin's Gson deserializer works with:
@@ -164,8 +245,19 @@ If _Pet_ declares `belongsTo = [child: Child]` everything should work as Grails 
 However if _Pet_ declares `belongsTo = Child` then _Child_ needs to override the default cascade _save-update_ so that
 new _Pet_ instances are created properly.
 
-See [the Grails documentation on the `cascade` mapping](http://grails.org/doc/latest/ref/Database%20Mapping/cascade.html)
+See [the Grails documentation on the `cascade` mapping][5]
 for more information.
 
-[gson]:http://code.google.com/p/google-gson/
-[grails-9220]:http://jira.grails.org/browse/GRAILS-9220
+### Circular references
+
+Gson does not support serializing object graphs with circular references and a `StackOverflowException` will be thrown
+if you try. The plugin protects against circular references caused by bi-directional relationships in GORM domain
+classes but any other circular reference is likely to cause a problem when serialized. If your domain model contains
+such relationships you will need to register additional `TypeAdapter` implementations for the classes involved.
+
+[1]:http://code.google.com/p/google-gson/
+[2]:http://jira.grails.org/browse/GRAILS-9220
+[3]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/TypeAdapterFactory.html
+[4]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/TypeAdapter.html
+[5]:http://grails.org/doc/latest/ref/Database%20Mapping/cascade.html
+[6]:https://travis-ci.org/robfletcher/grails-gson
