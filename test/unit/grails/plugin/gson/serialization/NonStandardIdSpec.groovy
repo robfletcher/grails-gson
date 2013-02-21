@@ -4,6 +4,7 @@ import com.google.gson.*
 import grails.persistence.Entity
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import spock.lang.*
 
 @Mock(Publication)
@@ -22,6 +23,16 @@ class NonStandardIdSpec extends Specification {
 	void setup() {
 		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
 		gson = gsonBuilder.create()
+	}
+
+	@Ignore
+	@Issue('http://jira.grails.org/browse/GRAILS-9864')
+	void 'mock GORM understands non-standard id'() {
+		given:
+		GrailsDomainClass dc = grailsApplication.getDomainClass(Publication.name)
+
+		expect:
+		dc.identifier.name == 'isbn'
 	}
 
 	@Ignore
