@@ -37,7 +37,7 @@ The plugin provides a Grails converter implementation so that you can replace us
 
 ### Using Gson directly
 
-Alternatively, the plugin provides a _gsonBuilder_ factory bean that you can inject into your components. This is
+Alternatively, the plugin provides a [`GsonBuilder`][7] factory bean that you can inject into your components. This is
 pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to
 override specific behaviour.
 
@@ -261,3 +261,4 @@ such relationships you will need to register additional `TypeAdapter` implementa
 [4]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/TypeAdapter.html
 [5]:http://grails.org/doc/latest/ref/Database%20Mapping/cascade.html
 [6]:https://travis-ci.org/robfletcher/grails-gson
+[7]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html
