@@ -8,7 +8,6 @@ import grails.plugin.gson.GsonFactory
 import grails.plugin.gson.converters.GSON
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 
 /**
  * Adds GSON meta methods and properties to Grails artifacts.
@@ -19,9 +18,9 @@ class ArtefactEnhancer {
 	private final GrailsApplication grailsApplication
 	private final Gson gson
 
-	ArtefactEnhancer(GrailsApplication grailsApplication, GrailsPluginManager pluginManager) {
+	ArtefactEnhancer(GrailsApplication grailsApplication, GsonFactory gsonFactory) {
 		this.grailsApplication = grailsApplication
-		gson = new GsonFactory(grailsApplication, pluginManager).createGson()
+		gson = gsonFactory.createGson()
 	}
 
 	void enhanceControllers() {

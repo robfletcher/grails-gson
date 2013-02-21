@@ -5,7 +5,6 @@ import com.google.gson.stream.JsonWriter
 import grails.plugin.gson.GsonFactory
 import grails.util.GrailsWebUtil
 import org.codehaus.groovy.grails.commons.ApplicationHolder
-import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import org.codehaus.groovy.grails.web.converters.*
 import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
 
@@ -54,9 +53,8 @@ class GSON extends AbstractConverter<JsonWriter> {
 	}
 
 	private GsonFactory getGsonFactory() {
-		def grailsApplication = ApplicationHolder.application
-		def pluginManager = PluginManagerHolder.pluginManager
-		new GsonFactory(grailsApplication, pluginManager)
+		def applicationContext = ApplicationHolder.application.mainContext
+		applicationContext.getBean('gsonFactory', GsonFactory)
 	}
 
 }

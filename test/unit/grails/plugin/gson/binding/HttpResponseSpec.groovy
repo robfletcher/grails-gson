@@ -1,10 +1,10 @@
 package grails.plugin.gson.binding
 
 import javax.servlet.http.HttpServletResponse
+import grails.plugin.gson.GsonFactory
 import grails.plugin.gson.converters.GSON
 import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.test.mixin.*
-import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import spock.lang.*
 import spock.util.mop.ConfineMetaClassChanges
 
@@ -14,8 +14,9 @@ import spock.util.mop.ConfineMetaClassChanges
 class HttpResponseSpec extends Specification {
 
     void setup() {
-		PluginManagerHolder.pluginManager = applicationContext.pluginManager
-		new ArtefactEnhancer(grailsApplication, applicationContext.pluginManager).enhanceControllers()
+		def gsonFactory = new GsonFactory(grailsApplication, applicationContext.pluginManager)
+		grailsApplication.mainContext.registerMockBean('gsonFactory', gsonFactory)
+		new ArtefactEnhancer(grailsApplication, gsonFactory).enhanceControllers()
     }
 
     void 'can render a domain instance list using GSON converter'() {
