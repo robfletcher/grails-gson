@@ -25,29 +25,29 @@ class ${className}Controller {
 		}
 	}
 
-	def show(Long id) {
-		def ${propertyName} = ${className}.get(id)
+	def show() {
+		def ${propertyName} = ${className}.get(params.id)
 		if (${propertyName}) {
 			respondFound ${propertyName}
 		} else {
-			respondNotFound id
+			respondNotFound params.id
 		}
 	}
 
-	def update(Long id, Long version) {
+	def update() {
 		if (!requestIsJson()) {
 			respondNotAcceptable()
 			return
 		}
 
-		def ${propertyName} = ${className}.get(id)
+		def ${propertyName} = ${className}.get(params.id)
 		if (!${propertyName}) {
-			respondNotFound id
+			respondNotFound params.id
 			return
 		}
 
-		if (version != null) {
-			if (${propertyName}.version > version) {
+		if (params.version != null) {
+			if (${propertyName}.version > params.long('version')) {
 				respondConflict(${propertyName})
 				return
 			}
@@ -62,18 +62,18 @@ class ${className}Controller {
 		}
 	}
 
-	def delete(Long id) {
-		def ${propertyName} = ${className}.get(id)
+	def delete() {
+		def ${propertyName} = ${className}.get(params.id)
 		if (!${propertyName}) {
-			respondNotFound id
+			respondNotFound params.id
 			return
 		}
 
 		try {
 			${propertyName}.delete(flush: true)
-			respondDeleted id
+			respondDeleted params.id
 		} catch (DataIntegrityViolationException e) {
-			respondNotDeleted id
+			respondNotDeleted params.id
 		}
 	}
 
@@ -105,7 +105,7 @@ class ${className}Controller {
 		render responseBody as GSON
 	}
 
-	private void respondNotFound(long id) {
+	private void respondNotFound(id) {
 		def responseBody = [:]
 		responseBody.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
 		response.status = SC_NOT_FOUND
@@ -124,14 +124,14 @@ class ${className}Controller {
 		render responseBody as GSON
 	}
 
-	private void respondDeleted(long id) {
+	private void respondDeleted(id) {
 		def responseBody = [:]
 		responseBody.message = message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
 		response.status = SC_OK
 		render responseBody as GSON
 	}
 
-	private void respondNotDeleted(long id) {
+	private void respondNotDeleted(id) {
 		def responseBody = [:]
 		responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
 		response.status = SC_INTERNAL_SERVER_ERROR

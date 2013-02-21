@@ -12,7 +12,7 @@ class NonStandardIdSpec extends RestEndpointSpec {
 
 	void 'id property is serialized correctly'() {
 		given:
-		def publication = new Publication(isbn: '1846683025', title: 'Just My Type').save(failOnError: true, flush: true)
+		def publication = new Publication(isbn: '978-1846683022', title: 'Just My Type').save(failOnError: true, flush: true)
 
 		when:
 		HttpResponseDecorator response = http.get(path: "publication/$publication.isbn")
@@ -26,7 +26,7 @@ class NonStandardIdSpec extends RestEndpointSpec {
 		response.data.title == publication.title
 
 		and:
-		response.id == null
+		response.data.id == null
 	}
 
 }
