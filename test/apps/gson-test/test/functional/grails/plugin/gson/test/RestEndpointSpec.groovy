@@ -14,9 +14,14 @@ abstract class RestEndpointSpec extends Specification {
 	protected FixtureLoader fixtureLoader = ApplicationHolder.application.mainContext.fixtureLoader
 
 	void cleanup() {
-		Album.withNewSession { session ->
-			Album.list()*.delete()
-			Artist.list()*.delete()
+		deleteAll Album
+		deleteAll Artist
+		deleteAll Publication
+	}
+
+	private void deleteAll(Class type) {
+		type.withNewSession { session ->
+			type.list()*.delete()
 			session.flush()
 		}
 	}
