@@ -192,7 +192,7 @@ The `gsonBuilder` factory bean provided by the plugin will automatically registe
 
 ### Example
 
-To register support serilizing and deserializing `org.joda.time.LocalDate` properties you would define a
+To register support for serializing and deserializing `org.joda.time.LocalDate` properties you would define a
 [`TypeAdapter`][4] implementation:
 
 ``` groovy
