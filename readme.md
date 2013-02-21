@@ -16,24 +16,26 @@ you can't bind a JSON data structure to a GORM domain class and have it populate
 The plugin provides a Grails converter implementation so that you can replace usage of the existing
 `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
 
-	import grails.plugin.gson.GSON
+``` groovy
+import grails.plugin.gson.GSON
 
-	class PersonController {
-		def list() {
-			render Person.list(params) as GSON
-		}
-
-		def save() {
-			def personInstance = new Person(request.GSON)
-			// ... etc.
-		}
-
-		def update() {
-			def personInstance = Person.get(params.id)
-			personInstance.properties = request.GSON
-			// ... etc.
-		}
+class PersonController {
+	def list() {
+		render Person.list(params) as GSON
 	}
+
+	def save() {
+		def personInstance = new Person(request.GSON)
+		// ... etc.
+	}
+
+	def update() {
+		def personInstance = Person.get(params.id)
+		personInstance.properties = request.GSON
+		// ... etc.
+	}
+}
+```
 
 ### Using Gson directly
 
@@ -41,29 +43,31 @@ Alternatively, the plugin provides a [`GsonBuilder`][7] factory bean that you ca
 pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to
 override specific behaviour.
 
-	class PersonController {
-		def gsonBuilder
+``` groovy
+class PersonController {
+	def gsonBuilder
 
-		def list() {
-			def gson = gsonBuilder.create()
-			def personInstances = Person.list(params)
-			render contentType: 'application/json', text: gson.toJson(personInstances)
-		}
-
-		def save() {
-			def gson = gsonBuilder.create()
-			def personInstance = gson.fromJson(request.reader, Person)
-			if (personInstance.save()) {
-				// ... etc.
-		}
-
-		def update() {
-			def gson = gsonBuilder.create()
-			// because the incoming JSON contains an id this will read the Person
-			// from the database and update it!
-			def personInstance = gson.fromJson(request.reader, Person)
-		}
+	def list() {
+		def gson = gsonBuilder.create()
+		def personInstances = Person.list(params)
+		render contentType: 'application/json', text: gson.toJson(personInstances)
 	}
+
+	def save() {
+		def gson = gsonBuilder.create()
+		def personInstance = gson.fromJson(request.reader, Person)
+		if (personInstance.save()) {
+			// ... etc.
+	}
+
+	def update() {
+		def gson = gsonBuilder.create()
+		// because the incoming JSON contains an id this will read the Person
+		// from the database and update it!
+		def personInstance = gson.fromJson(request.reader, Person)
+	}
+}
+```
 
 ## Serialization
 
@@ -72,38 +76,44 @@ The plugin will automatically resolve any _Hibernate_ proxies it encounters when
 If an object graph contains bi-directional relationships they will only be traversed once but in either direction. For
 example if you have the following domain classes:
 
-	class Artist {
-		String name
-		static hasMany = [albums: Album]
-	}
+``` groovy
+class Artist {
+	String name
+	static hasMany = [albums: Album]
+}
 
-	class Album {
-		String title
-		static belongsTo = [artist: Artist]
-	}
+class Album {
+	String title
+	static belongsTo = [artist: Artist]
+}
+```
 
 Instances of `Album` will get serialized to JSON as:
 
-	{
-		"id": 2,
-		"title": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars",
-		"artist": {
-			"id": 1,
-			"name": "David Bowie"
-		}
+``` json
+{
+	"id": 2,
+	"title": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars",
+	"artist": {
+		"id": 1,
+		"name": "David Bowie"
 	}
+}
+```
 
 And instances of `Artist` will get serialized to JSON as:
 
-	{
-		"id": 1,
-		"name": "David Bowie",
-		"albums": [
-			{ "id": 1, "title": "Hunky Dory" },
-			{ "id": 2, "title": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars" },
-			{ "id": 3, "title": "Low" }
-		]
-	}
+``` json
+{
+	"id": 1,
+	"name": "David Bowie",
+	"albums": [
+		{ "id": 1, "title": "Hunky Dory" },
+		{ "id": 2, "title": "The Rise and Fall of Ziggy Stardust and the Spiders From Mars" },
+		{ "id": 3, "title": "Low" }
+	]
+}
+```
 
 ## Deserialization examples
 
@@ -185,32 +195,38 @@ The `gsonBuilder` factory bean provided by the plugin will automatically registe
 To register support serilizing and deserializing `org.joda.time.LocalDate` properties you would define a
 [`TypeAdapter`][4] implementation:
 
-	class LocalDateAdapter extends TypeAdapter<LocalDate> {
+``` groovy
+class LocalDateAdapter extends TypeAdapter<LocalDate> {
 
-		private final formatter = ISODateTimeFormat.date()
+	private final formatter = ISODateTimeFormat.date()
 
-		void write(JsonWriter jsonWriter, LocalDateTime t) {
-			jsonWriter.value(t.toString(formatter))
-		}
-
-		LocalDateTime read(JsonReader jsonReader) {
-			formatter.parseLocalDate(jsonReader.nextString())
-		}
+	void write(JsonWriter jsonWriter, LocalDateTime t) {
+		jsonWriter.value(t.toString(formatter))
 	}
+
+	LocalDateTime read(JsonReader jsonReader) {
+		formatter.parseLocalDate(jsonReader.nextString())
+	}
+}
+```
 
 Then create a `TypeAdapterFactory`:
 
-	class LocalDateAdapterFactory implements TypeAdapterFactory {
-		TypeAdapter create(Gson gson, TypeToken type) {
-			type.rawType == LocalDate ? new LocalDateAdapter() : null
-		}
+``` groovy
+class LocalDateAdapterFactory implements TypeAdapterFactory {
+	TypeAdapter create(Gson gson, TypeToken type) {
+		type.rawType == LocalDate ? new LocalDateAdapter() : null
 	}
+}
+```
 
 Finally register the `TypeAdapterFactory` in `grails-app/conf/spring/resources.groovy`:
 
-	beans {
-		localDateAdapterFactory(LocalDateAdapterFactory)
-	}
+``` groovy
+beans {
+	localDateAdapterFactory(LocalDateAdapterFactory)
+}
+```
 
 The plugin will then automatically use it.
 
