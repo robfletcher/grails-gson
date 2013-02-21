@@ -4,7 +4,6 @@ import java.util.Map.Entry
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
-import grails.plugin.gson.GsonFactory
 import grails.plugin.gson.converters.GSON
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
@@ -18,9 +17,9 @@ class ArtefactEnhancer {
 	private final GrailsApplication grailsApplication
 	private final Gson gson
 
-	ArtefactEnhancer(GrailsApplication grailsApplication, GsonFactory gsonFactory) {
+	ArtefactEnhancer(GrailsApplication grailsApplication, GsonBuilder gsonBuilder) {
 		this.grailsApplication = grailsApplication
-		gson = gsonFactory.createGson()
+		gson = gsonBuilder.create()
 	}
 
 	void enhanceControllers() {

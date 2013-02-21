@@ -1,6 +1,7 @@
 package grails.plugin.gson.converters
 
-import grails.plugin.gson.GsonFactory
+import com.google.gson.GsonBuilder
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import org.codehaus.groovy.grails.commons.ApplicationHolder
@@ -11,10 +12,21 @@ import spock.lang.*
 @TestMixin(GrailsUnitTestMixin)
 class AsTypeSpec extends Specification {
 
+	void setupSpec() {
+		defineBeans {
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
+
 	void setup() {
-		def gsonFactory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
-		grailsApplication.mainContext.registerMockBean('gsonFactory', gsonFactory)
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
 		ConvertersPluginSupport.enhanceApplication(grailsApplication, applicationContext)
+
+		// have to do this because GrailsUnitTestMixin is dumb and does not inherit beans from applicationContext to
+		// grailsApplication.mainContext even though in a real app that is exactly what would happen
+		grailsApplication.mainContext.registerMockBean('gsonBuilder', gsonBuilder)
 		ApplicationHolder.application = grailsApplication
 	}
 

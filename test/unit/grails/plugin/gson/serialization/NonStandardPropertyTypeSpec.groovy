@@ -1,25 +1,34 @@
 package grails.plugin.gson.serialization
 
 import com.google.gson.*
+import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.*
 import grails.persistence.Entity
-import grails.plugin.gson.GsonFactory
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import groovy.transform.TupleConstructor
 import org.joda.time.LocalDateTime
 import org.joda.time.format.*
-import spock.lang.Specification
+import spock.lang.*
 
 @Mock(Reminder)
 class NonStandardPropertyTypeSpec extends Specification {
 
+	@Shared def formatter = ISODateTimeFormat.dateHourMinuteSecond()
 	Gson gson
-	def formatter = ISODateTimeFormat.dateHourMinuteSecond()
+
+	void setupSpec() {
+		defineBeans {
+			localDateTimeAdapterFactory(LocalDateTimeAdapterFactory, formatter)
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
 
 	void setup() {
-		def factory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
-		factory.registerTypeAdapter(LocalDateTime, new LocalDateTimeAdapter(formatter))
-		gson = factory.createGson()
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		gson = gsonBuilder.create()
 	}
 
 	void 'can deserialize a non-standard property type'() {
@@ -53,6 +62,17 @@ class NonStandardPropertyTypeSpec extends Specification {
 class Reminder {
 	String label
 	LocalDateTime time
+}
+
+@TupleConstructor
+class LocalDateTimeAdapterFactory implements TypeAdapterFactory {
+
+	final DateTimeFormatter formatter
+
+	@Override
+	<T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+		type.rawType == LocalDateTime ? new LocalDateTimeAdapter(formatter) : null
+	}
 }
 
 @TupleConstructor

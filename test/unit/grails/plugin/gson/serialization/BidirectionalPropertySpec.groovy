@@ -1,8 +1,8 @@
 package grails.plugin.gson.serialization
 
-import com.google.gson.Gson
+import com.google.gson.*
 import grails.persistence.Entity
-import grails.plugin.gson.GsonFactory
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import spock.lang.*
 
@@ -14,8 +14,17 @@ class BidirectionalPropertySpec extends Specification {
 	Artist artist
 	Album album1, album2, album3
 
+	void setupSpec() {
+		defineBeans {
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
+
 	void setup() {
-		gson = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager).createGson()
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		gson = gsonBuilder.create()
 
 		artist = new Artist(name: 'David Bowie').save(failOnError: true)
 		album1 = new Album(title: 'Hunky Dory', artist: artist).save(failOnError: true)

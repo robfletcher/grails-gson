@@ -1,14 +1,19 @@
 package grails.plugin.gson.converters
 
 import javax.servlet.http.HttpServletResponse
+import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonWriter
-import grails.plugin.gson.GsonFactory
 import grails.util.GrailsWebUtil
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.web.converters.*
 import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
 
 class GSON extends AbstractConverter<JsonWriter> {
+
+	@Lazy private GsonBuilder gsonBuilder = {
+		def applicationContext = ApplicationHolder.application.mainContext
+		applicationContext.getBean('gsonBuilder', GsonBuilder)
+	}()
 
 	private target
 
@@ -24,7 +29,7 @@ class GSON extends AbstractConverter<JsonWriter> {
 
 	void render(Writer out) {
 		try {
-			getGsonFactory().createGson().toJson(target, out)
+			gsonBuilder.create().toJson(target, out)
 		} finally {
 			out.flush()
 			out.close()
@@ -50,11 +55,6 @@ class GSON extends AbstractConverter<JsonWriter> {
 
 	ObjectMarshaller<? extends Converter> lookupObjectMarshaller(Object target) {
 		throw new UnsupportedOperationException()
-	}
-
-	private GsonFactory getGsonFactory() {
-		def applicationContext = ApplicationHolder.application.mainContext
-		applicationContext.getBean('gsonFactory', GsonFactory)
 	}
 
 }

@@ -1,9 +1,9 @@
 package grails.plugin.gson.binding
 
 import javax.servlet.http.HttpServletRequest
-import com.google.gson.JsonElement
+import com.google.gson.*
 import grails.persistence.Entity
-import grails.plugin.gson.GsonFactory
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.test.mixin.Mock
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
@@ -14,9 +14,17 @@ import spock.util.mop.ConfineMetaClassChanges
 @Mock(Album)
 class RequestBodySpec extends Specification {
 
+	void setupSpec() {
+		defineBeans {
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
+
 	void setup() {
-		def gsonFactory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
-		def enhancer = new ArtefactEnhancer(grailsApplication, gsonFactory)
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		def enhancer = new ArtefactEnhancer(grailsApplication, gsonBuilder)
 		enhancer.enhanceDomains()
 		enhancer.enhanceRequest()
     }

@@ -1,8 +1,8 @@
 package grails.plugin.gson.binding
 
-import com.google.gson.Gson
+import com.google.gson.*
 import grails.persistence.Entity
-import grails.plugin.gson.GsonFactory
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import spock.lang.*
 
@@ -12,8 +12,17 @@ class BlacklistedPropertySpec extends Specification {
 
 	Gson gson
 
+	void setupSpec() {
+		defineBeans {
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
+
 	void setup() {
-		gson = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager).createGson()
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		gson = gsonBuilder.create()
 	}
 
 	void 'blacklisted properties are not deserialized'() {

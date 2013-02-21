@@ -1,7 +1,8 @@
 package grails.plugin.gson.binding
 
 import javax.servlet.http.HttpServletResponse
-import grails.plugin.gson.GsonFactory
+import com.google.gson.GsonBuilder
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.converters.GSON
 import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.test.mixin.*
@@ -13,10 +14,21 @@ import spock.util.mop.ConfineMetaClassChanges
 @Mock(Album)
 class HttpResponseSpec extends Specification {
 
-    void setup() {
-		def gsonFactory = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager)
-		grailsApplication.mainContext.registerMockBean('gsonFactory', gsonFactory)
-		new ArtefactEnhancer(grailsApplication, gsonFactory).enhanceControllers()
+	void setupSpec() {
+		defineBeans {
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
+
+	void setup() {
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		new ArtefactEnhancer(grailsApplication, gsonBuilder).enhanceControllers()
+
+		// have to do this because GrailsUnitTestMixin is dumb and does not inherit beans from applicationContext to
+		// grailsApplication.mainContext even though in a real app that is exactly what would happen
+		grailsApplication.mainContext.registerMockBean('gsonBuilder', gsonBuilder)
     }
 
     void 'can render a domain instance list using GSON converter'() {

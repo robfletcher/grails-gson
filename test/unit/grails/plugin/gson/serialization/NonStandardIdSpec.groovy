@@ -1,8 +1,8 @@
 package grails.plugin.gson.serialization
 
-import com.google.gson.Gson
+import com.google.gson.*
 import grails.persistence.Entity
-import grails.plugin.gson.GsonFactory
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import spock.lang.*
 
@@ -11,9 +11,18 @@ class NonStandardIdSpec extends Specification {
 
     Gson gson
 
-    void setup() {
-        gson = new GsonFactory(applicationContext, grailsApplication, applicationContext.pluginManager).createGson()
-    }
+	void setupSpec() {
+		defineBeans {
+			gsonBuilder(GsonBuilderFactory) {
+				pluginManager = ref('pluginManager')
+			}
+		}
+	}
+
+	void setup() {
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		gson = gsonBuilder.create()
+	}
 
 	@Ignore
 	@Issue('https://github.com/robfletcher/grails-gson/issues/1')
