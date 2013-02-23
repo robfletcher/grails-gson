@@ -7,7 +7,7 @@ class Artist {
 
 	String name
 
-	static belongsTo = [artist: Artist]
+	static belongsTo = Album
 
 	static constraints = {
 		name blank: false, unique: true
