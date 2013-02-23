@@ -25,13 +25,20 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 		def domainClass = getDomainClassFor(type)
 		def jsonObject = element.asJsonObject
 		T instance = getOrCreateInstance(jsonObject, domainClass, context)
+		if (instance) {
+			bindJsonToInstance jsonObject, domainClass, instance, context
+			instance
+		} else {
+			null
+		}
+	}
 
+	private void bindJsonToInstance(JsonObject jsonObject, domainClass, T instance, context) {
 		def properties = jsonObject.entrySet().collectEntries { property ->
 			def propertyType = getPropertyType(domainClass, property.key)
 			[(property.key): context.deserialize(property.value, propertyType)]
 		}
 		bindObjectToDomainInstance domainClass, instance, properties
-		instance
 	}
 
 	private T getOrCreateInstance(JsonObject jsonObject, GrailsDomainClass domainClass, JsonDeserializationContext context) {

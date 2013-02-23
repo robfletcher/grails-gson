@@ -58,7 +58,7 @@ class InvalidRequestSpec extends RestEndpointSpec {
 		then:
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_UNPROCESSABLE_ENTITY
-		e.response.data.errors[0] == 'foo'
+		e.response.data.errors[0] == 'Property [artist] of class [class grails.plugin.gson.test.Album] cannot be null'
 	}
 
 	void 'save returns a 422 with details of error for a problem at a nested level in the graph'() {
