@@ -1,6 +1,7 @@
 package grails.plugin.gson.converters
 
 import com.google.gson.GsonBuilder
+import grails.util.GrailsNameUtils
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.web.converters.AbstractParsingParameterCreationListener
@@ -19,13 +20,30 @@ class GsonParsingParameterCreationListener extends AbstractParsingParameterCreat
 			try {
 				def json = GSON.parse(request)
 
-				for (entry in gsonBuilder.create().fromJson(json, Map)) {
-					params[entry.key] = entry.value
+				def map = gsonBuilder.create().fromJson(json, Map)
+
+				if (map.containsKey('class')) {
+					params[GrailsNameUtils.getPropertyName(map['class'])] = map
+				} else {
+					for (entry in map) {
+						params[entry.key] = entry.value
+					}
 				}
+
+				processNestedKeys map, params
 			} catch (Exception e) {
 				log.error 'exception parsing request as JSON', e
 			}
 		}
 	}
 
+	private void processNestedKeys(Map map, GrailsParameterMap params) {
+		def target = [:]
+		createFlattenedKeys(map, map, target)
+		for (entry in target) {
+			if (!map[entry.key]) {
+				params[entry.key] = entry.value
+			}
+		}
+	}
 }

@@ -4,20 +4,24 @@ import com.google.gson.*
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
 import grails.util.GrailsWebUtil
-import spock.lang.Specification
+import org.codehaus.groovy.grails.web.converters.JSONParsingParameterCreationListener
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import spock.lang.*
 import static grails.plugin.gson.converters.GSON.CACHED_GSON
 
+@Unroll
 @TestMixin(ControllerUnitTestMixin)
 class GsonParsingParameterCreationListenerSpec extends Specification {
 
 	private static final String APPLICATION_JSON = GrailsWebUtil.getContentType('application/json', 'UTF-8')
 
 	def gsonBuilder = new GsonBuilder()
-	def listener = new GsonParsingParameterCreationListener(gsonBuilder)
+	def gsonListener = new GsonParsingParameterCreationListener(gsonBuilder)
+	def jsonListener = new JSONParsingParameterCreationListener()
 
 	void 'does nothing if the request content is not JSON'() {
 		when:
-		listener.paramsCreated(params)
+		gsonListener.paramsCreated(params)
 
 		then:
 		request.getAttribute(CACHED_GSON) == null
@@ -29,7 +33,7 @@ class GsonParsingParameterCreationListenerSpec extends Specification {
 		request.content = '{"message":"Namaste"}'.getBytes('UTF-8')
 
 		when:
-		listener.paramsCreated(params)
+		gsonListener.paramsCreated(params)
 
 		then:
 		with(request.getAttribute(CACHED_GSON)) { json ->
@@ -44,22 +48,37 @@ class GsonParsingParameterCreationListenerSpec extends Specification {
 		request.content = new byte[0]
 
 		when:
-		listener.paramsCreated(params)
+		gsonListener.paramsCreated(params)
 
 		then:
 		request.getAttribute(CACHED_GSON) instanceof JsonNull
 	}
 
-	void 'parses JSON into request parameters'() {
+	void 'parses #description into request parameters consistently with JSON implementation'() {
 		given:
+		def jsonListener = new JSONParsingParameterCreationListener()
+
+		and:
 		request.contentType = APPLICATION_JSON
-		request.content = '{"message":"Namaste"}'.getBytes('UTF-8')
+		request.content = requestBody.getBytes('UTF-8')
+		request.format = 'json'
+
+		and:
+		def clonedParams = new GrailsParameterMap(request)
 
 		when:
-		listener.paramsCreated(params)
+		gsonListener.paramsCreated(params)
+		jsonListener.paramsCreated(clonedParams)
 
 		then:
-		params.message == 'Namaste'
+		params == clonedParams
+
+		where:
+		requestBody                                                                                   | description
+		'{"message":"Namaste"}'                                                                       | 'simple json object'
+		'{"message":{"type":"Greeting","content":"Namaste"}}'                                         | 'nested json object'
+		'{"message":[{"type":"Greeting","content":"Namaste"},{"type":"Greeting","content":"O HAI"}]}' | 'json object with nested arrays'
+		'{"class":"foo.Greeting","message":"Namaste"}'                                                | 'json with "class" value'
 	}
 
 }
