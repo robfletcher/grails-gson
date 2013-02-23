@@ -48,8 +48,7 @@ class ArtefactEnhancer {
 	void enhanceRequest() {
 		def requestMetaClass = GroovySystem.metaClassRegistry.getMetaClass(HttpServletRequest)
 		requestMetaClass.getGSON = {->
-			def requestBody = new BufferedReader(delegate.reader)
-			new JsonParser().parse(requestBody)
+			GSON.parse(delegate)
 		}
 	}
 }

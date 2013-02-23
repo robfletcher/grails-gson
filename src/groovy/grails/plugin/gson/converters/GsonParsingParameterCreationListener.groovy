@@ -9,7 +9,10 @@ class GsonParsingParameterCreationListener extends AbstractParsingParameterCreat
 
 	@Override
 	void paramsCreated(GrailsParameterMap params) {
-		log.error 'lol whatever'
+		def request = params.getRequest()
+		if (GSON.isJson(request)) {
+			GSON.parse(request)
+		}
 	}
 
 }

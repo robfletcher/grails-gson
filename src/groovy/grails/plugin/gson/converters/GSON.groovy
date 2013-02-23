@@ -1,7 +1,7 @@
 package grails.plugin.gson.converters
 
-import javax.servlet.http.HttpServletResponse
-import com.google.gson.GsonBuilder
+import javax.servlet.http.*
+import com.google.gson.*
 import com.google.gson.stream.JsonWriter
 import grails.util.GrailsWebUtil
 import org.codehaus.groovy.grails.commons.ApplicationHolder
@@ -10,10 +10,13 @@ import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
 
 class GSON extends AbstractConverter<JsonWriter> {
 
-	@Lazy private GsonBuilder gsonBuilder = {
+	@Lazy
+	private GsonBuilder gsonBuilder = {
 		def applicationContext = ApplicationHolder.application.mainContext
 		applicationContext.getBean('gsonBuilder', GsonBuilder)
 	}()
+
+	public static final String CACHED_GSON = 'grails.plugin.gson.CACHED_GSON_REQUEST_CONTENT'
 
 	private target
 
@@ -21,6 +24,20 @@ class GSON extends AbstractConverter<JsonWriter> {
 
 	GSON(target) {
 		setTarget(target)
+	}
+
+	static boolean isJson(HttpServletRequest request) {
+		(request.contentType =~ /^(application|text)\/json\b/).asBoolean()
+	}
+
+	static JsonElement parse(HttpServletRequest request) {
+		JsonElement json = request.getAttribute(CACHED_GSON)
+		if (!json) {
+			def requestBody = new BufferedReader(request.reader)
+			json = new JsonParser().parse(requestBody)
+			request.setAttribute(CACHED_GSON, json)
+		}
+		json
 	}
 
 	void setTarget(target) {

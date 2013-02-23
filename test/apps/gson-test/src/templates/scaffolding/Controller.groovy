@@ -1,4 +1,6 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>import grails.plugin.gson.converters.GSON
+
+import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
 import static grails.plugin.gson.http.HttpConstants.*
@@ -78,7 +80,7 @@ class ${className}Controller {
 	}
 
 	private boolean requestIsJson() {
-		request.contentType == 'application/json'
+		GSON.isJson(request)
 	}
 
 	private void respondFound(${className} ${propertyName}) {
