@@ -10,7 +10,7 @@ There is a [JIRA][2] open for this issue but since it's easy to provide an alter
 
 ## Installation
 
-Add `compile ':gson:1.0-SNAPSHOT'` to `grails-app/conf/BuildConfig.groovy`.
+Add `compile ':gson:1.0'` to `grails-app/conf/BuildConfig.groovy`.
 
 ## Usage
 

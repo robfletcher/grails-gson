@@ -3,7 +3,7 @@ import grails.plugin.gson.spring.GsonBuilderFactory
 
 class GsonGrailsPlugin {
     
-    def version = '1.0-SNAPSHOT'
+    def version = '1.0'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
 	def loadAfter = ['controllers', 'converters']
@@ -15,7 +15,7 @@ class GsonGrailsPlugin {
     def author = 'Rob Fletcher'
     def authorEmail = 'rob@freeside.co'
     def description = 'Provides alternate JSON (de)serialization using Google\'s Gson library'
-    def documentation = 'http://grails.org/plugin/gson'
+    def documentation = 'http://git.io/grails-gson'
     def license = 'APACHE'
     def organization = [name: 'Freeside Software', url: 'http://freeside.co']
     def issueManagement = [system: 'GitHub', url: 'https://github.com/robfletcher/grails-gson/issues']
