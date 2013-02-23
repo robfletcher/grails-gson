@@ -1,3 +1,5 @@
+# Grails Gson plugin
+
 [![Build Status](https://travis-ci.org/robfletcher/grails-gson.png)][6]
 
 This plugin provides alternate JSON (de)serialization for Grails using Google's [Gson][1] library.
