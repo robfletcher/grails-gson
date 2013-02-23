@@ -237,7 +237,7 @@ beans {
 
 The plugin will then automatically use it.
 
-See the [Gson documentation on customizing serialization and deserialization][11] for more information on how to write `TypeAdapter` implementations.
+See the [Gson documentation on custom serialization and deserialization][11] for more information on how to write `TypeAdapter` implementations.
 
 ## Compatibility
 
