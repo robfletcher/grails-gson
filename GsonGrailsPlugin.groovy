@@ -1,3 +1,4 @@
+import grails.plugin.gson.converters.GsonParsingParameterCreationListener
 import grails.plugin.gson.spring.GsonBuilderFactory
 
 class GsonGrailsPlugin {
@@ -5,7 +6,7 @@ class GsonGrailsPlugin {
     def version = '1.0-SNAPSHOT'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
-	def loadAfter = ['controllers']
+	def loadAfter = ['controllers', 'converters']
     def pluginExcludes = [
         'grails-app/views/**/*'
     ]
@@ -22,6 +23,7 @@ class GsonGrailsPlugin {
 
 	def doWithSpring = {
 		gsonBuilder GsonBuilderFactory
+		jsonParsingParameterCreationListener GsonParsingParameterCreationListener
 	}
 
     def doWithDynamicMethods = { ctx ->
