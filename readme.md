@@ -4,10 +4,9 @@ This plugin provides alternate JSON (de)serialization for Grails using Google's 
 
 ## Rationale
 
-Grails' JSON deserialization has some limitations. Specifically it doesn't work with nested object graphs. This means
-you can't bind a JSON data structure to a GORM domain class and have it populate associations, embedded properties, etc.
- There is a [JIRA][2] open for this issue but since it's easy to provide an alternative with _Gson_ I thought a plugin
- was worthwhile.
+Grails' JSON deserialization has some limitations. Specifically it doesn't work with nested object graphs. This means you can't bind a JSON data structure to a GORM domain class and have it populate associations, embedded properties, etc.
+
+There is a [JIRA][2] open for this issue but since it's easy to provide an alternative with _Gson_ I thought a plugin was worthwhile.
 
 ## Installation
 
@@ -17,8 +16,7 @@ Add `compile ':gson:1.0-SNAPSHOT'` to `grails-app/conf/BuildConfig.groovy`.
 
 ### Using Grails converters
 
-The plugin provides a Grails converter implementation so that you can replace usage of the existing
-`grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
+The plugin provides a Grails converter implementation so that you can replace usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
 
 ``` groovy
 import grails.plugin.gson.GSON
@@ -43,9 +41,7 @@ class PersonController {
 
 ### Using Gson directly
 
-Alternatively, the plugin provides a [`GsonBuilder`][7] factory bean that you can inject into your components. This is
-pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to
-override specific behaviour.
+The plugin provides a [`GsonBuilder`][7] factory bean that you can inject into your components. This is pre-configured to register type handlers for domain classes so you don't need to worry about doing so unless you need to override specific behaviour.
 
 ``` groovy
 class PersonController {
@@ -77,8 +73,7 @@ class PersonController {
 
 The plugin will automatically resolve any _Hibernate_ proxies it encounters when serializing an object graph to JSON.
 
-If an object graph contains bi-directional relationships they will only be traversed once but in either direction. For
-example if you have the following domain classes:
+If an object graph contains bi-directional relationships they will only be traversed once but in either direction. For example if you have the following domain classes:
 
 ``` groovy
 class Artist {
@@ -199,13 +194,11 @@ This can be deserialized in a number of ways.
 
 ## Registering additional type adapters
 
-The `gsonBuilder` factory bean provided by the plugin will automatically register any Spring beans that implement the
-[`TypeAdapterFactory`][3] interface.
+The `gsonBuilder` factory bean provided by the plugin will automatically register any Spring beans that implement the [`TypeAdapterFactory`][3] interface.
 
 ### Example
 
-To register support for serializing and deserializing `org.joda.time.LocalDate` properties you would define a
-[`TypeAdapter`][4] implementation:
+To register support for serializing and deserializing `org.joda.time.LocalDate` properties you would define a [`TypeAdapter`][4] implementation:
 
 ``` groovy
 class LocalDateAdapter extends TypeAdapter<LocalDate> {
@@ -261,27 +254,27 @@ When trying to bind an entire object graph you need to be mindful of the way GOR
 
 Even though you can bind nested domain relationships there need to be cascade rules in place so that they will save.
 
-In the examples above the _Pet_ domain class must declare that it `belongsTo` _Child_ (or _Child_ must declare that
-updates cascade to `pets`). Otherwise the data will bind but when you save the _Child_ instance the changes to any
-nested _Pet_ instances will not be persisted.
+In the examples above the _Pet_ domain class must declare that it `belongsTo` _Child_ (or _Child_ must declare that updates cascade to `pets`). Otherwise the data will bind but when you save the _Child_ instance the changes to any nested _Pet_ instances will not be persisted.
 
 ### Cascading saves
 
 Likewise if you are trying to create an entire object graph at once the correct cascade rules need to be present.
 
-If _Pet_ declares `belongsTo = [child: Child]` everything should work as Grails will apply cascade _all_ by default.
-However if _Pet_ declares `belongsTo = Child` then _Child_ needs to override the default cascade _save-update_ so that
-new _Pet_ instances are created properly.
+If _Pet_ declares `belongsTo = [child: Child]` everything should work as Grails will apply cascade _all_ by default. However if _Pet_ declares `belongsTo = Child` then _Child_ needs to override the default cascade _save-update_ so that new _Pet_ instances are created properly.
 
-See [the Grails documentation on the `cascade` mapping][5]
-for more information.
+See [the Grails documentation on the `cascade` mapping][5] for more information.
 
 ### Circular references
 
-Gson does not support serializing object graphs with circular references and a `StackOverflowException` will be thrown
-if you try. The plugin protects against circular references caused by bi-directional relationships in GORM domain
-classes but any other circular reference is likely to cause a problem when serialized. If your domain model contains
-such relationships you will need to register additional `TypeAdapter` implementations for the classes involved.
+Gson does not support serializing object graphs with circular references and a `StackOverflowException` will be thrown if you try. The plugin protects against circular references caused by bi-directional relationships in GORM domain classes but any other circular reference is likely to cause a problem when serialized. If your domain model contains such relationships you will need to register additional `TypeAdapter` implementations for the classes involved.
+
+### Parameter parsing
+
+In general it is possible to use the Gson plugn alongside Grails' built in JSON support. The only thing the plugin overrides in the parsing of a JSON request body into a parameter map.
+
+This is only done when you set `parseRequest: true` in _URLMappings_ or use a resource style mapping. See [the Grails documentation on REST services][10] for more information.
+
+The plugin's parsing is compatible with that done by the default JSON handler so you should see no difference in the result.
 
 [1]:http://code.google.com/p/google-gson/
 [2]:http://jira.grails.org/browse/GRAILS-9220
@@ -292,3 +285,4 @@ such relationships you will need to register additional `TypeAdapter` implementa
 [7]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html
 [8]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/JsonDeserializer.html
 [9]:http://grails.org/doc/latest/ref/Constraints/bindable.html
+[10]:http://grails.org/doc/latest/guide/webServices.html#REST
