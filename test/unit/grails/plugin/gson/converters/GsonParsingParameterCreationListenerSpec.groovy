@@ -1,13 +1,16 @@
 package grails.plugin.gson.converters
 
-import com.google.gson.JsonObject
+import com.google.gson.*
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
+import grails.util.GrailsWebUtil
 import spock.lang.Specification
 import static grails.plugin.gson.converters.GSON.CACHED_GSON
 
 @TestMixin(ControllerUnitTestMixin)
 class GsonParsingParameterCreationListenerSpec extends Specification {
+
+	private static final String APPLICATION_JSON = GrailsWebUtil.getContentType('application/json', 'UTF-8')
 
 	def listener = new GsonParsingParameterCreationListener()
 
@@ -21,8 +24,8 @@ class GsonParsingParameterCreationListenerSpec extends Specification {
 
 	void 'parses and caches a JsonElement if request content is JSON'() {
 		given:
-		request.contentType = 'application/json'
-		request.content = '{"message":"Namaste"}'.bytes
+		request.contentType = APPLICATION_JSON
+		request.content = '{"message":"Namaste"}'.getBytes('UTF-8')
 
 		when:
 		listener.paramsCreated(params)
@@ -32,6 +35,18 @@ class GsonParsingParameterCreationListenerSpec extends Specification {
 			json instanceof JsonObject
 			json.message.asString == 'Namaste'
 		}
+	}
+
+	void 'parses an empty request body as an empty JsonNull'() {
+		given:
+		request.contentType = APPLICATION_JSON
+		request.content = new byte[0]
+
+		when:
+		listener.paramsCreated(params)
+
+		then:
+		request.getAttribute(CACHED_GSON) instanceof JsonNull
 	}
 
 }
