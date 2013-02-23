@@ -33,8 +33,7 @@ class GSON extends AbstractConverter<JsonWriter> {
 	static JsonElement parse(HttpServletRequest request) {
 		JsonElement json = request.getAttribute(CACHED_GSON)
 		if (!json) {
-			def requestBody = new BufferedReader(request.reader)
-			json = new JsonParser().parse(requestBody)
+			json = new JsonParser().parse(request.reader)
 			request.setAttribute(CACHED_GSON, json)
 		}
 		json
