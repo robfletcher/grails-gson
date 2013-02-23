@@ -23,7 +23,7 @@ class GsonGrailsPlugin {
 
 	def doWithSpring = {
 		gsonBuilder GsonBuilderFactory
-		jsonParsingParameterCreationListener GsonParsingParameterCreationListener
+		jsonParsingParameterCreationListener GsonParsingParameterCreationListener, ref('gsonBuilder')
 	}
 
     def doWithDynamicMethods = { ctx ->

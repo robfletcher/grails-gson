@@ -88,6 +88,8 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+
+	debug  'grails.plugin.gson'
 }
 
 grails.app.context = '/'

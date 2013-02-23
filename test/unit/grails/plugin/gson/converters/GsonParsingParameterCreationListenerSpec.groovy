@@ -12,7 +12,8 @@ class GsonParsingParameterCreationListenerSpec extends Specification {
 
 	private static final String APPLICATION_JSON = GrailsWebUtil.getContentType('application/json', 'UTF-8')
 
-	def listener = new GsonParsingParameterCreationListener()
+	def gsonBuilder = new GsonBuilder()
+	def listener = new GsonParsingParameterCreationListener(gsonBuilder)
 
 	void 'does nothing if the request content is not JSON'() {
 		when:
@@ -47,6 +48,18 @@ class GsonParsingParameterCreationListenerSpec extends Specification {
 
 		then:
 		request.getAttribute(CACHED_GSON) instanceof JsonNull
+	}
+
+	void 'parses JSON into request parameters'() {
+		given:
+		request.contentType = APPLICATION_JSON
+		request.content = '{"message":"Namaste"}'.getBytes('UTF-8')
+
+		when:
+		listener.paramsCreated(params)
+
+		then:
+		params.message == 'Namaste'
 	}
 
 }
