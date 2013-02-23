@@ -1,3 +1,5 @@
+# Grails Gson plugin
+
 [![Build Status](https://travis-ci.org/robfletcher/grails-gson.png)][6]
 
 This plugin provides alternate JSON (de)serialization for Grails using Google's [Gson][1] library.
@@ -235,6 +237,8 @@ beans {
 
 The plugin will then automatically use it.
 
+See the [Gson documentation on custom serialization and deserialization][11] for more information on how to write `TypeAdapter` implementations.
+
 ## Compatibility
 
 The plugin's Gson deserializer works with:
@@ -286,3 +290,4 @@ The plugin's parsing is compatible with that done by the default JSON handler so
 [8]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/JsonDeserializer.html
 [9]:http://grails.org/doc/latest/ref/Constraints/bindable.html
 [10]:http://grails.org/doc/latest/guide/webServices.html#REST
+[11]:https://sites.google.com/site/gson/gson-user-guide#TOC-Custom-Serialization-and-Deserialization
