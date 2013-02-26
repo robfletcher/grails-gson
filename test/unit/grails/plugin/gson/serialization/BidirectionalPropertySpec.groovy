@@ -25,14 +25,53 @@ class BidirectionalPropertySpec extends Specification {
 	void setup() {
 		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
 		gson = gsonBuilder.create()
+	}
 
+	void 'bi-directional associations are populated in both directions when deserializing one-to-many'() {
+
+		given:
+		def data = [
+				name: 'David Bowie',
+				albums: [
+						[title: 'Low'],
+						[title: '"Heroes"'],
+						[title: 'Lodger']
+				]
+		]
+		def json = gson.toJson(data)
+
+		when:
+		def artist = gson.fromJson(json, Artist)
+
+		then:
+		artist.albums.artist.every { it == artist }
+
+	}
+
+	void 'bi-directional associations are populated in both directions when deserializing many-to-one'() {
+
+		given:
+		def data = [
+				title: 'Station to Station',
+				artist: [name: 'David Bowie']
+		]
+		def json = gson.toJson(data)
+
+		when:
+		def album = gson.fromJson(json, Album)
+
+		then:
+		album.artist.albums == [album]
+
+	}
+
+	void 'can serialize a full graph from the owning side of a relationship'() {
+
+		given:
 		artist = new Artist(name: 'David Bowie').save(failOnError: true)
 		album1 = new Album(title: 'Hunky Dory', artist: artist).save(failOnError: true)
 		album2 = new Album(title: 'Aladdin Sane', artist: artist).save(failOnError: true)
 		album3 = new Album(title: 'Low', artist: artist).save(failOnError: true)
-	}
-
-	void 'can serialize a full graph from the owning side of a relationship'() {
 
 		expect: 'the top-level object properties are serialized'
 		println gson.toJson(artist)
@@ -51,6 +90,12 @@ class BidirectionalPropertySpec extends Specification {
 	}
 
 	void 'serialization stops when it hits a circular relationship'() {
+
+		given:
+		artist = new Artist(name: 'David Bowie').save(failOnError: true)
+		album1 = new Album(title: 'Hunky Dory', artist: artist).save(failOnError: true)
+		album2 = new Album(title: 'Aladdin Sane', artist: artist).save(failOnError: true)
+		album3 = new Album(title: 'Low', artist: artist).save(failOnError: true)
 
 		expect: 'the top-level object properties are serialized'
 		println gson.toJson(album1)

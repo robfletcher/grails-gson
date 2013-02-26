@@ -2,15 +2,19 @@ package grails.plugin.gson.test
 
 import groovy.transform.ToString
 
-@ToString
+@ToString(includes = ['name'])
 class Artist {
 
 	String name
+	List<Album> albums
 
-	static belongsTo = Album
+	static hasMany = [albums: Album]
 
 	static constraints = {
 		name blank: false, unique: true
 	}
 
+	static mapping = {
+		albums cascade: 'all' // https://github.com/robfletcher/grails-gson/issues/15
+	}
 }

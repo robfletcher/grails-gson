@@ -1,6 +1,9 @@
 package grails.plugin.gson.test
 
 import groovyx.net.http.HttpResponseDecorator
+import groovyx.net.http.HttpResponseException
+import spock.lang.IgnoreRest
+import spock.lang.Issue
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.SC_CREATED
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
@@ -82,6 +85,60 @@ class CreateEntitySpec extends RestEndpointSpec {
 
 		and:
 		Album.count() == old(Album.count()) + 1
+		Artist.count() == old(Artist.count()) + 1
+	}
+
+	@IgnoreRest
+	@Issue('https://github.com/robfletcher/grails-gson/issues/15')
+	def 'save can create complex sub-graph'() {
+		given:
+		def request = [
+				name: 'David Bowie',
+				albums: [
+						[
+								title: 'Station to Station',
+								year: 1976,
+								tracks: [
+										'Station to Station', 'Golden Years', 'Word on a Wing',
+										'TVC 15', 'Stay', 'Wild is the Wind'
+								]
+						],
+						[
+								title: 'Low',
+								year: 1977,
+								tracks: [
+										'Speed of Life', 'Breaking Glass', 'What in the World',
+										'Sound and Vision', 'Always Crashing in the Same Car',
+										'Be My Wife', 'A New Career in a New Town', 'Warszawa',
+										'Art Decade', 'Weeping Wall', 'Subterraneans'
+								]
+
+						]
+				]
+		]
+
+		when:
+		HttpResponseDecorator response
+		try {
+			response = http.post(path: 'artist', body: request, requestContentType: JSON)
+		} catch(HttpResponseException e) {
+			println e.response.data.toString()
+			e.printStackTrace()
+			response = e.response
+		}
+
+		then:
+		response.status == SC_CREATED
+		response.contentType == APPLICATION_JSON.mimeType
+		response.data.name == request.name
+		response.data.albums.size() == 2
+		response.data.albums.title == request.albums.title
+		response.data.albums.year == request.albums.year
+		response.data.albums[0].tracks == request.albums[0].tracks
+		response.data.albums[1].tracks == request.albums[1].tracks
+
+		and:
+		Album.count() == old(Album.count()) + 2
 		Artist.count() == old(Artist.count()) + 1
 	}
 

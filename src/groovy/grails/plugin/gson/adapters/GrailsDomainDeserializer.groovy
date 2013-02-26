@@ -33,12 +33,26 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 		}
 	}
 
-	private void bindJsonToInstance(JsonObject jsonObject, domainClass, T instance, context) {
+	private void bindJsonToInstance(JsonObject jsonObject, GrailsDomainClass domainClass, T instance, context) {
 		def properties = jsonObject.entrySet().collectEntries { property ->
 			def propertyType = getPropertyType(domainClass, property.key)
 			[(property.key): context.deserialize(property.value, propertyType)]
 		}
 		bindObjectToDomainInstance domainClass, instance, properties
+
+		domainClass.persistentProperties.each { persistentProperty ->
+			if (persistentProperty.isBidirectional() && persistentProperty.isOwningSide()) {
+				if (persistentProperty.isOneToMany() || persistentProperty.isManyToMany()) {
+					log.debug "setting ${domainClass.propertyName}.${persistentProperty.name}*.${persistentProperty.otherSide.name} to ${instance}"
+					instance[persistentProperty.name].each {
+						it[persistentProperty.otherSide.name] = instance
+					}
+				} else {
+					log.debug "setting ${domainClass.propertyName}.${persistentProperty.name}.${persistentProperty.otherSide.name} to ${instance}"
+					instance[persistentProperty.name][persistentProperty.otherSide.name] = instance
+				}
+			}
+		}
 	}
 
 	private T getOrCreateInstance(JsonObject jsonObject, GrailsDomainClass domainClass, JsonDeserializationContext context) {

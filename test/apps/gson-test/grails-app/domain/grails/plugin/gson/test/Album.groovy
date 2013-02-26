@@ -5,12 +5,12 @@ import groovy.transform.ToString
 @ToString
 class Album {
 
-	Artist artist
 	String title
 	Integer year
 	List<String> tracks
 
 	static hasMany = [tracks: String]
+	static belongsTo = [artist: Artist]
 
 	static constraints = {
 		artist bindable: true
