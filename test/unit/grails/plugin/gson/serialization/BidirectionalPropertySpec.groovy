@@ -27,44 +27,6 @@ class BidirectionalPropertySpec extends Specification {
 		gson = gsonBuilder.create()
 	}
 
-	void 'bi-directional associations are populated in both directions when deserializing one-to-many'() {
-
-		given:
-		def data = [
-				name: 'David Bowie',
-				albums: [
-						[title: 'Low'],
-						[title: '"Heroes"'],
-						[title: 'Lodger']
-				]
-		]
-		def json = gson.toJson(data)
-
-		when:
-		def artist = gson.fromJson(json, Artist)
-
-		then:
-		artist.albums.artist.every { it == artist }
-
-	}
-
-	void 'bi-directional associations are populated in both directions when deserializing many-to-one'() {
-
-		given:
-		def data = [
-				title: 'Station to Station',
-				artist: [name: 'David Bowie']
-		]
-		def json = gson.toJson(data)
-
-		when:
-		def album = gson.fromJson(json, Album)
-
-		then:
-		album.artist.albums == [album]
-
-	}
-
 	void 'can serialize a full graph from the owning side of a relationship'() {
 
 		given:
