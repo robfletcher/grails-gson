@@ -33,14 +33,19 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 		}
 	}
 
-	private void bindJsonToInstance(JsonObject jsonObject, domainClass, T instance, context) {
-		def properties = jsonObject.entrySet().findAll{property-> domainClass.hasProperty(property.key)}.collectEntries { property ->
-			def propertyType = getPropertyType(domainClass, property.key)
-            [(property.key): context.deserialize(property.value, propertyType)]
+	private void bindJsonToInstance(JsonObject jsonObject, GrailsDomainClass domainClass, T instance, context) {
+		def jsonEntries = jsonObject.entrySet().findAll { property ->
+			if (domainClass.hasPersistentProperty(property.key)) {
+				true
+			} else {
+				log.debug "Unknown property ${domainClass.shortName}.${property.key} found in json"
+				false
+			}
 		}
-        if (properties.size()<jsonObject.entrySet().size()){
-            log.debug("Found properties in json, not known in the domain class: [${jsonObject.entrySet().findAll{!properties.containsKey(it.key)}}]")
-        }
+		def properties = jsonEntries.collectEntries { property ->
+			def propertyType = getPropertyType(domainClass, property.key)
+			[(property.key): context.deserialize(property.value, propertyType)]
+		}
 		bindObjectToDomainInstance domainClass, instance, properties
 	}
 
@@ -51,14 +56,14 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 	}
 
 	private Type getPropertyType(GrailsDomainClass domainClass, String name) {
-		def domainClassProperty = domainClass.hasProperty(name)? domainClass.getPropertyByName(name):null
-        if (domainClassProperty){
-            if (domainClassProperty.manyToMany || domainClassProperty.oneToMany) {
-                DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
-            } else {
-                domainClassProperty.type
-            }
-        }
+		def domainClassProperty = domainClass.hasProperty(name) ? domainClass.getPropertyByName(name) : null
+		if (domainClassProperty) {
+			if (domainClassProperty.manyToMany || domainClassProperty.oneToMany) {
+				DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
+			} else {
+				domainClassProperty.type
+			}
+		}
 	}
 
 	private GrailsDomainClass getDomainClassFor(Type type) {
