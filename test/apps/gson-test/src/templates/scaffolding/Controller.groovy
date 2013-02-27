@@ -1,6 +1,4 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>import grails.plugin.gson.converters.GSON
-
-import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
 import static grails.plugin.gson.http.HttpConstants.*
