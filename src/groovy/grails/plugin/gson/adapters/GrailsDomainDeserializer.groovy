@@ -34,7 +34,15 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 	}
 
 	private void bindJsonToInstance(JsonObject jsonObject, GrailsDomainClass domainClass, T instance, context) {
-		def properties = jsonObject.entrySet().collectEntries { property ->
+		def jsonEntries = jsonObject.entrySet().findAll { property ->
+			if (domainClass.hasPersistentProperty(property.key)) {
+				true
+			} else {
+				log.debug "Unknown property ${domainClass.shortName}.${property.key} found in json"
+				false
+			}
+		}
+		def properties = jsonEntries.collectEntries { property ->
 			def propertyType = getPropertyType(domainClass, property.key)
 			[(property.key): context.deserialize(property.value, propertyType)]
 		}
@@ -62,12 +70,13 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 	}
 
 	private Type getPropertyType(GrailsDomainClass domainClass, String name) {
-		def domainClassProperty = domainClass.getPropertyByName(name)
-
-		if (domainClassProperty.manyToMany || domainClassProperty.oneToMany) {
-			DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
-		} else {
-			domainClassProperty.type
+		def domainClassProperty = domainClass.hasProperty(name) ? domainClass.getPropertyByName(name) : null
+		if (domainClassProperty) {
+			if (domainClassProperty.manyToMany || domainClassProperty.oneToMany) {
+				DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
+			} else {
+				domainClassProperty.type
+			}
 		}
 	}
 

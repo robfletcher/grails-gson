@@ -4,6 +4,7 @@ import com.google.gson.*
 import grails.persistence.Entity
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
+import spock.lang.Issue
 import spock.lang.Specification
 
 @Mock(RockStar)
@@ -51,6 +52,20 @@ class BasicEntitySpec extends Specification {
 		then:
 		p2.firstName == p1.firstName
 		p2.lastName == data.lastName
+	}
+
+	@Issue('https://github.com/robfletcher/grails-gson/issues/22')
+	void 'can deserialize a new instance with extra json fields'() {
+		given:
+		def data = [firstName: 'Ziggy', lastName: 'Stardust', style: 'Flamboyant']
+		def json = gson.toJson(data)
+
+		when:
+		def p = gson.fromJson(json, RockStar)
+
+		then:
+		p.firstName == data.firstName
+		p.lastName == data.lastName
 	}
 
 	void 'can serialize an instance'() {
