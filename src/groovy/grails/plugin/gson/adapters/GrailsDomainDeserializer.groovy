@@ -2,6 +2,7 @@ package grails.plugin.gson.adapters
 
 import java.lang.reflect.Type
 import com.google.gson.*
+import grails.util.GrailsNameUtils
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
@@ -35,7 +36,7 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 
 	private void bindJsonToInstance(JsonObject jsonObject, GrailsDomainClass domainClass, T instance, context) {
 		def jsonEntries = jsonObject.entrySet().findAll { property ->
-			if (domainClass.hasPersistentProperty(property.key)) {
+			if (property.key == domainClass.identifier.name || domainClass.hasPersistentProperty(property.key)) {
 				true
 			} else {
 				log.debug "Unknown property ${domainClass.shortName}.${property.key} found in json"
@@ -48,20 +49,40 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 		}
 		bindObjectToDomainInstance domainClass, instance, properties
 
-		domainClass.persistentProperties.each { persistentProperty ->
-			if (persistentProperty.isBidirectional() && persistentProperty.isOwningSide()) {
-				if (persistentProperty.isOneToMany() || persistentProperty.isManyToMany()) {
-					log.debug "setting ${domainClass.propertyName}.${persistentProperty.name}*.${persistentProperty.otherSide.name} to ${instance}"
-					instance[persistentProperty.name].each {
-						it[persistentProperty.otherSide.name] = instance
-					}
-				} else {
-					log.debug "setting ${domainClass.propertyName}.${persistentProperty.name}.${persistentProperty.otherSide.name} to ${instance}"
-					instance[persistentProperty.name][persistentProperty.otherSide.name] = instance
-				}
+		processBidirectionalAssociations domainClass, instance
+	}
+
+	private void processBidirectionalAssociations(GrailsDomainClass domainClass, T instance) {
+		domainClass.persistentProperties.each { property ->
+			if (property.bidirectional) {
+				bindOwner instance."$property.name", property.otherSide, instance
 			}
 		}
 	}
+
+	private void bindOwner(value, GrailsDomainClassProperty property, T owner) {
+		if (value == null) return
+		if (property.manyToOne) {
+			value.each {
+				it[property.name] = owner
+			}
+		} else if (property.oneToMany) {
+			def addToMethodName = getAddToMethodName(property)
+			value."$addToMethodName" owner
+		} else if (property.manyToMany) {
+			def addToMethodName = getAddToMethodName(property)
+			value.each {
+				it."$addToMethodName" owner
+			}
+		} else {
+			value."$property.name" = owner
+		}
+	}
+
+	private String getAddToMethodName(GrailsDomainClassProperty property) {
+		"addTo${GrailsNameUtils.getClassName(property.name)}"
+	}
+
 
 	private T getOrCreateInstance(JsonObject jsonObject, GrailsDomainClass domainClass, JsonDeserializationContext context) {
 		def identityProp = domainClass.identifier

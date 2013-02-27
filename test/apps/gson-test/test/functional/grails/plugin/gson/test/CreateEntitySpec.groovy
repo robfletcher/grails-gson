@@ -2,7 +2,6 @@ package grails.plugin.gson.test
 
 import groovyx.net.http.HttpResponseDecorator
 import groovyx.net.http.HttpResponseException
-import spock.lang.IgnoreRest
 import spock.lang.Issue
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.SC_CREATED
@@ -88,8 +87,8 @@ class CreateEntitySpec extends RestEndpointSpec {
 		Artist.count() == old(Artist.count()) + 1
 	}
 
-	@IgnoreRest
 	@Issue('https://github.com/robfletcher/grails-gson/issues/15')
+	@Issue('https://github.com/robfletcher/grails-gson/issues/24')
 	def 'save can create complex sub-graph'() {
 		given:
 		def request = [

@@ -7,7 +7,7 @@ import grails.test.mixin.Mock
 import spock.lang.*
 
 @Issue('https://github.com/robfletcher/grails-gson/issues/24')
-@Mock([Album, Artist, Biography, Cover])
+@Mock([Album, Artist, Biography, Cover, Genre])
 class BidirectionalAssociationSpec extends Specification {
 
 	Gson gson
@@ -56,7 +56,7 @@ class BidirectionalAssociationSpec extends Specification {
 		def album = gson.fromJson(json, Album)
 
 		then:
-		album.artist.albums == [album]
+		album.artist.albums == [album] as Set
 	}
 
 	void 'bi-directional associations are populated in both directions when deserializing one-to-one'() {
@@ -77,7 +77,7 @@ class BidirectionalAssociationSpec extends Specification {
 	void 'bi-directional associations are populated in both directions when deserializing one-to-one using hasOne'() {
 		given:
 		def data = [
-		        name: 'David Bowie',
+				name: 'David Bowie',
 				bio: [text: 'David Robert Jones (born 8 January 1947), known by his' +
 						' stage name David Bowie (pron.: /ˈboʊ.i/ boh-ee),[1]' +
 						' is an English musician, actor, record producer and arranger...']
@@ -91,6 +91,27 @@ class BidirectionalAssociationSpec extends Specification {
 		artist.bio.artist == artist
 	}
 
+	void 'bi-directional associations are populated in both directions when deserializing many-to-many'() {
+		given:
+		def data = [
+				title: 'Young Americans',
+				genres: [
+						[name: 'Funk'],
+						[name: 'Rock'],
+						[name: 'Plastic Soul']
+				]
+		]
+		def json = gson.toJson(data)
+
+		when:
+		def album = gson.fromJson(json, Album)
+
+		then:
+		album.genres.every {
+			it.albums == [album] as Set
+		}
+	}
+
 }
 
 @Entity
@@ -98,6 +119,7 @@ class Album {
 	String title
 	Cover cover
 	static belongsTo = [artist: Artist]
+	static hasMany = [genres: Genre]
 }
 
 @Entity
@@ -117,4 +139,11 @@ class Biography {
 class Cover {
 	byte[] image
 	static belongsTo = [album: Album]
+}
+
+@Entity
+class Genre {
+	String name
+	static hasMany = [albums: Album]
+	static belongsTo = Album
 }
