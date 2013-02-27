@@ -1,10 +1,11 @@
 language: groovy
 jdk:
   - oraclejdk7
+branches:
+  only:
+    - master
 script: ./grailsw refresh-dependencies
-  && ./grailsw clean
-  && ./grailsw "test-app unit:"
-  && cd test/apps/gson-test
-  && ./grailsw refresh-dependencies
-  && ./grailsw clean 
-  && ./grailsw "test-app functional:"
+     && ./grailsw "test-app unit:"
+     && cd test/apps/gson-test
+     && ./grailsw refresh-dependencies
+     && ./grailsw "test-app functional:"
