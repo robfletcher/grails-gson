@@ -19,6 +19,6 @@ class Album {
 	}
 
 	static mapping = {
-		artist cascade: 'all' // https://github.com/robfletcher/grails-gson/issues/15
+		artist cascade: 'all'
 	}
 }
