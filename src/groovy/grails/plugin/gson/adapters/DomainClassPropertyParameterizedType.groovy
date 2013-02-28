@@ -26,8 +26,12 @@ class DomainClassPropertyParameterizedType implements ParameterizedType {
 
 	final GrailsDomainClassProperty property
 
-	static ParameterizedType forProperty(GrailsDomainClassProperty property) {
-		new DomainClassPropertyParameterizedType(property)
+	static Type forProperty(GrailsDomainClassProperty property) {
+		if (property.manyToMany || property.oneToMany) {
+			new DomainClassPropertyParameterizedType(property)
+		} else {
+			property.type
+		}
 	}
 
 	Type[] getActualTypeArguments() {

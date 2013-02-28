@@ -98,11 +98,7 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 	private Type getPropertyType(GrailsDomainClass domainClass, String name) {
 		def domainClassProperty = domainClass.hasProperty(name) ? domainClass.getPropertyByName(name) : null
 		if (domainClassProperty) {
-			if (domainClassProperty.manyToMany || domainClassProperty.oneToMany) {
-				DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
-			} else {
-				domainClassProperty.type
-			}
+			DomainClassPropertyParameterizedType.forProperty(domainClassProperty)
 		}
 	}
 
