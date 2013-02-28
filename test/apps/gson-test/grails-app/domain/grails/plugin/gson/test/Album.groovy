@@ -2,7 +2,7 @@ package grails.plugin.gson.test
 
 import groovy.transform.ToString
 
-@ToString
+@ToString(includeNames = true)
 class Album {
 
 	String title

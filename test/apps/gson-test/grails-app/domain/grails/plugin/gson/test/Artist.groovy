@@ -2,7 +2,7 @@ package grails.plugin.gson.test
 
 import groovy.transform.ToString
 
-@ToString(includes = ['name'])
+@ToString(includes = ['name'], includeNames = true)
 class Artist {
 
 	String name

@@ -63,27 +63,30 @@ class InvalidRequestSpec extends RestEndpointSpec {
 
 	void 'save returns a 422 with details of error for a problem at a nested level in the graph'() {
 		when:
-		http.post(path: 'album', body: [title: 'Aladdin Sane', artist: [name: null]], requestContentType: JSON)
+		http.post(path: 'artist', body: [name: 'David Bowie', albums: [[title: null]]], requestContentType: JSON)
 
 		then:
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_UNPROCESSABLE_ENTITY
 		e.response.contentType == APPLICATION_JSON.mimeType
-		e.response.data.errors[0] == 'Property [name] of class [class grails.plugin.gson.test.Artist] cannot be null'
+		e.response.data.errors[0] == 'Property [title] of class [class grails.plugin.gson.test.Album] cannot be null'
 	}
 
 	void 'update returns a 422 with details of error for a problem at a nested level in the graph'() {
 		given:
-		def album = fixtureLoader.load('albums').aThingCalledDivineFits
+		def fixture = fixtureLoader.load('albums')
+		def artist = fixture.divineFits
+		def album = fixture.aThingCalledDivineFits
+		println "id is a ${album.id.getClass().simpleName}"
 
 		when:
-		http.put(path: "album/$album.id", body: [artist: [name: null]], requestContentType: JSON)
+		http.put(path: "artist/$artist.id", body: [albums: [[id: album.id, title: null]]], requestContentType: JSON)
 
 		then:
 		def e = thrown(HttpResponseException)
 		e.response.status == SC_UNPROCESSABLE_ENTITY
 		e.response.contentType == APPLICATION_JSON.mimeType
-		e.response.data.errors[0] == 'Property [name] of class [class grails.plugin.gson.test.Artist] cannot be null'
+		e.response.data.errors[0] == 'Property [title] of class [class grails.plugin.gson.test.Album] cannot be null'
 	}
 
 }
