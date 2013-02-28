@@ -122,7 +122,7 @@ The plugin registers a [`JsonDeserializer`][8] that handles conversion of JSON t
 
 If a JSON object contains an `id` property then it will use GORM to retrieve an existing instance, otherwise it creates a new one.
 
-Any other properties of the JSON object are bound to the domain instance. The deserializer respects the [`bindable`][9] constraint so any properties that are blacklisted from binding are ignored.
+The deserializer respects the [`bindable`][9] constraint so any properties that are blacklisted from binding are ignored. Any JSON properties that do not correspond to persistent properties on the domain class are ignored. Any other properties of the JSON object are bound to the domain instance.
 
 ### Deserialization examples
 
@@ -279,6 +279,19 @@ In general it is possible to use the Gson plugn alongside Grails' built in JSON 
 This is only done when you set `parseRequest: true` in _URLMappings_ or use a resource style mapping. See [the Grails documentation on REST services][10] for more information.
 
 The plugin's parsing is compatible with that done by the default JSON handler so you should see no difference in the result.
+
+## Version history
+
+### [1.0.1](https://github.com/robfletcher/grails-gson/issues?milestone=2)
+
+Bugfix release.
+
+* Fixes deserialization of bi-directional relationships so tbat the domain instances can be save successfully.
+* Ignores unknown properties in JSON rather than throwing an exception
+
+### [1.0](https://github.com/robfletcher/grails-gson/issues?milestone=1)
+
+Initial release.
 
 [1]:http://code.google.com/p/google-gson/
 [2]:http://jira.grails.org/browse/GRAILS-9220
