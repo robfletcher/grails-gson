@@ -62,6 +62,11 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 
 	private void bindOwner(value, GrailsDomainClassProperty property, T owner) {
 		if (value == null) return
+
+		if (value instanceof Map) {
+			value = value.values()
+		}
+
 		if (property.manyToOne) {
 			value.each {
 				it[property.name] = owner

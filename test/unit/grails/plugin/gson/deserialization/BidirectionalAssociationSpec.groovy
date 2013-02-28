@@ -7,7 +7,7 @@ import grails.test.mixin.Mock
 import spock.lang.*
 
 @Issue('https://github.com/robfletcher/grails-gson/issues/24')
-@Mock([Album, Artist, Biography, Cover, Genre])
+@Mock([Album, Artist, Biography, Cover, Genre, Musician])
 class BidirectionalAssociationSpec extends Specification {
 
 	Gson gson
@@ -112,38 +112,68 @@ class BidirectionalAssociationSpec extends Specification {
 		}
 	}
 
+	void 'bi-directional associations are populated in both directions when deserializing one-to-many Maps'() {
+		given:
+		def data = [
+				title: 'The Rise and Fall of Ziggy Stardust and the Spiders from Mars',
+				personnel: [
+						vocals: [name: 'David Bowie'],
+						guitar: [name: 'Mick Ronson'],
+						bass: [name: 'Trevor Bolder'],
+						drums: [name: 'Mick Woodmansey']
+				]
+		]
+		def json = gson.toJson(data)
+
+		when:
+		def album = gson.fromJson(json, Album)
+
+		then:
+		album.personnel.values().album.every { it == album }
+	}
+
 }
 
 @Entity
 class Album {
 	String title
-	Cover cover
-	static belongsTo = [artist: Artist]
-	static hasMany = [genres: Genre]
+	Map<String, Musician> personnel
+	Cover cover                         // one-to-one
+	static belongsTo = [artist: Artist] // many-to-one
+	static hasMany = [
+			personnel: Musician,        // one-to-many via Map
+			genres: Genre               // many-to-many
+	]
 }
 
 @Entity
 class Artist {
 	String name
-	static hasMany = [albums: Album]
-	static hasOne = [bio: Biography]
+	static hasMany = [albums: Album]    // one-to-many
+	static hasOne = [bio: Biography]    // one-to-one via hasOne
 }
 
 @Entity
 class Biography {
-	Artist artist
+	Artist artist                       // one-to-one via hasOne
 	String text
 }
 
 @Entity
 class Cover {
 	byte[] image
-	static belongsTo = [album: Album]
+	static belongsTo = [album: Album]   // one-to-one
 }
 
 @Entity
 class Genre {
 	String name
-	static hasMany = [albums: Album]
+	static hasMany = [albums: Album]    // many-to-many
 	static belongsTo = Album
+}
+
+@Entity
+class Musician {
+	String name
+	static belongsTo = [album: Album]   // many-to-one via Map
 }
