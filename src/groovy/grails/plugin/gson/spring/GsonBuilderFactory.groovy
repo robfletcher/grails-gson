@@ -1,7 +1,6 @@
 package grails.plugin.gson.spring
 
 import com.google.gson.*
-import grails.plugin.gson.adapters.*
 import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
@@ -21,6 +20,14 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 	ApplicationContext applicationContext
 	GrailsPluginManager pluginManager
 
+	private final JsonSerializer domainSerializer
+	private final JsonDeserializer domainDeserializer
+
+	GsonBuilderFactory(JsonSerializer domainSerializer, JsonDeserializer domainDeserializer) {
+		this.domainSerializer = domainSerializer
+		this.domainDeserializer = domainDeserializer
+	}
+
 	@Override
 	Class<GsonBuilder> getObjectType() {
 		GsonBuilder
@@ -29,9 +36,6 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 	@Override
 	protected GsonBuilder createInstance() {
 		def builder = new GsonBuilder()
-
-		def domainSerializer = new GrailsDomainSerializer(grailsApplication)
-		def domainDeserializer = new GrailsDomainDeserializer(grailsApplication)
 
 		for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
 			log.debug "registering adapters for $domainClass.name"

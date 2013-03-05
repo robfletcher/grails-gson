@@ -1,7 +1,6 @@
 package grails.plugin.gson.test
 
 import groovyx.net.http.HttpResponseDecorator
-import spock.lang.*
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.SC_OK
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
@@ -145,7 +144,6 @@ class UpdateEntitySpec extends RestEndpointSpec {
 		artist.albums.title == request.albums.title
 	}
 
-	@Ignore
 	void 'update can bind a different instance to a relationship'() {
 		given:
 		def album = fixtureLoader.load('albums').aThingCalledDivineFits
@@ -174,7 +172,6 @@ class UpdateEntitySpec extends RestEndpointSpec {
 		album.artist.name == artist.name
 	}
 
-	@Ignore
 	void 'update can bind a new instance to a relationship'() {
 		given:
 		def album = fixtureLoader.load('albums').aThingCalledDivineFits

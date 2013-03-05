@@ -1,3 +1,5 @@
+import grails.plugin.gson.adapters.GrailsDomainDeserializer
+import grails.plugin.gson.adapters.GrailsDomainSerializer
 import grails.plugin.gson.converters.GsonParsingParameterCreationListener
 import grails.plugin.gson.spring.GsonBuilderFactory
 
@@ -22,12 +24,14 @@ class GsonGrailsPlugin {
     def scm = [url: 'https://github.com/robfletcher/grails-gson']
 
 	def doWithSpring = {
-		gsonBuilder GsonBuilderFactory
+		domainSerializer GrailsDomainSerializer, ref("grailsApplication")
+		domainDeserializer GrailsDomainDeserializer, ref("grailsApplication")
+		gsonBuilder GsonBuilderFactory, domainSerializer, domainDeserializer
 		jsonParsingParameterCreationListener GsonParsingParameterCreationListener, ref('gsonBuilder')
 	}
 
     def doWithDynamicMethods = { ctx ->
-        def enhancer = new grails.plugin.gson.metaclass.ArtefactEnhancer(application, ctx.gsonBuilder)
+        def enhancer = new grails.plugin.gson.metaclass.ArtefactEnhancer(application, ctx.gsonBuilder, ctx.domainDeserializer)
 		enhancer.enhanceRequest()
 		enhancer.enhanceControllers()
 		enhancer.enhanceDomains()

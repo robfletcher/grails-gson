@@ -1,6 +1,5 @@
 package grails.plugin.gson.metaclass
 
-import java.lang.reflect.Type
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
 import grails.plugin.gson.adapters.GrailsDomainDeserializer
@@ -15,10 +14,12 @@ import org.codehaus.groovy.grails.commons.*
 class ArtefactEnhancer {
 
 	private final GrailsApplication grailsApplication
+	private final GrailsDomainDeserializer domainDeserializer
 	private final Gson gson
 
-	ArtefactEnhancer(GrailsApplication grailsApplication, GsonBuilder gsonBuilder) {
+	ArtefactEnhancer(GrailsApplication grailsApplication, GsonBuilder gsonBuilder, GrailsDomainDeserializer domainDeserializer) {
 		this.grailsApplication = grailsApplication
+		this.domainDeserializer = domainDeserializer
 		gson = gsonBuilder.create()
 	}
 
@@ -33,16 +34,10 @@ class ArtefactEnhancer {
 	void enhanceDomains() {
 		grailsApplication.domainClasses.each { GrailsDomainClass domainClass ->
 			domainClass.metaClass.constructor = { JsonObject json ->
-				gson.fromJson(json, delegate)
+				gson.fromJson json, delegate
 			}
 			domainClass.metaClass.setProperties = { JsonObject json ->
-				def deserializer = new GrailsDomainDeserializer(grailsApplication)
-				deserializer.bindJsonToInstance(json, domainClass, delegate, new JsonDeserializationContext() {
-					@Override
-					def <T> T deserialize(JsonElement j, Type typeOfT) {
-						gson.fromJson(j, typeOfT)
-					}
-				})
+				domainDeserializer.bindJsonToInstance json, domainClass, delegate, gson.deserializationContext
 			}
 		}
 	}
@@ -50,7 +45,7 @@ class ArtefactEnhancer {
 	void enhanceRequest() {
 		def requestMetaClass = GroovySystem.metaClassRegistry.getMetaClass(HttpServletRequest)
 		requestMetaClass.getGSON = {->
-			GSON.parse(delegate)
+			GSON.parse delegate
 		}
 	}
 }
