@@ -5,6 +5,7 @@ import com.google.gson.*
 import groovy.transform.TupleConstructor
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
+import org.codehaus.groovy.grails.commons.cfg.GrailsConfig
 
 @TupleConstructor
 @Slf4j
@@ -18,7 +19,8 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 	JsonElement serialize(T instance, Type type, JsonSerializationContext context) {
 		def element = new JsonObject()
 		eachUnvisitedProperty(instance) { GrailsDomainClassProperty property ->
-			element.add property.name, context.serialize(instance[property.name], property.type)
+			def field = instance.getClass().getDeclaredField(property.name)
+			element.add fieldNamingStrategy.translateName(field), context.serialize(instance[property.name], property.type)
 		}
 		element
 	}
@@ -51,5 +53,10 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 		// TODO: may need to cache this
 		grailsApplication.getDomainClass(instance.getClass().name)
 	}
+
+	@Lazy private FieldNamingStrategy fieldNamingStrategy = {
+		def grailsConfig = new GrailsConfig(grailsApplication)
+		grailsConfig.get('grails.converters.gson.fieldNamingPolicy', FieldNamingStrategy) ?: FieldNamingPolicy.IDENTITY
+	}()
 
 }

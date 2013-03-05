@@ -51,13 +51,42 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 			builder.registerTypeAdapterFactory(typeAdapterFactory)
 		}
 
+		applyConfiguration builder
+
+		builder
+	}
+
+	private void applyConfiguration(GsonBuilder builder) {
 		def grailsConfig = new GrailsConfig(grailsApplication)
+
 		def defaultPrettyPrint = grailsConfig.get("grails.converters.default.pretty.print", false)
 		def prettyPrint = grailsConfig.get("grails.converters.json.pretty.print", defaultPrettyPrint)
 		if (prettyPrint) {
 			builder.setPrettyPrinting()
 		}
 
-		builder
+		if (grailsConfig.get('grails.converters.gson.serializeNulls', false)) {
+			builder.serializeNulls()
+		}
+
+		if (grailsConfig.get('grails.converters.gson.complexMapKeySerialization', false)) {
+			builder.enableComplexMapKeySerialization()
+		}
+
+		if (!grailsConfig.get('grails.converters.gson.escapeHtmlChars', true)) {
+			builder.disableHtmlEscaping()
+		}
+
+		if (grailsConfig.get('grails.converters.gson.generateNonExecutableJson', false)) {
+			builder.generateNonExecutableJson()
+		}
+
+		if (grailsConfig.get('grails.converters.gson.serializeSpecialFloatingPointValues', false)) {
+			builder.serializeSpecialFloatingPointValues()
+		}
+
+		builder.longSerializationPolicy = grailsConfig.get('grails.converters.gson.longSerializationPolicy', LongSerializationPolicy) ?: LongSerializationPolicy.DEFAULT
+
+		builder.fieldNamingPolicy = grailsConfig.get('grails.converters.gson.fieldNamingPolicy', FieldNamingStrategy) ?: FieldNamingPolicy.IDENTITY
 	}
 }
