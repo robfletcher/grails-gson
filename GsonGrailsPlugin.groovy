@@ -5,7 +5,7 @@ import grails.plugin.gson.spring.GsonBuilderFactory
 
 class GsonGrailsPlugin {
     
-    def version = '1.0'
+    def version = '1.0.1'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
 	def loadAfter = ['controllers', 'converters']
@@ -24,8 +24,8 @@ class GsonGrailsPlugin {
     def scm = [url: 'https://github.com/robfletcher/grails-gson']
 
 	def doWithSpring = {
-		domainSerializer GrailsDomainSerializer, ref("grailsApplication")
-		domainDeserializer GrailsDomainDeserializer, ref("grailsApplication")
+		domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+		domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 		gsonBuilder GsonBuilderFactory
 		jsonParsingParameterCreationListener GsonParsingParameterCreationListener, ref('gsonBuilder')
 	}
