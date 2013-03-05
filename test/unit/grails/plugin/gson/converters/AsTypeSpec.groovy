@@ -1,6 +1,7 @@
 package grails.plugin.gson.converters
 
 import com.google.gson.GsonBuilder
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
@@ -14,6 +15,8 @@ class AsTypeSpec extends Specification {
 
 	void setupSpec() {
 		defineBeans {
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')
 			}

@@ -2,6 +2,7 @@ package grails.plugin.gson
 
 import com.google.gson.*
 import grails.converters.JSON
+import grails.plugin.gson.adapters.GrailsDomainDeserializer
 import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.test.mixin.*
 import grails.test.mixin.support.GrailsUnitTestMixin
@@ -17,7 +18,8 @@ class DomainConstructorSpec extends Specification {
 
 	void setup() {
 		def gsonBuilder = new GsonBuilder()
-		def enhancer = new ArtefactEnhancer(grailsApplication, gsonBuilder)
+		def domainDeserializer = new GrailsDomainDeserializer()
+		def enhancer = new ArtefactEnhancer(grailsApplication, gsonBuilder, domainDeserializer)
 		enhancer.enhanceDomains()
 	}
 

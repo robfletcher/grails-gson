@@ -1,11 +1,13 @@
 package grails.plugin.gson.spring
 
 import com.google.gson.*
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.plugins.*
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.AbstractFactoryBean
 import org.springframework.context.*
 
@@ -20,13 +22,8 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 	ApplicationContext applicationContext
 	GrailsPluginManager pluginManager
 
-	private final JsonSerializer domainSerializer
-	private final JsonDeserializer domainDeserializer
-
-	GsonBuilderFactory(JsonSerializer domainSerializer, JsonDeserializer domainDeserializer) {
-		this.domainSerializer = domainSerializer
-		this.domainDeserializer = domainDeserializer
-	}
+	@Autowired final GrailsDomainSerializer domainSerializer
+	@Autowired final GrailsDomainDeserializer domainDeserializer
 
 	@Override
 	Class<GsonBuilder> getObjectType() {

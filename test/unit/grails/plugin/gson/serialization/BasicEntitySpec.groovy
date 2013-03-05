@@ -2,10 +2,10 @@ package grails.plugin.gson.serialization
 
 import com.google.gson.*
 import grails.persistence.Entity
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
-import spock.lang.Issue
-import spock.lang.Specification
+import spock.lang.*
 
 @Mock(RockStar)
 class BasicEntitySpec extends Specification {
@@ -14,6 +14,8 @@ class BasicEntitySpec extends Specification {
 
 	void setupSpec() {
 		defineBeans {
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')
 			}

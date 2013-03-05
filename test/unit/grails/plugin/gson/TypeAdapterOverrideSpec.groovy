@@ -4,6 +4,7 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.*
 import grails.persistence.Entity
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import spock.lang.Specification
@@ -16,6 +17,8 @@ class TypeAdapterOverrideSpec extends Specification {
 	void setupSpec() {
 		defineBeans {
 			personTypeAdapterFactory(PersonTypeAdapterFactory)
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')
 			}

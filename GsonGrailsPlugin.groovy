@@ -26,7 +26,7 @@ class GsonGrailsPlugin {
 	def doWithSpring = {
 		domainSerializer GrailsDomainSerializer, ref("grailsApplication")
 		domainDeserializer GrailsDomainDeserializer, ref("grailsApplication")
-		gsonBuilder GsonBuilderFactory, domainSerializer, domainDeserializer
+		gsonBuilder GsonBuilderFactory
 		jsonParsingParameterCreationListener GsonParsingParameterCreationListener, ref('gsonBuilder')
 	}
 

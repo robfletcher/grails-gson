@@ -3,8 +3,9 @@ package grails.plugin.gson.binding
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
 import grails.persistence.Entity
-import grails.plugin.gson.spring.GsonBuilderFactory
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.metaclass.ArtefactEnhancer
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
 import spock.lang.Specification
@@ -16,6 +17,8 @@ class RequestBodySpec extends Specification {
 
 	void setupSpec() {
 		defineBeans {
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')
 			}
@@ -24,7 +27,8 @@ class RequestBodySpec extends Specification {
 
 	void setup() {
 		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
-		def enhancer = new ArtefactEnhancer(grailsApplication, gsonBuilder)
+		def domainDeserializer = applicationContext.getBean('domainDeserializer', GrailsDomainDeserializer)
+		def enhancer = new ArtefactEnhancer(grailsApplication, gsonBuilder, domainDeserializer)
 		enhancer.enhanceDomains()
 		enhancer.enhanceRequest()
     }

@@ -2,9 +2,10 @@ package grails.plugin.gson.binding
 
 import javax.servlet.http.HttpServletResponse
 import com.google.gson.GsonBuilder
-import grails.plugin.gson.spring.GsonBuilderFactory
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.converters.GSON
 import grails.plugin.gson.metaclass.ArtefactEnhancer
+import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.*
 import spock.lang.*
 import spock.util.mop.ConfineMetaClassChanges
@@ -16,6 +17,8 @@ class HttpResponseSpec extends Specification {
 
 	void setupSpec() {
 		defineBeans {
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')
 			}
@@ -24,7 +27,8 @@ class HttpResponseSpec extends Specification {
 
 	void setup() {
 		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
-		new ArtefactEnhancer(grailsApplication, gsonBuilder).enhanceControllers()
+		def domainDeserializer = applicationContext.getBean('domainDeserializer', GrailsDomainDeserializer)
+		new ArtefactEnhancer(grailsApplication, gsonBuilder, domainDeserializer).enhanceControllers()
 
 		// have to do this because GrailsUnitTestMixin is dumb and does not inherit beans from applicationContext to
 		// grailsApplication.mainContext even though in a real app that is exactly what would happen
