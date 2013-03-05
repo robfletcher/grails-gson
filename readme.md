@@ -287,7 +287,7 @@ The plugin's parsing is compatible with that done by the default JSON handler so
 Bugfix release.
 
 * Fixes deserialization of bi-directional relationships so tbat the domain instances can be save successfully.
-* Ignores unknown properties in JSON rather than throwing an exception
+* Ignores unknown properties in JSON rather than throwing an exception (contributed by @gavinhogan).
 
 ### [1.0](https://github.com/robfletcher/grails-gson/issues?milestone=1)
 
