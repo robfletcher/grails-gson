@@ -280,6 +280,16 @@ This is only done when you set `parseRequest: true` in _URLMappings_ or use a re
 
 The plugin's parsing is compatible with that done by the default JSON handler so you should see no difference in the result.
 
+## Configuration
+
+The plugin supports a few configurable options. Where equivalent configuration applies to the standard Grails _JSON_ converter then the same configuration can be used for the _GSON_ converter.
+
+`grails.converters.default.pretty.print`
+: if set to `true` this will cause serialization to output pretty-printed JSON unless `grails.converters.json.pretty.print` is set to `false`.
+
+`grails.converters.json.pretty.print`
+: if set to `true` this will cause serialization to output pretty-printed JSON
+
 ## Version history
 
 ### [1.0.1](https://github.com/robfletcher/grails-gson/issues?milestone=2)

@@ -5,6 +5,7 @@ import grails.plugin.gson.adapters.*
 import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
+import org.codehaus.groovy.grails.commons.cfg.GrailsConfig
 import org.codehaus.groovy.grails.plugins.*
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,8 +23,10 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 	ApplicationContext applicationContext
 	GrailsPluginManager pluginManager
 
-	@Autowired final GrailsDomainSerializer domainSerializer
-	@Autowired final GrailsDomainDeserializer domainDeserializer
+	@Autowired
+	final GrailsDomainSerializer domainSerializer
+	@Autowired
+	final GrailsDomainDeserializer domainDeserializer
 
 	@Override
 	Class<GsonBuilder> getObjectType() {
@@ -46,6 +49,13 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 
 		for (typeAdapterFactory in applicationContext.getBeansOfType(TypeAdapterFactory).values()) {
 			builder.registerTypeAdapterFactory(typeAdapterFactory)
+		}
+
+		def grailsConfig = new GrailsConfig(grailsApplication)
+		def defaultPrettyPrint = grailsConfig.get("grails.converters.default.pretty.print", false)
+		def prettyPrint = grailsConfig.get("grails.converters.json.pretty.print", defaultPrettyPrint)
+		if (prettyPrint) {
+			builder.setPrettyPrinting()
 		}
 
 		builder
