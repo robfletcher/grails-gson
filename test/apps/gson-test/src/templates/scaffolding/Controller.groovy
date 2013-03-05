@@ -1,6 +1,7 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 import static grails.plugin.gson.http.HttpConstants.*
 
 class ${className}Controller {
@@ -88,6 +89,7 @@ class ${className}Controller {
 
 	private void respondCreated(${className} ${propertyName}) {
 		response.status = SC_CREATED
+		response.addHeader LOCATION, createLink(action: 'show', id: ${propertyName}.id)
 		render ${propertyName} as GSON
 	}
 

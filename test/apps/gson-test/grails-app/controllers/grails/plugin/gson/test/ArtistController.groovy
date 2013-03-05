@@ -3,6 +3,7 @@ package grails.plugin.gson.test
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 import static grails.plugin.gson.http.HttpConstants.*
 
 class ArtistController {
@@ -90,6 +91,7 @@ class ArtistController {
 
 	private void respondCreated(Artist artistInstance) {
 		response.status = SC_CREATED
+		response.addHeader LOCATION, createLink(action: 'show', id: artistInstance.id)
 		render artistInstance as GSON
 	}
 

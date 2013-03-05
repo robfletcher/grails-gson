@@ -3,6 +3,7 @@ package grails.plugin.gson.test
 import grails.plugin.gson.converters.GSON
 import org.springframework.dao.DataIntegrityViolationException
 import static javax.servlet.http.HttpServletResponse.*
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 import static grails.plugin.gson.http.HttpConstants.*
 
 class PublicationController {
@@ -90,6 +91,7 @@ class PublicationController {
 
 	private void respondCreated(Publication publicationInstance) {
 		response.status = SC_CREATED
+		response.addHeader LOCATION, createLink(action: 'show', id: publicationInstance.id)
 		render publicationInstance as GSON
 	}
 

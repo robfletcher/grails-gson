@@ -6,6 +6,7 @@ import spock.lang.Issue
 import static groovyx.net.http.ContentType.JSON
 import static javax.servlet.http.HttpServletResponse.SC_CREATED
 import static org.apache.http.entity.ContentType.APPLICATION_JSON
+import static org.codehaus.groovy.grails.web.servlet.HttpHeaders.*
 
 class CreateEntitySpec extends RestEndpointSpec {
 
@@ -38,6 +39,7 @@ class CreateEntitySpec extends RestEndpointSpec {
 
 		then:
 		response.status == SC_CREATED
+		response.getFirstHeader(LOCATION).value == "/album/$response.data.id"
 		response.contentType == APPLICATION_JSON.mimeType
 		response.data.title == request.title
 		response.data.artist.id == artist.id
@@ -76,6 +78,7 @@ class CreateEntitySpec extends RestEndpointSpec {
 
 		then:
 		response.status == SC_CREATED
+		response.getFirstHeader(LOCATION).value == "/album/$response.data.id"
 		response.contentType == APPLICATION_JSON.mimeType
 		response.data.title == request.title
 		response.data.artist.name == request.artist.name
@@ -128,6 +131,7 @@ class CreateEntitySpec extends RestEndpointSpec {
 
 		then:
 		response.status == SC_CREATED
+		response.getFirstHeader(LOCATION).value == "/artist/$response.data.id"
 		response.contentType == APPLICATION_JSON.mimeType
 		response.data.name == request.name
 		response.data.albums.size() == 2
