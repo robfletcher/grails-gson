@@ -1,10 +1,9 @@
 package grails.plugin.gson.metaclass
 
-import java.util.Map.Entry
+import java.lang.reflect.Type
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
-import com.google.gson.reflect.TypeToken
-import grails.plugin.gson.adapters.DomainClassPropertyParameterizedType
+import grails.plugin.gson.adapters.GrailsDomainDeserializer
 import grails.plugin.gson.converters.GSON
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
@@ -37,12 +36,13 @@ class ArtefactEnhancer {
 				gson.fromJson(json, delegate)
 			}
 			domainClass.metaClass.setProperties = { JsonObject json ->
-				for (Entry<String, JsonElement> entry in json.entrySet()) {
-					def persistentProperty = domainClass.getPersistentProperty(entry.key)
-					def type = DomainClassPropertyParameterizedType.forProperty(persistentProperty)
-					def adapter = gson.getAdapter(TypeToken.get(type))
-					delegate[entry.key] = adapter.fromJsonTree(entry.value)
-				}
+				def deserializer = new GrailsDomainDeserializer(grailsApplication)
+				deserializer.bindJsonToInstance(json, domainClass, delegate, new JsonDeserializationContext() {
+					@Override
+					def <T> T deserialize(JsonElement j, Type typeOfT) {
+						gson.fromJson(j, typeOfT)
+					}
+				})
 			}
 		}
 	}

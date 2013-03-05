@@ -34,7 +34,7 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 		}
 	}
 
-	private void bindJsonToInstance(JsonObject jsonObject, GrailsDomainClass domainClass, T instance, context) {
+	void bindJsonToInstance(JsonObject jsonObject, GrailsDomainClass domainClass, T instance, context) {
 		def jsonEntries = jsonObject.entrySet().findAll { property ->
 			if (property.key == domainClass.identifier.name || domainClass.hasPersistentProperty(property.key)) {
 				true
