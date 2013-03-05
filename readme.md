@@ -290,6 +290,27 @@ The plugin supports a few configurable options. Where equivalent configuration a
 `grails.converters.json.pretty.print`
 : if set to `true` this will cause serialization to output pretty-printed JSON
 
+`grails.converters.gson.serializeNulls`
+: if `true` then `null` properties are included in serialized JSON, otherwise they are omitted. Defaults to `false`. See [`GsonBuilder.serializeNulls`][13]
+
+`grails.converters.gson.complexMapKeySerialization`
+: if `true` then object map keys are serialized as JSON objects, otherwise their `toString` method is used. Defaults to `false`. See [`GsonBuilder.enableComplexMapKeySerialization`][14]
+
+`grails.converters.gson.escapeHtmlChars`
+: if `true` then HTML characters are escaped in serialized output. Defaults to `true`. See [`GsonBuilder.disableHtmlEscaping`][15]
+
+`grails.converters.gson.generateNonExecutableJson`
+: if `true` then serialized output is prepended with an escape string to prevent execution as JavaScript. Defaults to `false`. See [`GsonBuilder.generateNonExecutableJson`][16]
+
+`grails.converters.gson.serializeSpecialFloatingPointValues`
+: if `true` then serialization will not throw an exception if it encounters a _special_ long value such as _NaN_. Defaults to `false`. See [`GsonBuilder.serializeSpecialFloatingPointValues`][17]
+
+`grails.converters.gson.longSerializationPolicy`
+: specifies how long values are serialized. Defaults to [`LongSerializationPolicy.DEFAULT`][20]. See [`GsonBuilder.setLongSerializationPolicy`][18]
+
+`grails.converters.gson.fieldNamingPolicy`
+: specifies how field names are serialized. Defaults to [`FieldNamingPolicy.IDENTITY`][21]. See [`GsonBuilder.setFieldNamingStrategy`][19]
+
 ## Version history
 
 ### [1.0.1](https://github.com/robfletcher/grails-gson/issues?milestone=2)
@@ -315,3 +336,12 @@ Initial release.
 [10]:http://grails.org/doc/latest/guide/webServices.html#REST
 [11]:https://sites.google.com/site/gson/gson-user-guide#TOC-Custom-Serialization-and-Deserialization
 [12]:https://github.com/gavinhogan
+[13]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#serializeNulls()
+[14]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#enableComplexMapKeySerialization()
+[15]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#disableHtmlEscaping()
+[16]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#generateNonExecutableJson()
+[17]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#serializeSpecialFloatingPointValues()
+[18]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setLongSerializationPolicy(com.google.gson.LongSerializationPolicy)
+[19]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setFieldNamingStrategy(com.google.gson.FieldNamingStrategy)
+[20]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/LongSerializationPolicy.html#DEFAULT
+[21]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/FieldNamingPolicy.html#IDENTITY
