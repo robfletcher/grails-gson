@@ -1,11 +1,14 @@
 package grails.plugin.gson.configuration
 
+import java.text.*
 import com.google.gson.*
 import grails.persistence.Entity
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import spock.lang.*
+import static java.text.DateFormat.*
+import static java.util.Locale.US
 
 @Unroll
 @Mock(Person)
@@ -29,7 +32,7 @@ class GsonConfigurationSpec extends Specification {
 		}
 	}
 
-	void 'output is #outputStyle when grails.converters.default.pretty.print is #defaultConfig and grails.converters.gson.pretty.print is #gsonConverterConfig'() {
+	void 'output is #outputStyle when grails.converters.default.pretty.print is #defaultConfig and pretty.print is #gsonConverterConfig'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.default.pretty.print = defaultConfig
@@ -54,7 +57,7 @@ class GsonConfigurationSpec extends Specification {
 		outputStyle = prettyPrinted ? 'pretty printed' : 'not pretty printed'
 	}
 
-	void 'null properties are #outputStyle when grails.converters.gson.serializeNulls is #configValue'() {
+	void 'null properties are #outputStyle when serializeNulls is #configValue'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.gson.serializeNulls = configValue
@@ -78,7 +81,7 @@ class GsonConfigurationSpec extends Specification {
 		outputStyle = nullsOutput ? 'output' : 'not output'
 	}
 
-	void 'complex map keys are serialized as a #outputStyle when grails.converters.gson.complexMapKeySerialization is #configValue'() {
+	void 'complex map keys are serialized as a #outputStyle when complexMapKeySerialization is #configValue'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.gson.complexMapKeySerialization = configValue
@@ -102,7 +105,7 @@ class GsonConfigurationSpec extends Specification {
 		outputStyle = complexKeys ? 'JSON object' : 'string'
 	}
 
-	void 'HTML characters are serialized #outputStyle when grails.converters.gson.escapeHtmlChars is #configValue'() {
+	void 'HTML characters are serialized #outputStyle when escapeHtmlChars is #configValue'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.gson.escapeHtmlChars = configValue
@@ -126,7 +129,7 @@ class GsonConfigurationSpec extends Specification {
 		outputStyle = htmlEscaped ? 'escaped' : 'unescaped'
 	}
 
-	void 'serialization output is #outputStyle when grails.converters.gson.generateNonExecutableJson is #configValue'() {
+	void 'serialization output is #outputStyle when generateNonExecutableJson is #configValue'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.gson.generateNonExecutableJson = configValue
@@ -192,7 +195,7 @@ class GsonConfigurationSpec extends Specification {
 		configValue = true
 	}
 
-	void 'long values are serialized as a #outputStyle when grails.converters.gson.longSerializationPolicy is #configValue'() {
+	void 'long values are serialized as a #outputStyle when longSerializationPolicy is #configValue'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.gson.longSerializationPolicy = configValue
@@ -222,7 +225,7 @@ class GsonConfigurationSpec extends Specification {
 	void 'field naming policy is configurable'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.fieldNamingPolicy = fieldNamingPolicy
+			config.grails.converters.gson.fieldNamingPolicy = configValue
 			configChanged()
 		}
 
@@ -234,10 +237,37 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson(new Person(name: 'Rob')) == expectedOutput
 
 		where:
-		fieldNamingPolicy                  | expectedOutput
+		configValue                        | expectedOutput
 		null                               | '{"name":"Rob"}'
 		FieldNamingPolicy.IDENTITY         | '{"name":"Rob"}'
 		FieldNamingPolicy.UPPER_CAMEL_CASE | '{"Name":"Rob"}'
+	}
+
+	void 'date value is output as #expectedOutput when datePattern is #datePatternConfigValue, dateStyle is #dateStyleConfigValue and timeStyle is #timeStyleConfigValue'() {
+		given:
+		grailsApplication.with {
+			config.grails.converters.gson.datePattern = datePatternConfigValue
+			config.grails.converters.gson.dateStyle = dateStyleConfigValue
+			config.grails.converters.gson.timeStyle = timeStyleConfigValue
+			configChanged()
+		}
+
+		and:
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		def gson = gsonBuilder.create()
+
+		expect:
+		gson.toJson(value) == expectedOutput
+
+		where:
+		datePatternConfigValue | dateStyleConfigValue | timeStyleConfigValue | expectedOutputFormat
+		null                   | null                 | null                 | DateFormat.getDateTimeInstance(DEFAULT, DEFAULT, US)
+		null                   | SHORT                | null                 | DateFormat.getDateTimeInstance(DEFAULT, DEFAULT, US)
+		null                   | LONG                 | SHORT                | DateFormat.getDateTimeInstance(LONG, SHORT, US)
+		'yyyy-MM-dd HH:mm:ss'  | null                 | null                 | new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+
+		value = new Date()
+		expectedOutput = "\"${expectedOutputFormat.format(value)}\""
 	}
 
 }

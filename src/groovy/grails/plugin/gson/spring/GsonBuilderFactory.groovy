@@ -1,5 +1,6 @@
 package grails.plugin.gson.spring
 
+import java.text.DateFormat
 import com.google.gson.*
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
@@ -88,5 +89,14 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 		builder.longSerializationPolicy = grailsConfig.get('grails.converters.gson.longSerializationPolicy', LongSerializationPolicy) ?: LongSerializationPolicy.DEFAULT
 
 		builder.fieldNamingPolicy = grailsConfig.get('grails.converters.gson.fieldNamingPolicy', FieldNamingStrategy) ?: FieldNamingPolicy.IDENTITY
+
+		def datePattern = grailsConfig.get('grails.converters.gson.datePattern', String)
+		int dateStyle = grailsConfig.get('grails.converters.gson.dateStyle', DateFormat.DEFAULT)
+		int timeStyle = grailsConfig.get('grails.converters.gson.timeStyle', DateFormat.DEFAULT)
+		if (datePattern) {
+			builder.setDateFormat(datePattern)
+		} else {
+			builder.setDateFormat(dateStyle, timeStyle)
+		}
 	}
 }
