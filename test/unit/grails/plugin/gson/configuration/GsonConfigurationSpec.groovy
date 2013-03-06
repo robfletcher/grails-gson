@@ -33,7 +33,7 @@ class GsonConfigurationSpec extends Specification {
 		given:
 		grailsApplication.with {
 			config.grails.converters.default.pretty.print = defaultConfig
-			config.grails.converters.json.pretty.print = jsonConverterConfig
+			config.grails.converters.gson.pretty.print = gsonConverterConfig
 			configChanged()
 		}
 
@@ -45,7 +45,7 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson(new Person(name: 'Rob')) == expectedOutput
 
 		where:
-		defaultConfig | jsonConverterConfig || expectedOutput
+		defaultConfig | gsonConverterConfig || expectedOutput
 		null          | null                || '{"name":"Rob"}'
 		true          | null                || '{\n  "name": "Rob"\n}'
 		false         | true                || '{\n  "name": "Rob"\n}'

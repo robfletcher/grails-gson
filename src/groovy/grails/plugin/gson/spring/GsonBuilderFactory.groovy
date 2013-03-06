@@ -60,7 +60,7 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 		def grailsConfig = new GrailsConfig(grailsApplication)
 
 		def defaultPrettyPrint = grailsConfig.get("grails.converters.default.pretty.print", false)
-		def prettyPrint = grailsConfig.get("grails.converters.json.pretty.print", defaultPrettyPrint)
+		def prettyPrint = grailsConfig.get("grails.converters.gson.pretty.print", defaultPrettyPrint)
 		if (prettyPrint) {
 			builder.setPrettyPrinting()
 		}
