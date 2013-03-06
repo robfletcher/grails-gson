@@ -29,7 +29,7 @@ class GsonConfigurationSpec extends Specification {
 		}
 	}
 
-	void 'pretty print is configurable'() {
+	void 'output is #outputStyle when grails.converters.default.pretty.print is #defaultConfig and grails.converters.gson.pretty.print is #gsonConverterConfig'() {
 		given:
 		grailsApplication.with {
 			config.grails.converters.default.pretty.print = defaultConfig
@@ -45,16 +45,19 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson(new Person(name: 'Rob')) == expectedOutput
 
 		where:
-		defaultConfig | gsonConverterConfig || expectedOutput
-		null          | null                || '{"name":"Rob"}'
-		true          | null                || '{\n  "name": "Rob"\n}'
-		false         | true                || '{\n  "name": "Rob"\n}'
+		defaultConfig | gsonConverterConfig | prettyPrinted
+		null          | null                | false
+		true          | null                | true
+		false         | true                | true
+
+		expectedOutput = prettyPrinted ? '{\n  "name": "Rob"\n}' : '{"name":"Rob"}'
+		outputStyle = prettyPrinted ? 'pretty printed' : 'not pretty printed'
 	}
 
-	void 'null serialization is configurable'() {
+	void 'null properties are #outputStyle when grails.converters.gson.serializeNulls is #configValue'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.serializeNulls = serializeNulls
+			config.grails.converters.gson.serializeNulls = configValue
 			configChanged()
 		}
 
@@ -66,16 +69,19 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson(new Person(name: null)) == expectedOutput
 
 		where:
-		serializeNulls || expectedOutput
-		null           || '{}'
-		false          || '{}'
-		true           || '{"id":null,"name":null}'
+		configValue | nullsOutput
+		false       | false
+		null        | false
+		true        | true
+
+		expectedOutput = nullsOutput ? '{"id":null,"name":null}' : '{}'
+		outputStyle = nullsOutput ? 'output' : 'not output'
 	}
 
-	void 'complex map key serialization is configurable'() {
+	void 'complex map keys are serialized as a #outputStyle when grails.converters.gson.complexMapKeySerialization is #configValue'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.complexMapKeySerialization = complexMapKeySerialization
+			config.grails.converters.gson.complexMapKeySerialization = configValue
 			configChanged()
 		}
 
@@ -87,16 +93,19 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson([(new Person(name: 'Rob')): 'Developer']) == expectedOutput
 
 		where:
-		complexMapKeySerialization || expectedOutput
-		null                       || '{"Rob":"Developer"}'
-		false                      || '{"Rob":"Developer"}'
-		true                       || '[[{"name":"Rob"},"Developer"]]'
+		configValue | complexKeys
+		null        | false
+		false       | false
+		true        | true
+
+		expectedOutput = complexKeys ? '[[{"name":"Rob"},"Developer"]]' : '{"Rob":"Developer"}'
+		outputStyle = complexKeys ? 'JSON object' : 'string'
 	}
 
-	void 'HTML escaping is configurable'() {
+	void 'HTML characters are serialized #outputStyle when grails.converters.gson.escapeHtmlChars is #configValue'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.escapeHtmlChars = escapeHtmlChars
+			config.grails.converters.gson.escapeHtmlChars = configValue
 			configChanged()
 		}
 
@@ -108,16 +117,19 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson('<div class="foo">foo</div>') == expectedOutput
 
 		where:
-		escapeHtmlChars || expectedOutput
-		null            || '"\\u003cdiv class\\u003d\\"foo\\"\\u003efoo\\u003c/div\\u003e"'
-		true            || '"\\u003cdiv class\\u003d\\"foo\\"\\u003efoo\\u003c/div\\u003e"'
-		false           || '"<div class=\\"foo\\">foo</div>"'
+		configValue | htmlEscaped
+		null        | true
+		true        | true
+		false       | false
+
+		expectedOutput = htmlEscaped ? '"\\u003cdiv class\\u003d\\"foo\\"\\u003efoo\\u003c/div\\u003e"' : '"<div class=\\"foo\\">foo</div>"'
+		outputStyle = htmlEscaped ? 'escaped' : 'unescaped'
 	}
 
-	void 'non-executable output is configurable'() {
+	void 'serialization output is #outputStyle when grails.converters.gson.generateNonExecutableJson is #configValue'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.generateNonExecutableJson = generateNonExecutableJson
+			config.grails.converters.gson.generateNonExecutableJson = configValue
 			configChanged()
 		}
 
@@ -129,16 +141,19 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson('foo') == expectedOutput
 
 		where:
-		generateNonExecutableJson || expectedOutput
-		null                      || '"foo"'
-		false                     || '"foo"'
-		true                      || ')]}\'\n"foo"'
+		configValue | outputPrefixed
+		null        | false
+		false       | false
+		true        | true
+
+		expectedOutput = outputPrefixed ? ')]}\'\n"foo"' : '"foo"'
+		outputStyle = outputPrefixed ? 'prefixed' : 'not prefixed'
 	}
 
 	void 'special floating point values cause exceptions if configuration says they should not be handled'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.serializeSpecialFloatingPointValues = serializeSpecialFloatingPointValues
+			config.grails.converters.gson.serializeSpecialFloatingPointValues = configValue
 			configChanged()
 		}
 
@@ -153,13 +168,13 @@ class GsonConfigurationSpec extends Specification {
 		thrown(IllegalArgumentException)
 
 		where:
-		serializeSpecialFloatingPointValues << [null, false]
+		configValue << [null, false]
 	}
 
 	void 'special floating point values do not cause exceptions if configuration says they should be handled'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.serializeSpecialFloatingPointValues = serializeSpecialFloatingPointValues
+			config.grails.converters.gson.serializeSpecialFloatingPointValues = configValue
 			configChanged()
 		}
 
@@ -174,13 +189,13 @@ class GsonConfigurationSpec extends Specification {
 		notThrown(IllegalArgumentException)
 
 		where:
-		serializeSpecialFloatingPointValues = true
+		configValue = true
 	}
 
-	void 'long serialization policy is configurable'() {
+	void 'long values are serialized as a #outputStyle when grails.converters.gson.longSerializationPolicy is #configValue'() {
 		given:
 		grailsApplication.with {
-			config.grails.converters.gson.longSerializationPolicy = longSerializationPolicy
+			config.grails.converters.gson.longSerializationPolicy = configValue
 			configChanged()
 		}
 
@@ -195,10 +210,13 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson(person) == expectedOutput
 
 		where:
-		longSerializationPolicy         || expectedOutput
-		null                            || '{"id":1,"name":"Rob"}'
-		LongSerializationPolicy.DEFAULT || '{"id":1,"name":"Rob"}'
-		LongSerializationPolicy.STRING  || '{"id":"1","name":"Rob"}'
+		configValue                     | numeric
+		null                            | true
+		LongSerializationPolicy.DEFAULT | true
+		LongSerializationPolicy.STRING  | false
+
+		outputStyle = numeric ? 'number' : 'string'
+		expectedOutput = numeric ? '{"id":1,"name":"Rob"}' : '{"id":"1","name":"Rob"}'
 	}
 
 	void 'field naming policy is configurable'() {
@@ -216,10 +234,10 @@ class GsonConfigurationSpec extends Specification {
 		gson.toJson(new Person(name: 'Rob')) == expectedOutput
 
 		where:
-		fieldNamingPolicy                  || expectedOutput
-		null                               || '{"name":"Rob"}'
-		FieldNamingPolicy.IDENTITY         || '{"name":"Rob"}'
-		FieldNamingPolicy.UPPER_CAMEL_CASE || '{"Name":"Rob"}'
+		fieldNamingPolicy                  | expectedOutput
+		null                               | '{"name":"Rob"}'
+		FieldNamingPolicy.IDENTITY         | '{"name":"Rob"}'
+		FieldNamingPolicy.UPPER_CAMEL_CASE | '{"Name":"Rob"}'
 	}
 
 }
