@@ -284,32 +284,21 @@ The plugin's parsing is compatible with that done by the default JSON handler so
 
 The plugin supports a few configurable options. Where equivalent configuration applies to the standard Grails _JSON_ converter then the same configuration can be used for the _GSON_ converter.
 
-`grails.converters.default.pretty.print`
-: if set to `true` this will cause serialization to output pretty-printed JSON unless `grails.converters.json.pretty.print` is set to `false`.
+* **`grails.converters.json.pretty.print`** if set to `true` then serialization will output pretty-printed JSON. Defaults to `grails.converters.default.pretty.print` or `false`. See [GsonBuilder.setPrettyPrinting][22]
 
-`grails.converters.json.pretty.print`
-: if set to `true` this will cause serialization to output pretty-printed JSON
+* **`grails.converters.gson.serializeNulls`** if set to `true` then `null` properties are included in serialized JSON, otherwise they are omitted. Defaults to `false`. See [`GsonBuilder.serializeNulls`][13]
 
-`grails.converters.gson.serializeNulls`
-: if `true` then `null` properties are included in serialized JSON, otherwise they are omitted. Defaults to `false`. See [`GsonBuilder.serializeNulls`][13]
+* **`grails.converters.gson.complexMapKeySerialization`** if set to `true` then object map keys are serialized as JSON objects, otherwise their `toString` method is used. Defaults to `false`. See [`GsonBuilder.enableComplexMapKeySerialization`][14]
 
-`grails.converters.gson.complexMapKeySerialization`
-: if `true` then object map keys are serialized as JSON objects, otherwise their `toString` method is used. Defaults to `false`. See [`GsonBuilder.enableComplexMapKeySerialization`][14]
+* **`grails.converters.gson.escapeHtmlChars`** if set to `true` then HTML characters are escaped in serialized output. Defaults to `true`. See [`GsonBuilder.disableHtmlEscaping`][15]
 
-`grails.converters.gson.escapeHtmlChars`
-: if `true` then HTML characters are escaped in serialized output. Defaults to `true`. See [`GsonBuilder.disableHtmlEscaping`][15]
+* **`grails.converters.gson.generateNonExecutableJson`** if set to `true` then serialized output is prepended with an escape string to prevent execution as JavaScript. Defaults to `false`. See [`GsonBuilder.generateNonExecutableJson`][16]
 
-`grails.converters.gson.generateNonExecutableJson`
-: if `true` then serialized output is prepended with an escape string to prevent execution as JavaScript. Defaults to `false`. See [`GsonBuilder.generateNonExecutableJson`][16]
+* **`grails.converters.gson.serializeSpecialFloatingPointValues`** if set to `true` then serialization will not throw an exception if it encounters a _special_ long value such as _NaN_. Defaults to `false`. See [`GsonBuilder.serializeSpecialFloatingPointValues`][17]
 
-`grails.converters.gson.serializeSpecialFloatingPointValues`
-: if `true` then serialization will not throw an exception if it encounters a _special_ long value such as _NaN_. Defaults to `false`. See [`GsonBuilder.serializeSpecialFloatingPointValues`][17]
+* **`grails.converters.gson.longSerializationPolicy`** specifies how long values are serialized. Defaults to [`LongSerializationPolicy.DEFAULT`][20]. See [`GsonBuilder.setLongSerializationPolicy`][18]
 
-`grails.converters.gson.longSerializationPolicy`
-: specifies how long values are serialized. Defaults to [`LongSerializationPolicy.DEFAULT`][20]. See [`GsonBuilder.setLongSerializationPolicy`][18]
-
-`grails.converters.gson.fieldNamingPolicy`
-: specifies how field names are serialized. Defaults to [`FieldNamingPolicy.IDENTITY`][21]. See [`GsonBuilder.setFieldNamingStrategy`][19]
+* **`grails.converters.gson.fieldNamingPolicy`** specifies how field names are serialized. Defaults to [`FieldNamingPolicy.IDENTITY`][21]. See [`GsonBuilder.setFieldNamingStrategy`][19]
 
 ## Version history
 
@@ -345,3 +334,4 @@ Initial release.
 [19]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setFieldNamingStrategy(com.google.gson.FieldNamingStrategy)
 [20]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/LongSerializationPolicy.html#DEFAULT
 [21]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/FieldNamingPolicy.html#IDENTITY
+[22]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setPrettyPrinting()
