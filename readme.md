@@ -73,9 +73,11 @@ class PersonController {
 
 ## Serialization
 
-The plugin will automatically resolve any _Hibernate_ proxies it encounters when serializing an object graph to JSON.
+By default the plugin will automatically resolve any _Hibernate_ proxies it encounters when serializing an object graph to JSON. If this is not what you want then set `grails.converters.gson.resolveProxies` to `false` in your _Config.groovy_.
 
-If an object graph contains bi-directional relationships they will only be traversed once but in either direction. For example if you have the following domain classes:
+If an object graph contains bi-directional relationships they will only be traversed once (but in either direction).
+
+For example if you have the following domain classes:
 
 ``` groovy
 class Artist {
@@ -283,6 +285,8 @@ The plugin's parsing is compatible with that done by the default JSON handler so
 ## Configuration
 
 The plugin supports a few configurable options. Where equivalent configuration applies to the standard Grails _JSON_ converter then the same configuration can be used for the _GSON_ converter.
+
+* **`grails.converters.json.resolveProxies`** if set to `true` then any Hibernate proxies are initialized when serializing entities to JSON. Defaults to `true`. If set to `false` any _n-to-one_ proxies are serialized as just their identifier and any _n-to-many_ proxies are omitted altogether.
 
 * **`grails.converters.json.pretty.print`** if set to `true` then serialization will output pretty-printed JSON. Defaults to `grails.converters.default.pretty.print` or `false`. See [GsonBuilder.setPrettyPrinting][22].
 
