@@ -8,14 +8,13 @@ import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.commons.cfg.GrailsConfig
 import org.codehaus.groovy.grails.support.proxy.EntityProxyHandler
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler
 
 @TupleConstructor
 @Slf4j
 class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	final GrailsApplication grailsApplication
-	final ProxyHandler proxyHandler
+	final EntityProxyHandler proxyHandler
 
 	private final Stack<GrailsDomainClassProperty> circularityStack = new Stack<GrailsDomainClassProperty>()
 
@@ -25,20 +24,21 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 		eachUnvisitedProperty(instance) { GrailsDomainClassProperty property ->
 			def field = instance.getClass().getDeclaredField(property.name)
 			def value = PropertyUtils.getProperty(instance, property.name)
+			def elementName = fieldNamingStrategy.translateName(field)
 			if (!proxyHandler.isInitialized(instance, property.name)) {
-				if (config.get('grails.converters.gson.resolveProxies', true)) {
+				if (shouldResolveProxy()) {
 					log.debug "unwrapping proxy for $property.domainClass.shortName.$property.name"
 					value = proxyHandler.unwrapIfProxy(value)
-					element.add fieldNamingStrategy.translateName(field), context.serialize(value, property.type)
+					element.add elementName, context.serialize(value, property.type)
 				} else if (property.oneToMany || property.manyToMany) {
 					log.debug "skipping proxied collection $property.domainClass.shortName.$property.name"
 				} else {
 					log.debug "not unwrapping proxy for $property.domainClass.shortName.$property.name"
 					value = [id: proxyHandler.getProxyIdentifier(value)]
-					element.add fieldNamingStrategy.translateName(field), context.serialize(value, Map)
+					element.add elementName, context.serialize(value, Map)
 				}
 			} else {
-				element.add fieldNamingStrategy.translateName(field), context.serialize(value, property.type)
+				element.add elementName, context.serialize(value, property.type)
 			}
 		}
 		element
@@ -77,6 +77,10 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 		def grailsConfig = new GrailsConfig(grailsApplication)
 		grailsConfig.get('grails.converters.gson.fieldNamingPolicy', FieldNamingStrategy) ?: FieldNamingPolicy.IDENTITY
 	}()
+
+	private boolean shouldResolveProxy() {
+		config.get('grails.converters.gson.resolveProxies', true)
+	}
 
 	private GrailsConfig getConfig() {
 		new GrailsConfig(grailsApplication)
