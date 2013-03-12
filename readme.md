@@ -12,7 +12,7 @@ There is a [JIRA][2] open for this issue but since it's easy to provide an alter
 
 ## Installation
 
-Add `compile ':gson:1.0'` to `grails-app/conf/BuildConfig.groovy`.
+Add `compile ':gson:1.0.1'` to `grails-app/conf/BuildConfig.groovy`.
 
 ## Usage
 
@@ -21,7 +21,7 @@ Add `compile ':gson:1.0'` to `grails-app/conf/BuildConfig.groovy`.
 The plugin provides a Grails converter implementation so that you can replace usage of the existing `grails.converters.JSON` class with `grails.plugin.gson.GSON`. For example:
 
 ``` groovy
-import grails.plugin.gson.GSON
+import grails.plugin.gson.converters.GSON
 
 class PersonController {
 	def list() {
