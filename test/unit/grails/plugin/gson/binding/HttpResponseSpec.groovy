@@ -6,6 +6,7 @@ import grails.plugin.gson.adapters.*
 import grails.plugin.gson.converters.GSON
 import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.plugin.gson.spring.GsonBuilderFactory
+import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.*
 import spock.lang.*
 import spock.util.mop.ConfineMetaClassChanges
@@ -17,7 +18,8 @@ class HttpResponseSpec extends Specification {
 
 	void setupSpec() {
 		defineBeans {
-			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			proxyHandler DefaultEntityProxyHandler
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
 			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')

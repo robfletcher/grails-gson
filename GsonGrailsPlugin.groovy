@@ -24,7 +24,7 @@ class GsonGrailsPlugin {
     def scm = [url: 'https://github.com/robfletcher/grails-gson']
 
 	def doWithSpring = {
-		domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+		domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
 		domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 		gsonBuilder GsonBuilderFactory
 		jsonParsingParameterCreationListener GsonParsingParameterCreationListener, ref('gsonBuilder')

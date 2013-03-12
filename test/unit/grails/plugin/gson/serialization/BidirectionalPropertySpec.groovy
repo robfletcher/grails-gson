@@ -4,6 +4,7 @@ import com.google.gson.*
 import grails.persistence.Entity
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
+import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.Mock
 import spock.lang.*
 
@@ -17,7 +18,8 @@ class BidirectionalPropertySpec extends Specification {
 
 	void setupSpec() {
 		defineBeans {
-			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			proxyHandler DefaultEntityProxyHandler
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
 			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')

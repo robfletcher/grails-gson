@@ -6,6 +6,7 @@ import com.google.gson.stream.*
 import grails.persistence.Entity
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
+import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.Mock
 import groovy.transform.TupleConstructor
 import org.joda.time.LocalDateTime
@@ -21,7 +22,8 @@ class NonStandardPropertyTypeSpec extends Specification {
 	void setupSpec() {
 		defineBeans {
 			localDateTimeAdapterFactory(LocalDateTimeAdapterFactory, formatter)
-			domainSerializer GrailsDomainSerializer, ref('grailsApplication')
+			proxyHandler DefaultEntityProxyHandler
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
 			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 			gsonBuilder(GsonBuilderFactory) {
 				pluginManager = ref('pluginManager')
