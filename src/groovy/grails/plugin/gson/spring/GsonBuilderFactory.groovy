@@ -3,7 +3,6 @@ package grails.plugin.gson.spring
 import java.text.DateFormat
 import com.google.gson.*
 import grails.plugin.gson.adapters.*
-import grails.plugin.gson.support.hibernate.HibernateProxyAdapter
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.commons.cfg.GrailsConfig
@@ -42,10 +41,6 @@ class GsonBuilderFactory extends AbstractFactoryBean<GsonBuilder> implements App
 			log.debug "registering adapters for $domainClass.name"
 			builder.registerTypeAdapter domainClass.clazz, domainSerializer
 			builder.registerTypeAdapter domainClass.clazz, domainDeserializer
-		}
-
-		if (pluginManager.hasGrailsPlugin('hibernate')) {
-			builder.registerTypeAdapterFactory(HibernateProxyAdapter.FACTORY)
 		}
 
 		for (typeAdapterFactory in applicationContext.getBeansOfType(TypeAdapterFactory).values()) {
