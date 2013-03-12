@@ -2,6 +2,7 @@ import grails.plugin.gson.adapters.GrailsDomainDeserializer
 import grails.plugin.gson.adapters.GrailsDomainSerializer
 import grails.plugin.gson.converters.GsonParsingParameterCreationListener
 import grails.plugin.gson.spring.GsonBuilderFactory
+import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 
 class GsonGrailsPlugin {
     
@@ -24,6 +25,10 @@ class GsonGrailsPlugin {
     def scm = [url: 'https://github.com/robfletcher/grails-gson']
 
 	def doWithSpring = {
+		if (!manager?.hasGrailsPlugin('hibernate')) {
+			proxyHandler DefaultEntityProxyHandler
+		}
+
 		domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
 		domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 		gsonBuilder GsonBuilderFactory
