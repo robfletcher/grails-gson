@@ -12,7 +12,7 @@ There is a [JIRA][2] open for this issue but since it's easy to provide an alter
 
 ## Installation
 
-Add `compile ':gson:1.0.1'` to `grails-app/conf/BuildConfig.groovy`.
+Add `compile ':gson:1.1'` to `grails-app/conf/BuildConfig.groovy`.
 
 ## Usage
 
@@ -321,6 +321,11 @@ The GSON plugin includes a scaffolding template for RESTful controllers designed
 This will overwrite any existing file in `src/templates/scaffoldng/Controller.groovy`. You can then generate RESTful controllers that use GSON using the normal dynamic or static scaffolding capabilities.
 
 ## Version history
+
+### [1.1](https://github.com/robfletcher/grails-gson/issues?milestone=3)
+
+* Introduces various configuration options
+* Adds RESTful controller template
 
 ### [1.0.1](https://github.com/robfletcher/grails-gson/issues?milestone=2)
 
