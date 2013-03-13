@@ -361,7 +361,7 @@ Initial release.
 [21]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/FieldNamingPolicy.html#IDENTITY
 [22]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setPrettyPrinting()
 [23]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setDateFormat(java.lang.String)
-[24]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setDateFormat(int, int)
+[24]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setDateFormat(int,%20int)
 [25]:http://docs.oracle.com/javase/7/docs/api/java/text/DateFormat.html
 [26]:http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#US
 [27]:http://grails.org/doc/latest/guide/single.html#REST
