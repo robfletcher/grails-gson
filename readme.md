@@ -312,6 +312,14 @@ The plugin supports a few configurable options. Where equivalent configuration a
 
 * **grails.converters.gson.dateStyle** and **grails.converters.gson.timeStyle** specify the style used to format  `java.util.Date` objects in serialized output. See [`GsonBuilder.setDateFormat(int, int)`][24]. The values should be one of the `int` constants - `SHORT`, `MEDIUM`, `LONG` or `FULL` - from [`java.text.DateFormat`][25]. Note that Gson does not have a way to specify a _locale_ for the format so [`Locale.US`][26] is always used. For more control over the format use _grails.converters.gson.datePattern_ or register a custom `TypeAdapterFactory`.
 
+## RESTful controllers with GSON
+
+The GSON plugin includes a scaffolding template for RESTful controllers designed to work with Grails' [resource style URL mappings][27]. To install the template run:
+
+    grails install-gson-templates
+
+This will overwrite any existing file in `src/templates/scaffoldng/Controller.groovy`. You can then generate RESTful controllers that use GSON using the normal dynamic or static scaffolding capabilities.
+
 ## Version history
 
 ### [1.0.1](https://github.com/robfletcher/grails-gson/issues?milestone=2)
@@ -351,3 +359,4 @@ Initial release.
 [24]:http://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/GsonBuilder.html#setDateFormat(int, int)
 [25]:http://docs.oracle.com/javase/7/docs/api/java/text/DateFormat.html
 [26]:http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#US
+[27]:http://grails.org/doc/latest/guide/single.html#REST
