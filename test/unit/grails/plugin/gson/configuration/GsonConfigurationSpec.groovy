@@ -272,6 +272,65 @@ class GsonConfigurationSpec extends Specification {
 		expectedOutput = "\"${expectedOutputFormat.format(value)}\""
 	}
 
+	@Issue('https://github.com/robfletcher/grails-gson/issues/4')
+	void 'serialized object #includes class element when domain.include.class is #defaultConfigValue and gson.domain.include.class is #gsonConfigValue'() {
+		given:
+		grailsApplication.with {
+			config.grails.converters.domain.include.class = defaultConfigValue
+			config.grails.converters.gson.domain.include.class = gsonConfigValue
+			configChanged()
+		}
+
+		and:
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		def gson = gsonBuilder.create()
+
+		expect:
+		gson.toJson(new Person(name: 'Rob')) == expectedOutput
+
+		where:
+		defaultConfigValue | gsonConfigValue | shouldOutputClass
+		null               | null            | false
+		false              | false           | false
+		true               | false           | false
+		true               | null            | true
+		false              | true            | true
+
+		expectedOutput = shouldOutputClass ? '{"class":"grails.plugin.gson.configuration.Person","name":"Rob"}' : '{"name":"Rob"}'
+		includes = shouldOutputClass ? 'includes' : 'does not include'
+	}
+
+	@Issue('https://github.com/robfletcher/grails-gson/issues/3')
+	void 'serialized object #includes version element when domain.include.version is #defaultConfigValue and gson.domain.include.version is #gsonConfigValue'() {
+		given:
+		grailsApplication.with {
+			config.grails.converters.domain.include.version = defaultConfigValue
+			config.grails.converters.gson.domain.include.version = gsonConfigValue
+			configChanged()
+		}
+
+		and:
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		def gson = gsonBuilder.create()
+
+		and:
+		def value = new Person(name: 'Rob').save(failOnError: true)
+
+		expect:
+		gson.toJson(value) ==~ expectedOutput
+
+		where:
+		defaultConfigValue | gsonConfigValue | shouldOutputVersion
+		null               | null            | false
+		false              | false           | false
+		true               | false           | false
+		true               | null            | true
+		false              | true            | true
+
+		expectedOutput = shouldOutputVersion ? /\{"id":\d+,"version":0,"name":"Rob"\}/ : /\{"id":\d+,"name":"Rob"\}/
+		includes = shouldOutputVersion ? 'includes' : 'does not include'
+	}
+
 }
 
 @Entity
