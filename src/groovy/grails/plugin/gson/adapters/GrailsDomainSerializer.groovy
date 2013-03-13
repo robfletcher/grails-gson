@@ -21,6 +21,9 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 	@Override
 	JsonElement serialize(T instance, Type type, JsonSerializationContext context) {
 		def element = new JsonObject()
+		if (shouldOutputClass()) {
+			element.add 'class', context.serialize(instance.getClass().name)
+		}
 		eachUnvisitedProperty(instance) { GrailsDomainClassProperty property ->
 			def field = instance.getClass().getDeclaredField(property.name)
 			def value = PropertyUtils.getProperty(instance, property.name)
@@ -60,9 +63,6 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	private void eachProperty(T instance, Closure iterator) {
 		def domainClass = getDomainClassFor(instance)
-//		if (shouldOutputClass()) {
-//			iterator(domainClass.clazz.name)
-//		}
 		iterator(domainClass.identifier)
 		if (shouldOutputVersion()) {
 			iterator(domainClass.version)
@@ -79,7 +79,8 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 		grailsApplication.getDomainClass(instance.getClass().name)
 	}
 
-	@Lazy private FieldNamingStrategy fieldNamingStrategy = {
+	@Lazy
+	private FieldNamingStrategy fieldNamingStrategy = {
 		def grailsConfig = new GrailsConfig(grailsApplication)
 		grailsConfig.get('grails.converters.gson.fieldNamingPolicy', FieldNamingStrategy) ?: FieldNamingPolicy.IDENTITY
 	}()
