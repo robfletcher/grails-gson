@@ -314,7 +314,7 @@ class GsonConfigurationSpec extends Specification {
 		def gson = gsonBuilder.create()
 
 		and:
-		def value = new Person(name: 'Rob').save(failOnError: true)
+		def value = new Person(name: 'Rob').save(failOnError: true, flush: true)
 
 		expect:
 		gson.toJson(value) ==~ expectedOutput

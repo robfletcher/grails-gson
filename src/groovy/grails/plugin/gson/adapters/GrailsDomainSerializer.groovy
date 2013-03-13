@@ -60,7 +60,13 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	private void eachProperty(T instance, Closure iterator) {
 		def domainClass = getDomainClassFor(instance)
+//		if (shouldOutputClass()) {
+//			iterator(domainClass.clazz.name)
+//		}
 		iterator(domainClass.identifier)
+		if (shouldOutputVersion()) {
+			iterator(domainClass.version)
+		}
 		for (property in domainClass.persistentProperties) iterator(property)
 	}
 
@@ -80,6 +86,14 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	private boolean shouldResolveProxy() {
 		config.get('grails.converters.gson.resolveProxies', true)
+	}
+
+	private boolean shouldOutputClass() {
+		config.get('grails.converters.gson.domain.include.class', config.get('grails.converters.domain.include.class', false))
+	}
+
+	private boolean shouldOutputVersion() {
+		config.get('grails.converters.gson.domain.include.version', config.get('grails.converters.domain.include.version', false))
 	}
 
 	private GrailsConfig getConfig() {
