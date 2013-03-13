@@ -87,24 +87,22 @@ class ${className}Controller {
 		render ${propertyName} as GSON
 	}
 
-	private void respondCreated(${className} ${propertyName}) {
-		response.status = SC_CREATED
-		response.addHeader LOCATION, createLink(action: 'show', id: ${propertyName}.id)
-		render ${propertyName} as GSON
-	}
-
 	private void respondUpdated(${className} ${propertyName}) {
 		response.status = SC_OK
 		render ${propertyName} as GSON
 	}
 
-	private void respondUnprocessableEntity(${className} ${propertyName}) {
+	private void respondDeleted(id) {
 		def responseBody = [:]
-		responseBody.errors = ${propertyName}.errors.allErrors.collect {
-			message(error: it)
-		}
-		response.status = SC_UNPROCESSABLE_ENTITY
+		responseBody.message = message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
+		response.status = SC_OK
 		render responseBody as GSON
+	}
+
+	private void respondCreated(${className} ${propertyName}) {
+		response.status = SC_CREATED
+		response.addHeader LOCATION, createLink(action: 'show', id: ${propertyName}.id)
+		render ${propertyName} as GSON
 	}
 
 	private void respondNotFound(id) {
@@ -112,6 +110,13 @@ class ${className}Controller {
 		responseBody.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
 		response.status = SC_NOT_FOUND
 		render responseBody as GSON
+	}
+
+	private void respondNotAcceptable() {
+		response.status = SC_NOT_ACCEPTABLE
+		response.contentLength = 0
+		response.outputStream.flush()
+		response.outputStream.close()
 	}
 
 	private void respondConflict(${className} ${propertyName}) {
@@ -126,10 +131,12 @@ class ${className}Controller {
 		render responseBody as GSON
 	}
 
-	private void respondDeleted(id) {
+	private void respondUnprocessableEntity(${className} ${propertyName}) {
 		def responseBody = [:]
-		responseBody.message = message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
-		response.status = SC_OK
+		responseBody.errors = ${propertyName}.errors.allErrors.collect {
+			message(error: it)
+		}
+		response.status = SC_UNPROCESSABLE_ENTITY
 		render responseBody as GSON
 	}
 
@@ -138,13 +145,6 @@ class ${className}Controller {
 		responseBody.message = message(code: 'default.not.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
 		response.status = SC_INTERNAL_SERVER_ERROR
 		render responseBody as GSON
-	}
-
-	private void respondNotAcceptable() {
-		response.status = SC_NOT_ACCEPTABLE
-		response.contentLength = 0
-		response.outputStream.flush()
-		response.outputStream.close()
 	}
 
 }
