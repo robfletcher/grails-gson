@@ -286,9 +286,13 @@ The plugin's parsing is compatible with that done by the default JSON handler so
 
 The plugin supports a few configurable options. Where equivalent configuration applies to the standard Grails _JSON_ converter then the same configuration can be used for the _GSON_ converter.
 
-* **`grails.converters.json.resolveProxies`** if set to `true` then any Hibernate proxies are initialized when serializing entities to JSON. Defaults to `true`. If set to `false` any _n-to-one_ proxies are serialized as just their identifier and any _n-to-many_ proxies are omitted altogether.
+* **`grails.converters.gson.resolveProxies`** if set to `true` then any Hibernate proxies are initialized when serializing entities to JSON. Defaults to `true`. If set to `false` any _n-to-one_ proxies are serialized as just their identifier and any _n-to-many_ proxies are omitted altogether.
 
-* **`grails.converters.json.pretty.print`** if set to `true` then serialization will output pretty-printed JSON. Defaults to `grails.converters.default.pretty.print` or `false`. See [GsonBuilder.setPrettyPrinting][22].
+* **`grails.converters.gson.pretty.print`** if set to `true` then serialization will output pretty-printed JSON. Defaults to `grails.converters.default.pretty.print` or `false`. See [GsonBuilder.setPrettyPrinting][22].
+
+* **`grails.converters.gson.domain.include.class`** if set to `true` then serialization will include domain class names. Defaults to `grails.converters.domain.include.class` or `false`.
+
+* **`grails.converters.gson.domain.include.version`** if set to `true` then serialization will include entity version. Defaults to `grails.converters.domain.include.version` or `false`.
 
 * **`grails.converters.gson.serializeNulls`** if set to `true` then `null` properties are included in serialized JSON, otherwise they are omitted. Defaults to `false`. See [`GsonBuilder.serializeNulls`][13].
 
