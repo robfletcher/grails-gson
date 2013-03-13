@@ -12,7 +12,7 @@ import static java.text.DateFormat.*
 import static java.util.Locale.US
 
 @Unroll
-@Mock(Person)
+@Mock([Person, UnversionedPerson])
 class GsonConfigurationSpec extends Specification {
 
 	void setup() {
@@ -331,6 +331,25 @@ class GsonConfigurationSpec extends Specification {
 		includes = shouldOutputVersion ? 'includes' : 'does not include'
 	}
 
+	@Issue('https://github.com/robfletcher/grails-gson/issues/3')
+	void 'serialized object does not include version element when gson.domain.include.version is true but class is unversioned'() {
+		given:
+		grailsApplication.with {
+			config.grails.converters.gson.domain.include.version = true
+			configChanged()
+		}
+
+		and:
+		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
+		def gson = gsonBuilder.create()
+
+		and:
+		def value = new UnversionedPerson(name: 'Rob').save(failOnError: true, flush: true)
+
+		expect:
+		gson.toJson(value) ==~ /\{"id":\d+,"name":"Rob"\}/
+	}
+
 }
 
 @Entity
@@ -340,5 +359,19 @@ class Person {
 	@Override
 	String toString() {
 		name
+	}
+}
+
+@Entity
+class UnversionedPerson {
+	String name
+
+	@Override
+	String toString() {
+		name
+	}
+
+	static mapping = {
+		version false
 	}
 }
