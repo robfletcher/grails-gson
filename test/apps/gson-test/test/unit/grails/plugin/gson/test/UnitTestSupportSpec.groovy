@@ -1,49 +1,18 @@
 package grails.plugin.gson.test
 
-import javax.servlet.http.HttpServletResponse
-import com.google.gson.*
-import grails.plugin.gson.adapters.*
-import grails.plugin.gson.metaclass.ArtefactEnhancer
-import grails.plugin.gson.spring.GsonBuilderFactory
-import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.*
 import spock.lang.*
 import static javax.servlet.http.HttpServletResponse.SC_CREATED
 
 @Issue('https://github.com/robfletcher/grails-gson/issues/28')
 @TestFor(AlbumController)
+@TestMixin(GsonUnitTestMixin)
 @Mock([Artist, Album])
 class UnitTestSupportSpec extends Specification {
 
-	Gson gson
 	Artist artist
 
-	void setupSpec() {
-		defineBeans {
-			proxyHandler DefaultEntityProxyHandler
-			domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
-			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
-			gsonBuilder(GsonBuilderFactory) {
-				pluginManager = ref('pluginManager')
-			}
-		}
-	}
-
 	void setup() {
-		def gsonBuilder = applicationContext.gsonBuilder
-		gson = gsonBuilder.create()
-
-		def deserializer = applicationContext.domainDeserializer
-		def enhancer = new ArtefactEnhancer(grailsApplication, gsonBuilder, deserializer)
-		enhancer.enhanceControllers()
-		enhancer.enhanceDomains()
-		enhancer.enhanceRequest()
-
-		def parser = new JsonParser()
-		HttpServletResponse.metaClass.getContentAsJson = {->
-			parser.parse delegate.contentAsString
-		}
-
 		artist = new Artist(name: 'David Bowie').save(failOnError: true)
 	}
 
@@ -56,7 +25,7 @@ class UnitTestSupportSpec extends Specification {
 		controller.list(10)
 
 		then:
-		with(response.contentAsJson) {
+		with(response.GSON) {
 			it.size() == 3
 			it*.title.asString == ['Low', '"Heroes"', 'Lodger']
 			it*.artist.name.asString.unique() == [artist.name]
