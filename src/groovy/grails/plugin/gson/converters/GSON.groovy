@@ -4,16 +4,17 @@ import javax.servlet.http.*
 import com.google.gson.*
 import com.google.gson.stream.JsonWriter
 import grails.util.GrailsWebUtil
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.codehaus.groovy.grails.web.converters.*
 import org.codehaus.groovy.grails.web.converters.marshaller.ObjectMarshaller
+import org.springframework.context.*
 
-class GSON extends AbstractConverter<JsonWriter> {
+class GSON extends AbstractConverter<JsonWriter> implements ApplicationContextAware {
+
+	ApplicationContext applicationContext
 
 	@Lazy
 	private GsonBuilder gsonBuilder = {
-		def applicationContext = ApplicationHolder.application.mainContext
-		applicationContext.getBean('gsonBuilder', GsonBuilder)
+		applicationContext?.getBean('gsonBuilder', GsonBuilder) ?: new GsonBuilder()
 	}()
 
 	public static final String CACHED_GSON = 'grails.plugin.gson.CACHED_GSON_REQUEST_CONTENT'
