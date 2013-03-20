@@ -1,28 +1,37 @@
 package grails.plugin.gson.test
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
+import javax.servlet.http.*
+import com.google.gson.*
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.metaclass.ArtefactEnhancer
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.support.GrailsUnitTestMixin
-import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.junit.*
 
 class GsonUnitTestMixin extends GrailsUnitTestMixin {
 
 	@BeforeClass
 	static void initializeGsonDependencies() {
+
+		// this has to be called first as there's no declarative way to enforce
+		// execution order
+		initGrailsApplication()
+
 		defineBeans {
-			proxyHandler DefaultEntityProxyHandler
-			domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
+
+			// this is not named `proxyHandler` as a real app because GrailsUnitTestMixin
+			// names it differently and we need to override that bean or
+			// ControllerUnitTestMixin will shit the bed because something asserts
+			// that there's only one bean that implements ProxyHandler
+			grailsProxyHandler DefaultEntityProxyHandler
+
+			domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('grailsProxyHandler')
 			domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
+
 			gsonBuilder(GsonBuilderFactory) {
+				// GrailsUnitTestMixin ignores PluginManagerAware so we need to wire
+				// this explicitly
 				pluginManager = ref('pluginManager')
 			}
 		}
