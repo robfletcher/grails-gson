@@ -35,8 +35,7 @@ class UnitTestSupportSpec extends Specification {
 
 	void 'can create a new mocked domain instance'() {
 		given:
-		request.contentType = 'application/json'
-		request.content = "{\"title\":\"The Next Day\",\"artist\":{\"id\":$artist.id}}".bytes
+		request.GSON = "{\"title\":\"The Next Day\",\"artist\":{\"id\":$artist.id}}"
 
 		when:
 		controller.save()
