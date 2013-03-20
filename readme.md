@@ -122,6 +122,15 @@ And instances of `Artist` will get serialized to JSON as:
 
 The plugin registers a [`JsonDeserializer`][8] that handles conversion of JSON to Grails domain objects. It will handle deserialization at any level of a JSON object graph so embedded objects, relationships and persistent collections can all be modified when binding to the top level domain object instance.
 
+The deserializer is pre-configured to handle:
+
+- domain classes
+- domain associations
+- _Set_, _List_ and _Map_ associations
+- embedded properties
+- collections of basic types
+- arbitrary depth object graphs
+
 If a JSON object contains an `id` property then it will use GORM to retrieve an existing instance, otherwise it creates a new one.
 
 The deserializer respects the [`bindable`][9] constraint so any properties that are blacklisted from binding are ignored. Any JSON properties that do not correspond to persistent properties on the domain class are ignored. Any other properties of the JSON object are bound to the domain instance.
@@ -241,16 +250,22 @@ The plugin will then automatically use it.
 
 See the [Gson documentation on custom serialization and deserialization][11] for more information on how to write `TypeAdapter` implementations.
 
-## Compatibility
+## Unit test support
 
-The plugin's Gson deserializer works with:
+The plugin provides a test mixin. Simply add `@TestMixin(GsonUnitTestMixin)` to test or spec classes. The mixin registers beans in the mock application context that are required for the _GSON_ converter class to work properly. It also ensures that binding and rendering works with _@Mock_ domain classes just as it does in a real running application.
 
-- domain classes
-- domain associations
-- _Set_, _List_ and _Map_ associations
-- embedded properties
-- collections of basic types
-- arbitrary depth object graphs
+In addition the mixin adds:
+
+- a `GSON` property on _HttpServletResponse_ for convenience in making assertions in controller tests.
+- a writable `GSON` property on _HttpServletResponse_ that accepts either a _JsonElement_ or a JSON string.
+
+## Scaffolding RESTful controllers
+
+The GSON plugin includes a scaffolding template for RESTful controllers designed to work with Grails' [resource style URL mappings][27]. To install the template run:
+
+    grails install-gson-templates
+
+This will overwrite any existing file in `src/templates/scaffoldng/Controller.groovy`. You can then generate RESTful controllers that use GSON using the normal dynamic or static scaffolding capabilities.
 
 ## Gotchas
 
@@ -312,15 +327,11 @@ The plugin supports a few configurable options. Where equivalent configuration a
 
 * **grails.converters.gson.dateStyle** and **grails.converters.gson.timeStyle** specify the style used to format  `java.util.Date` objects in serialized output. See [`GsonBuilder.setDateFormat(int, int)`][24]. The values should be one of the `int` constants - `SHORT`, `MEDIUM`, `LONG` or `FULL` - from [`java.text.DateFormat`][25]. Note that Gson does not have a way to specify a _locale_ for the format so [`Locale.US`][26] is always used. For more control over the format use _grails.converters.gson.datePattern_ or register a custom `TypeAdapterFactory`.
 
-## RESTful controllers with GSON
-
-The GSON plugin includes a scaffolding template for RESTful controllers designed to work with Grails' [resource style URL mappings][27]. To install the template run:
-
-    grails install-gson-templates
-
-This will overwrite any existing file in `src/templates/scaffoldng/Controller.groovy`. You can then generate RESTful controllers that use GSON using the normal dynamic or static scaffolding capabilities.
-
 ## Version history
+
+### [1.1.2](https://github.com/robfletcher/grails-gson/issues?milestone=5)
+
+* Adds `GsonUnitTestMixin` for unit test support.
 
 ### [1.1.1](https://github.com/robfletcher/grails-gson/issues?milestone=4)
 
