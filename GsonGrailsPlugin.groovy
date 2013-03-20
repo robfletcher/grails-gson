@@ -6,7 +6,7 @@ import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 
 class GsonGrailsPlugin {
     
-    def version = '1.1.2-SNAPSHOT'
+    def version = '1.1.2'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
 	def loadAfter = ['controllers', 'converters']
