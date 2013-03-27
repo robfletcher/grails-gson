@@ -8,4 +8,4 @@ script: ./grailsw refresh-dependencies
      && ./grailsw "test-app unit:"
      && cd test/apps/gson-test
      && ./grailsw refresh-dependencies
-     && ./grailsw "test-app functional:"
+     && ./grailsw "test-app integration: functional:"
