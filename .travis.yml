@@ -5,7 +5,7 @@ branches:
   only:
     - master
 script: ./grailsw refresh-dependencies
-     && ./grailsw "test-app unit:"
+     && ./grailsw "test-app -unit"
      && cd test/apps/gson-test
      && ./grailsw refresh-dependencies
-     && ./grailsw "test-app integration: functional:"
+     && ./grailsw "test-app -integration -functional"
