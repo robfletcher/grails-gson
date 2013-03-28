@@ -3,7 +3,7 @@ package grails.plugin.gson.test
 import javax.servlet.http.*
 import com.google.gson.*
 import grails.plugin.gson.adapters.*
-import grails.plugin.gson.metaclass.ArtefactEnhancer
+import grails.plugin.gson.api.ArtefactEnhancer
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.support.GrailsUnitTestMixin

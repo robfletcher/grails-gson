@@ -3,7 +3,7 @@ package grails.plugin.gson
 import com.google.gson.*
 import grails.converters.JSON
 import grails.plugin.gson.adapters.GrailsDomainDeserializer
-import grails.plugin.gson.metaclass.ArtefactEnhancer
+import grails.plugin.gson.api.ArtefactEnhancer
 import grails.test.mixin.*
 import grails.test.mixin.support.GrailsUnitTestMixin
 import spock.lang.*

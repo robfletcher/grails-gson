@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import com.google.gson.*
 import grails.persistence.Entity
 import grails.plugin.gson.adapters.*
-import grails.plugin.gson.metaclass.ArtefactEnhancer
+import grails.plugin.gson.api.ArtefactEnhancer
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.test.mixin.Mock
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest

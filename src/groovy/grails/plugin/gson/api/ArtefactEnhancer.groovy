@@ -1,4 +1,4 @@
-package grails.plugin.gson.metaclass
+package grails.plugin.gson.api
 
 import javax.servlet.http.HttpServletRequest
 import com.google.gson.*

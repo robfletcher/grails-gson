@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletResponse
 import com.google.gson.GsonBuilder
 import grails.plugin.gson.adapters.*
 import grails.plugin.gson.converters.GSON
-import grails.plugin.gson.metaclass.ArtefactEnhancer
+import grails.plugin.gson.api.ArtefactEnhancer
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.*
