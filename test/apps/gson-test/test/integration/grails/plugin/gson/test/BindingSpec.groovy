@@ -50,4 +50,36 @@ class BindingSpec extends IntegrationSpec {
 		type = parameter.getClass().name
 	}
 
+	void "can bind a new domain instance from a GrailsParameterMap"() {
+		given:
+		def request = RequestContextHolder.currentRequestAttributes().request
+		request.setParameter("name", "David Bowie")
+
+		and:
+		def parameterMap = new GrailsParameterMap(request)
+
+		when:
+		artist = new Artist(parameterMap)
+
+		then:
+		artist.name == parameterMap.name
+	}
+
+	void "can bind a new domain instance from a #type"() {
+		when:
+		artist = new Artist(parameter)
+
+		then:
+		artist.name == value
+
+		where:
+		parameter << [
+				new JsonParser().parse('{"name":"David Bowie"}'),
+				JSON.parse('{"name":"David Bowie"}'),
+				[name: "David Bowie"]
+		]
+		value = "David Bowie"
+		type = parameter.getClass().name
+	}
+
 }
