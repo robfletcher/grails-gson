@@ -32,12 +32,27 @@ class ArtefactEnhancer {
 	}
 
 	void enhanceDomains() {
-		grailsApplication.domainClasses.each { GrailsDomainClass domainClass ->
-			domainClass.metaClass.constructor = { JsonObject json ->
-				gson.fromJson json, delegate
-			}
-			domainClass.metaClass.setProperties = { JsonObject json ->
-				domainDeserializer.bindJsonToInstance json, domainClass, delegate, gson.deserializationContext
+		for (domainClass in grailsApplication.domainClasses) {
+			enhanceDomain domainClass
+		}
+	}
+
+	void enhanceDomain(GrailsClass domainClass) {
+		final mc = domainClass.metaClass
+
+		mc.constructor = { JsonObject json ->
+			gson.fromJson json, delegate
+		}
+
+		// I hate doing this but Groovy does not allow overloading of the method dispatched to by the assignment operator.
+		// Although you *can* overload `setProperties` the assignment operator will just dispatch to the last `setProperties`
+		// implementation attached to the metaClass regardless of the parameter types.
+		final setPropertiesMethod = mc.pickMethod('setProperties', [Object] as Class[])
+		mc.setProperties = {
+			if (it instanceof JsonObject) {
+				domainDeserializer.bindJsonToInstance it, domainClass, delegate, gson.deserializationContext
+			} else {
+				setPropertiesMethod.invoke delegate, it
 			}
 		}
 	}
