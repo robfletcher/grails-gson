@@ -1,5 +1,8 @@
 package grails.plugin.gson.test
 
+import com.google.gson.Gson
+import grails.converters.JSON
+import grails.plugin.gson.converters.GSON
 import grails.test.mixin.*
 import spock.lang.*
 import static javax.servlet.http.HttpServletResponse.SC_CREATED
@@ -8,6 +11,7 @@ import static javax.servlet.http.HttpServletResponse.SC_CREATED
 @TestFor(AlbumController)
 @TestMixin(GsonUnitTestMixin)
 @Mock([Artist, Album])
+@Unroll
 class UnitTestSupportSpec extends Specification {
 
 	Artist artist
@@ -47,6 +51,28 @@ class UnitTestSupportSpec extends Specification {
 		Album.countByTitle('The Next Day') == 1
 		def album = Album.findByTitle('The Next Day')
 		album.artist.name == artist.name
+	}
+
+	@Shared def data = [title: "The Next Day", artist: [name: "David Bowie"]]
+
+	void 'can assign #type to request.GSON'() {
+		when:
+		request.GSON = body
+
+		then:
+		request.GSON.title.asString == data.title
+		request.GSON.artist.name.asString == data.artist.name
+
+		where:
+		body << [
+				new Gson().toJson(data),
+				data,
+				new Gson().toJsonTree(data),
+				data as GSON,
+				data as JSON
+		]
+
+		type = body.getClass().simpleName
 	}
 
 }

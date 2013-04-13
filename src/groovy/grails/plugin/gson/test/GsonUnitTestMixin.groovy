@@ -7,6 +7,7 @@ import grails.plugin.gson.api.ArtefactEnhancer
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.support.GrailsUnitTestMixin
+import org.codehaus.groovy.grails.web.converters.Converter
 import org.junit.*
 
 class GsonUnitTestMixin extends GrailsUnitTestMixin {
@@ -49,13 +50,15 @@ class GsonUnitTestMixin extends GrailsUnitTestMixin {
 
 		def parser = new JsonParser()
 
-		HttpServletRequest.metaClass.setGSON = { JsonElement json ->
+		HttpServletRequest.metaClass.setGSON = { json ->
+			if (json instanceof Converter) {
+				json = json.toString()
+			}
+			if (json instanceof CharSequence) {
+				json = parser.parse(json.toString())
+			}
 			delegate.contentType = 'application/json'
-			delegate.content = new Gson().toJson(json).getBytes('UTF-8')
-		}
-
-		HttpServletRequest.metaClass.setGSON = { CharSequence json ->
-			delegate.setGSON parser.parse(json.toString())
+			delegate.content = gsonBuilder.create().toJson(json).getBytes('UTF-8')
 		}
 
 		HttpServletResponse.metaClass.getGSON = {->
