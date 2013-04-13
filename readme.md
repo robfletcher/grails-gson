@@ -12,7 +12,7 @@ There is a [JIRA][2] open for this issue but since it's easy to provide an alter
 
 ## Installation
 
-Add `compile ':gson:1.1.3'` to `grails-app/conf/BuildConfig.groovy`.
+Add `compile ':gson:1.1.4'` to `grails-app/conf/BuildConfig.groovy`.
 
 ## Usage
 
@@ -328,6 +328,10 @@ The plugin supports a few configurable options. Where equivalent configuration a
 * **grails.converters.gson.dateStyle** and **grails.converters.gson.timeStyle** specify the style used to format  `java.util.Date` objects in serialized output. See [`GsonBuilder.setDateFormat(int, int)`][24]. The values should be one of the `int` constants - `SHORT`, `MEDIUM`, `LONG` or `FULL` - from [`java.text.DateFormat`][25]. Note that Gson does not have a way to specify a _locale_ for the format so [`Locale.US`][26] is always used. For more control over the format use _grails.converters.gson.datePattern_ or register a custom `TypeAdapterFactory`.
 
 ## Version history
+
+### [1.1.4](https://github.com/robfletcher/grails-gson/issues?milestone=7)
+
+* Fixes a problem in unit tests with `request.GSON = x` where `x` is anything other than a `String`.
 
 ### [1.1.3](https://github.com/robfletcher/grails-gson/issues?milestone=6)
 
