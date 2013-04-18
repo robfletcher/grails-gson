@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.commons.cfg.GrailsConfig
 import org.codehaus.groovy.grails.support.proxy.EntityProxyHandler
+import org.springframework.util.ReflectionUtils
 
 @TupleConstructor
 @Slf4j
@@ -25,7 +26,10 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 			element.add 'class', context.serialize(instance.getClass().name)
 		}
 		eachUnvisitedProperty(instance) { GrailsDomainClassProperty property ->
-			def field = instance.getClass().getDeclaredField(property.name)
+			def field = ReflectionUtils.findField(instance.getClass(), property.name)
+			if (!field) {
+				throw new NoSuchFieldException(property.name)
+			}
 			def value = PropertyUtils.getProperty(instance, property.name)
 			def elementName = fieldNamingStrategy.translateName(field)
 			if (!proxyHandler.isInitialized(instance, property.name)) {
