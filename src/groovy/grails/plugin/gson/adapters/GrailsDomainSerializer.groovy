@@ -7,7 +7,6 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.commons.cfg.GrailsConfig
-import org.codehaus.groovy.grails.support.proxy.EntityProxyHandler
 import org.springframework.util.ReflectionUtils;
 
 @TupleConstructor
@@ -15,7 +14,7 @@ import org.springframework.util.ReflectionUtils;
 class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	final GrailsApplication grailsApplication
-	final EntityProxyHandler proxyHandler
+	final proxyHandler
 
 	private final Stack<GrailsDomainClassProperty> circularityStack = new Stack<GrailsDomainClassProperty>()
 
