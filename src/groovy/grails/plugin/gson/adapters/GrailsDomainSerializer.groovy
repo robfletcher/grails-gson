@@ -27,6 +27,9 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 		}
 		eachUnvisitedProperty(instance) { GrailsDomainClassProperty property ->
 			def field = ReflectionUtils.findField(instance.getClass(), property.name)
+			if (!field) {
+				throw new NoSuchFieldException(property.name)
+			}
 			def value = PropertyUtils.getProperty(instance, property.name)
 			def elementName = fieldNamingStrategy.translateName(field)
 			if (proxyHandler.isProxy(value)) {
