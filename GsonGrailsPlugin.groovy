@@ -3,6 +3,7 @@ import grails.plugin.gson.adapters.GrailsDomainSerializer
 import grails.plugin.gson.converters.GsonParsingParameterCreationListener
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
+import grails.plugin.gson.support.proxy.ProxyHandlerFacade
 
 class GsonGrailsPlugin {
     
@@ -29,7 +30,8 @@ class GsonGrailsPlugin {
 			proxyHandler DefaultEntityProxyHandler
 		}
 
-		domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyHandler')
+		proxyFacade ProxyHandlerFacade, ref('proxyHandler')
+		domainSerializer GrailsDomainSerializer, ref('grailsApplication'), ref('proxyFacade')
 		domainDeserializer GrailsDomainDeserializer, ref('grailsApplication')
 		gsonBuilder GsonBuilderFactory
 		jsonParsingParameterCreationListener GsonParsingParameterCreationListener, ref('gsonBuilder')
