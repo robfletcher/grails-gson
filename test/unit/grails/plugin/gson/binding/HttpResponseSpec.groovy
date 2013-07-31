@@ -31,10 +31,6 @@ class HttpResponseSpec extends Specification {
 		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
 		def domainDeserializer = applicationContext.getBean('domainDeserializer', GrailsDomainDeserializer)
 		new ArtefactEnhancer(grailsApplication, gsonBuilder, domainDeserializer).enhanceControllers()
-
-		// have to do this because GrailsUnitTestMixin is dumb and does not inherit beans from applicationContext to
-		// grailsApplication.mainContext even though in a real app that is exactly what would happen
-		grailsApplication.mainContext.registerMockBean('gsonBuilder', gsonBuilder)
     }
 
     void 'can render a domain instance list using GSON converter'() {

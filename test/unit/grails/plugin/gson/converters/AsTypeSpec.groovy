@@ -24,13 +24,7 @@ class AsTypeSpec extends Specification {
 	}
 
 	void setup() {
-		def gsonBuilder = applicationContext.getBean('gsonBuilder', GsonBuilder)
 		ConvertersPluginSupport.enhanceApplication(grailsApplication, applicationContext)
-
-		// have to do this because GrailsUnitTestMixin is dumb and does not inherit beans from applicationContext to
-		// grailsApplication.mainContext even though in a real app that is exactly what would happen
-		grailsApplication.mainContext.registerMockBean('gsonBuilder', gsonBuilder)
-		ApplicationHolder.application = grailsApplication
 	}
 
 	void 'can cast a #type to GSON'() {
