@@ -16,8 +16,8 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        compile 'com.google.code.gson:gson:2.2.2'
-        test('joda-time:joda-time:2.1') {
+        compile 'com.google.code.gson:gson:2.2.4'
+        test('joda-time:joda-time:2.2') {
             export = false
         }
 		test('org.spockframework:spock-grails-support:0.7-groovy-2.0') {
@@ -26,7 +26,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(':release:2.2.0', ':rest-client-builder:1.0.3') {
+        build(':release:2.2.1', ':rest-client-builder:1.0.3') {
             export = false
         }
         test(':spock:0.7') {

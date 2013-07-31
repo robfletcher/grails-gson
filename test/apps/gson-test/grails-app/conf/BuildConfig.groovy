@@ -25,7 +25,7 @@ grails.project.dependency.resolution = {
 	}
 
 	dependencies {
-		compile 'com.google.code.gson:gson:2.2.2'
+		compile 'com.google.code.gson:gson:2.2.4'
 
 		test 'org.spockframework:spock-grails-support:0.7-groovy-2.0'
 		test 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
