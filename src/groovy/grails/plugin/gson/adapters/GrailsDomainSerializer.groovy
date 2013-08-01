@@ -32,7 +32,7 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 			def value = PropertyUtils.getProperty(instance, property.name)
 			def elementName = fieldNamingStrategy.translateName(field)
 			if (proxyHandler.isProxy(value)) {
-				if (shouldResolveProxy()) {
+				if (shouldResolveProxy() || (shouldResolveInitializedProxy() && proxyHandler.isInitialized(value))) {
 					log.debug "unwrapping proxy for $property.domainClass.shortName.$property.name"
 					value = proxyHandler.unwrapIfProxy(value)
 					element.add elementName, context.serialize(value, property.type)
@@ -90,6 +90,10 @@ class GrailsDomainSerializer<T> implements JsonSerializer<T> {
 
 	private boolean shouldResolveProxy() {
 		config.get('grails.converters.gson.resolveProxies', true)
+	}
+
+	private boolean shouldResolveInitializedProxy() {
+		config.get('grails.converters.gson.resolveInitializedProxies', true)
 	}
 
 	private boolean shouldOutputClass() {
