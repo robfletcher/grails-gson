@@ -75,6 +75,8 @@ class PersonController {
 
 By default the plugin will automatically resolve any _Hibernate_ proxies it encounters when serializing an object graph to JSON. If this is not what you want then set `grails.converters.gson.resolveProxies` to `false` in your _Config.groovy_.
 
+If you would like the plugin to resolve _Hibernate_ collections and proxy objects, but only when they have already been initialized (so no further SQL queries will be issued), set `grails.converters.gson.resolveProxies` to `false` and `grails.converters.gson.resolveInitializedProxies` to `true`.
+
 If an object graph contains bi-directional relationships they will only be traversed once (but in either direction).
 
 For example if you have the following domain classes:
