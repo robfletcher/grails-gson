@@ -2,13 +2,11 @@ package grails.plugin.gson.serialization
 
 import com.google.gson.GsonBuilder
 import grails.persistence.Entity
-import grails.plugin.gson.adapters.GrailsDomainDeserializer
-import grails.plugin.gson.adapters.GrailsDomainSerializer
+import grails.plugin.gson.adapters.*
 import grails.plugin.gson.spring.GsonBuilderFactory
 import grails.plugin.gson.support.proxy.DefaultEntityProxyHandler
 import grails.test.mixin.Mock
-import spock.lang.Specification
-import spock.lang.Unroll
+import spock.lang.*
 
 /**
  * Copyright Tom Dunstan 2013. All rights reserved.
@@ -37,12 +35,12 @@ class ProxyConfigSpec extends Specification {
         }
     }
 
-    @Unroll
+    @Unroll('output #description collection if proxy is #proxyState, resolveProxies is #resolveProxiesConfig and serializeProxies is #serializeProxiesConfig')
     void 'output contains collection depending on config and initialized state'() {
         given:
             grailsApplication.with {
-                config.grails.converters.gson.resolveProxies = proxiesConfig
-                config.grails.converters.gson.resolveInitializedProxies = initializedProxiesConfig
+                config.grails.converters.gson.resolveProxies = resolveProxiesConfig
+                config.grails.converters.gson.serializeProxies = serializeProxiesConfig
                 configChanged()
             }
 
@@ -61,16 +59,19 @@ class ProxyConfigSpec extends Specification {
             gson.toJson(blogPost) == expectedOutput
 
         where:
-            proxiesConfig | initializedProxiesConfig | isInitialized | expectedOutput
-            null          | null                     | false         | '{"id":1,"comments":[{"id":1,"content":"you suck"}],"content":"hi there"}'
-            null          | false                    | false         | '{"id":1,"comments":[{"id":1,"content":"you suck"}],"content":"hi there"}'
-            false         | false                    | false         | '{"id":1,"content":"hi there"}'
-            false         | true                     | false         | '{"id":1,"content":"hi there"}'
-            false         | false                    | true          | '{"id":1,"content":"hi there"}'
-            false         | true                     | true          | '{"id":1,"comments":[{"id":1,"content":"you suck"}],"content":"hi there"}'
-    }
-}
+			serializeProxiesConfig | resolveProxiesConfig | isInitialized | expectOutputToContainCollection
+			null                   | null                 | false         | true
+			false                  | null                 | false         | false
+			false                  | false                | false         | false
+			true                   | false                | false         | false
+			false                  | false                | true          | false
+			true                   | false                | true          | true
 
+			expectedOutput = expectOutputToContainCollection ? '{"id":1,"comments":[{"id":1,"content":"you suck"}],"content":"hi there"}' : '{"id":1,"content":"hi there"}'
+			description = expectOutputToContainCollection ? "contains" : "does not contain"
+			proxyState = isInitialized ? "initialized" : "not initialized"
+	}
+}
 
 @Entity
 class BlogPost {

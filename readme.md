@@ -73,9 +73,7 @@ class PersonController {
 
 ## Serialization
 
-By default the plugin will automatically resolve any _Hibernate_ proxies it encounters when serializing an object graph to JSON. If this is not what you want then set `grails.converters.gson.resolveProxies` to `false` in your _Config.groovy_.
-
-If you would like the plugin to resolve _Hibernate_ collections and proxy objects, but only when they have already been initialized (so no further SQL queries will be issued), set `grails.converters.gson.resolveProxies` to `false` and `grails.converters.gson.resolveInitializedProxies` to `true`.
+By default the plugin will automatically serialize any _Hibernate_ proxies it encounters when serializing an object graph to JSON, resolving any uninitialized proxies along the way. This means by default you get a full, deep object graph at the potential cost of additional SQL queries. There are two config flags to control this behavior in your _Config.groovy_. If you set `grails.converters.gson.resolveProxies` to `false` then only initialized proxies are serialized – therefore no additional queries are performed. If you set `grails.converters.gson.serializeProxies` to `false` then no proxies are serialized at all meaning your JSON will only contain a shallow object graph.
 
 If an object graph contains bi-directional relationships they will only be traversed once (but in either direction).
 
@@ -303,7 +301,9 @@ The plugin's parsing is compatible with that done by the default JSON handler so
 
 The plugin supports a few configurable options. Where equivalent configuration applies to the standard Grails _JSON_ converter then the same configuration can be used for the _GSON_ converter.
 
-* **grails.converters.gson.resolveProxies** if set to `true` then any Hibernate proxies are initialized when serializing entities to JSON. Defaults to `true`. If set to `false` any _n-to-one_ proxies are serialized as just their identifier and any _n-to-many_ proxies are omitted altogether.
+* **grails.converters.gson.serializeProxies** if set to `true` then any Hibernate proxies are traversed when serializing entities to JSON. Defaults to `true`. If set to `false` any _n-to-one_ proxies are serialized as just their identifier and any _n-to-many_ proxies are omitted altogether.
+
+* **grails.converters.gson.resolveProxies** if set to `true` then any Hibernate proxies are initialized when serializing entities to JSON. Defaults to `true`. If set to `false` only proxies that are already initialized get serialized to JSON. This flag has no effect if `grails.converters.gson.serializeProxies` is set to `false` as proxies will not be traversed anyway.
 
 * **grails.converters.gson.pretty.print** if set to `true` then serialization will output pretty-printed JSON. Defaults to `grails.converters.default.pretty.print` or `false`. See [GsonBuilder.setPrettyPrinting][22].
 
