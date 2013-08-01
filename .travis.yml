@@ -9,3 +9,11 @@ script: ./grailsw refresh-dependencies
      && cd test/apps/gson-test
      && ./grailsw refresh-dependencies
      && ./grailsw "test-app -integration -functional"
+     && cd ../../..
+     && ./grailsw package-plugin
+     && ./grailsw publish-plugin --no-scm --allow-overwrite
+
+env:
+  global:
+  - secure: <output from travis encrypt 'GRAILS_CENTRAL_USERNAME=theusername'
+  - secure: <output from travis encrypt 'GRAILS_CENTRAL_PASSWORD=thepassword'
