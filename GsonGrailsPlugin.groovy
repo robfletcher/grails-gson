@@ -7,7 +7,7 @@ import grails.plugin.gson.support.proxy.ProxyHandlerFacade
 
 class GsonGrailsPlugin {
     
-    def version = '1.1.4'
+    def version = '1.2-SNAPSHOT'
     def grailsVersion = '2.0 > *'
     def dependsOn = [:]
 	def loadAfter = ['controllers', 'converters']

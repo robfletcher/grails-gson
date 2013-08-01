@@ -15,5 +15,5 @@ script: ./grailsw refresh-dependencies
 
 env:
   global:
-  - secure: "l+tg5PYMovNO0CQpHxamIkiGzL6wtXfgNQxQFLgGRmrr60EJKkB3zOMHKww0T/q1RyOz+W0MCGB1d525FKQqnk/Qam8+oZbGe5OUtxDCBnLGBItOrddzSrA7PNoW8vIf8dBzsAHLwfgjqIk/MYXrX0CWLDcvB1EFy6Ih5A/M2hU="
-  - secure: "rYaY87Gg1nvL/AmmVdcu7OaGRYpTEqw/3gzoUEwfvwoNKewz1PCRPJuIqMM0QVHOF5wsUO+yC3yx6Pc29owaXKgQobAluNFxjfE9IKLdvCsaeWH3JMJhw7xTcKiqNzRwFvCZF/84tDvc8mG1P3Qh9gbmDyaHRSK6a4pP9CDOK1E="
+  - secure: l+tg5PYMovNO0CQpHxamIkiGzL6wtXfgNQxQFLgGRmrr60EJKkB3zOMHKww0T/q1RyOz+W0MCGB1d525FKQqnk/Qam8+oZbGe5OUtxDCBnLGBItOrddzSrA7PNoW8vIf8dBzsAHLwfgjqIk/MYXrX0CWLDcvB1EFy6Ih5A/M2hU=
+  - secure: rYaY87Gg1nvL/AmmVdcu7OaGRYpTEqw/3gzoUEwfvwoNKewz1PCRPJuIqMM0QVHOF5wsUO+yC3yx6Pc29owaXKgQobAluNFxjfE9IKLdvCsaeWH3JMJhw7xTcKiqNzRwFvCZF/84tDvc8mG1P3Qh9gbmDyaHRSK6a4pP9CDOK1E=
