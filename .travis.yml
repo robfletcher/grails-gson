@@ -1,18 +1,17 @@
 language: groovy
 jdk:
-  - oraclejdk7
+- oraclejdk7
 branches:
   only:
-    - master
-script: ./grailsw refresh-dependencies
-     && ./grailsw "test-app -unit"
+  - master
+script: ./grailsw refresh-dependencies --non-interactive
+     && ./grailsw "test-app -unit" --non-interactive
      && cd test/apps/gson-test
-     && ./grailsw refresh-dependencies
-     && ./grailsw "test-app -integration -functional"
+     && ./grailsw refresh-dependencies --non-interactive
+     && ./grailsw "test-app -integration -functional" --non-interactive
      && cd ../../..
-     && ./grailsw package-plugin
-     && ./grailsw publish-plugin --no-scm --allow-overwrite
-
+     && ./grailsw package-plugin --non-interactive
+     && ./grailsw publish-plugin --no-scm --allow-overwrite --non-interactive
 env:
   global:
   - secure: l+tg5PYMovNO0CQpHxamIkiGzL6wtXfgNQxQFLgGRmrr60EJKkB3zOMHKww0T/q1RyOz+W0MCGB1d525FKQqnk/Qam8+oZbGe5OUtxDCBnLGBItOrddzSrA7PNoW8vIf8dBzsAHLwfgjqIk/MYXrX0CWLDcvB1EFy6Ih5A/M2hU=
