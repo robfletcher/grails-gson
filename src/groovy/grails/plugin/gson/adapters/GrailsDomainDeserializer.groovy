@@ -49,11 +49,14 @@ class GrailsDomainDeserializer<T> implements JsonDeserializer<T> {
 		}
 		bindObjectToDomainInstance domainClass, instance, properties
 
-		processBidirectionalAssociations domainClass, instance
+		def modifiedProperties = jsonEntries.collect { property ->
+			domainClass.getPersistentProperty(property.key)
+		}
+		processBidirectionalAssociations modifiedProperties, instance
 	}
 
-	private void processBidirectionalAssociations(GrailsDomainClass domainClass, T instance) {
-		domainClass.persistentProperties.each { property ->
+	private void processBidirectionalAssociations(def modifiedProperties, T instance) {
+		modifiedProperties.each { property ->
 			if (property.bidirectional) {
 				bindOwner instance."$property.name", property.otherSide, instance
 			}
